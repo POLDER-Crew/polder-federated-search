@@ -17,7 +17,7 @@ This tool uses docker to manage the different services that it depends on. One o
 
 #### Setup
 1. Install [Docker](https://docker.com)
-You can then run `docker-compose --profile setup up -d` in order to start all of the necessary services and set up Gleaner for indexing.
+1. You can then run `docker-compose --profile setup up -d` in order to start all of the necessary services and set up Gleaner for indexing.
 
 #### Doing a crawl
 1. `curl -O https://schema.org/version/latest/schemaorg-current-https.jsonld`
