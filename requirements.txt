@@ -21,6 +21,7 @@ pyasn1==0.4.8
 pycparser==2.20
 PyJWT==2.2.0
 pyparsing==2.4.7
+python-dotenv==0.19.1
 PyXB==1.2.6
 rdflib==6.0.2
 requests==2.26.0
