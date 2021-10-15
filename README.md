@@ -13,6 +13,8 @@
 ### Architecture
 This tool uses docker to manage the different services that it depends on. One of those is [Gleaner](https://gleaner.io).
 
+The web app itself that hosts the UI and does the searches is built using [Flask](https://flask.palletsprojects.com), which is a Python web framework. I chose Python because DataOne has [client libraries](https://dataone-python.readthedocs.io/en/latest/#python-libraries-for-software-developers) written in Python, and Python has good support for RDF and SPARQL operations with [RDFLib](https://rdflib.dev/).
+
 ### Deployment
 
 #### Setup
