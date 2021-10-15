@@ -23,6 +23,7 @@ To build the Docker image for this app, run `docker build -f docker/Dockerfile .
 Assuming that you're starting from **this directory**:
 
 1. Install [Docker](https://docker.com)
+
 1. `cd docker`
 1. `docker-compose --profile setup up -d` in order to start all of the necessary services and set up Gleaner for indexing.
 
