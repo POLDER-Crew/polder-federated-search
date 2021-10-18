@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        <title>
+            {% block title %}{% endblock %} - POLDER Federated Search
+        </title>
+    </head>
+    <body>
+        <nav>
+          <h1>POLDER Federated Search</h1>
+        </nav>
+        <section class="content">
+          <header>
+            {% block header %}{% endblock %}
+          </header>
+          {% for message in get_flashed_messages() %}
+            <div class="flash">{{ message }}</div>
+          {% endfor %}
+          {% block content %}{% endblock %}
+        </section>
+    </body>
+</html>

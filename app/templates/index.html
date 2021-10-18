@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <form class="search" method="get" action="/search">
+    <label for="text">Perform a full-text search</label>
+    <input name="text" id="text" required>
+  </form>
+  <div class="results">
+  </div>
+{% endblock %}

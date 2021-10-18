@@ -27,6 +27,8 @@ services:
       - ./:/config
     working_dir: /config
 
+# Todo: add nabu into the mix
+
   triplestore:
     image: nawer/blazegraph
     environment:

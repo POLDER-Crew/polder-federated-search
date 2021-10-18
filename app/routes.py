@@ -1,11 +1,14 @@
+from flask import render_template, request
+
 from app import app
-from app.search.dataone import DataOneSearch
+from app.search.dataone import SolrDirectSearch
 
 @app.route('/')
 def home():
-    return 'POLDER Federated Search!'
+    return render_template('index.html')
 
-@app.route('/search/<text>')
-def text_search(text):
-    dataone = DataOneSearch()
-    return dataone.text_search(q="title:" + text)
+@app.route('/search')
+def text_search():
+    text = request.args.get('text')
+    dataone = SolrDirectSearch()
+    return dataone.text_search(q=text)
