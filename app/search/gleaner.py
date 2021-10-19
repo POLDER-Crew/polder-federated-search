@@ -1,12 +1,14 @@
-import rdflib
+from SPARQLWrapper import SPARQLWrapper, JSON
 from .searcher_base import SearcherBase
 
 class GleanerSearch(SearcherBase):
-    SPARQL_ENDPOINT="http://triplestore:9999"
-    graph = rdflib.Graph()
-
+    # todo: this DEFINITELY needs to go in a config
+    SPARQL_ENDPOINT="http://localhost:9999/blazegraph/namespace/polder/sparql"
+    sparql = SPARQLWrapper(SPARQL_ENDPOINT)
     def text_search(self, **kwargs):
-        return g.query(
+        text = kwargs.pop('q', '')
+
+        self.sparql.setQuery(
             f"""
             prefix prov: <http://www.w3.org/ns/prov#>
             PREFIX con: <http://www.ontotext.com/connectors/lucene#>
@@ -18,20 +20,20 @@ class GleanerSearch(SearcherBase):
             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
             SELECT ?s
             WHERE {{
-              SERVICE <{SPARQL_ENDPOINT}> {{
-                   ?lit bds:search "{kwargs['q']}" .
+              SERVICE <{self.SPARQL_ENDPOINT}> {{
+                   ?lit bds:search "{text}" .
                    ?lit bds:matchAllTerms "false" .
                    ?lit bds:relevance ?score .
                    ?s ?p ?lit .
 
-                   graph ?g {
+                   graph ?g {{
                     ?s ?p ?lit .
                     ?s rdf:type ?type .
-                    OPTIONAL { ?s schema:name ?name .   }
-                    OPTIONAL { ?s schema:headline ?headline .   }
-                    OPTIONAL { ?s schema:url ?url .   }
-                    OPTIONAL { ?s schema:description ?description .    }
-                  }
+                    OPTIONAL {{ ?s schema:name ?name .   }}
+                    OPTIONAL {{ ?s schema:headline ?headline .   }}
+                    OPTIONAL {{ ?s schema:url ?url .   }}
+                    OPTIONAL {{ ?s schema:description ?description .    }}
+                  }}
                    ?sp prov:generated ?g  .
                    ?sp prov:used ?used .
                    ?used prov:hadMember ?hm .
@@ -44,3 +46,8 @@ class GleanerSearch(SearcherBase):
             OFFSET 0
             """
         )
+        self.sparql.setReturnFormat(JSON)
+
+        result = self.sparql.query()
+        result.convert()
+        return results
