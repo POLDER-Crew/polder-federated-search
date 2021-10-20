@@ -5,6 +5,7 @@ class GleanerSearch(SearcherBase):
     # todo: this DEFINITELY needs to go in a config
     SPARQL_ENDPOINT="http://localhost:9999/blazegraph/namespace/polder/sparql"
     sparql = SPARQLWrapper(SPARQL_ENDPOINT)
+
     def text_search(self, **kwargs):
         text = kwargs.pop('q', '')
 
@@ -47,7 +48,5 @@ class GleanerSearch(SearcherBase):
             """
         )
         self.sparql.setReturnFormat(JSON)
-
-        result = self.sparql.query()
-        result.convert()
+        results = self.sparql.query().convert()
         return results

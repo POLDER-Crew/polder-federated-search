@@ -1,13 +1,16 @@
 import unittest
+from unittest.mock import patch, mock_open
 import re
 import requests
 import requests_mock
 from SPARQLWrapper import SPARQLExceptions
+from urllib.error import HTTPError
 from urllib.parse import unquote
+from urllib.response import addinfourl
 
 from app.search import dataone, gleaner
 
-test_response = [{'some': 'result'}, {'another': 'result'}]
+test_response = "[{'some': 'result'}, {'another': 'result'}]"
 
 class TestSolrDirectSearch(unittest.TestCase):
     def setUp(self):
@@ -49,25 +52,37 @@ class TestGleanerSearch(unittest.TestCase):
     def setUp(self):
         self.search = gleaner.GleanerSearch()
 
-    @requests_mock.Mocker()
-    def test_text_search(self, m):
-        m.get(
-            requests_mock.ANY,
-            json=test_response
+        # gross, but requests-mock does not touch the requests
+        # that SPARQLWrapper makes using good old urllib
+        # for some reason, even if I try to capture
+        # every request, so here we are creating fake file handles
+        # because that's what the response object that
+        # SPARQLWrapper knows how to work with expects
+        with patch("builtins.open", mock_open(read_data=test_response)) as file_patch:
+            self.test_response_fp = open("foo")
+
+
+    @patch('SPARQLWrapper.Wrapper.urlopener')
+    def test_text_search(self, urlopen):
+        urlopen.return_value = addinfourl(
+            self.test_response_fp, # our fake file pointer
+            {}, # empty headers
+            self.search.SPARQL_ENDPOINT
         )
         results = self.search.text_search(q='test')
-        # self.assertIn(test_response, results)
+        self.assertIn(test_response, results)
 
-    @unittest.skip("ugh")
-    @requests_mock.Mocker()
-    def test_search_error(self, m):
-        m.get(
-            gleaner.GleanerSearch.SPARQL_ENDPOINT,
-            status_code=500
+    @patch('SPARQLWrapper.Wrapper.urlopener')
+    def test_search_error(self, urlopen):
+        resp = addinfourl(
+            self.test_response_fp, # our fake file pointer
+            {}, # empty headers
+            self.search.SPARQL_ENDPOINT
         )
-        # with self.assertRaises(SPARQLExceptions.EndPointInternalError):
-        results = self.search.text_search(q='test')
-
-    @unittest.skip("bleh")
-    def test_missing_kwargs(self):
-        results = self.search.text_search()
+        resp.code = 500
+        urlopen.return_value = resp
+        urlopen.side_effect = HTTPError(
+            "oh no", 500, {}, {}, self.test_response_fp
+        )
+        with self.assertRaises(SPARQLExceptions.EndPointInternalError):
+            results = self.search.text_search(q='test')
