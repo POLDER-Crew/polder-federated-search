@@ -21,3 +21,5 @@ class SolrDirectSearch(SearcherBase):
         )
         response.raise_for_status()
         return response.json()
+
+        # todo: include scores for each document in query so I can collate results
