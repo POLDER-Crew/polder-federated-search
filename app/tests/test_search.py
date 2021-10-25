@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch, mock_open
+from unittest.mock import patch, mock_open, Mock
 import re
 import requests
 import requests_mock
@@ -52,37 +52,59 @@ class TestGleanerSearch(unittest.TestCase):
     def setUp(self):
         self.search = gleaner.GleanerSearch()
 
-        # gross, but requests-mock does not touch the requests
-        # that SPARQLWrapper makes using good old urllib
-        # for some reason, even if I try to capture
-        # every request, so here we are creating fake file handles
-        # because that's what the response object that
-        # SPARQLWrapper knows how to work with expects
-        with patch("builtins.open", mock_open(read_data=test_response)) as file_patch:
-            self.test_response_fp = open("foo")
+    @patch('SPARQLWrapper.SPARQLWrapper.query')
+    def test_text_search(self, query):
 
+        # Set up our mock SPARQLWrapper results. We have mocked out the query() method from
+        # SPARQLWrapper, but that method returns an object that we immediately call convert() on,
+        # and the results of that are what we work with.
+        mock_convert = Mock(return_value={"results": {
+            "bindings": [
+                {
+                    's': {'type': 'bnode', 'value': 'thing1'},
+                    'score': {'datatype': 'http://www.w3.org/2001/XMLSchema#double', 'type': 'literal', 'value': '0.01953125'},
+                    'description': {'type': 'literal', 'value': "Here is a thing"},
+                    'name': {'type': 'literal', 'value': 'thing'}
+                },
+                                {
+                    's': {'type': 'bnode', 'value': 'thing2'},
+                    'score': {'datatype': 'http://www.w3.org/2001/XMLSchema#double', 'type': 'literal', 'value': '0.01953124'},
+                    'description': {'type': 'literal', 'value': "Here is a less relevant thing"},
+                    'name': {'type': 'literal', 'value': 'thing the second'}
+                }
+            ]
+        }})
+        mock_query = Mock()
+        mock_query.convert = mock_convert
+        query.return_value = mock_query
 
-    @patch('SPARQLWrapper.Wrapper.urlopener')
-    def test_text_search(self, urlopen):
-        urlopen.return_value = addinfourl(
-            self.test_response_fp, # our fake file pointer
-            {}, # empty headers
-            self.search.SPARQL_ENDPOINT
-        )
+        # Do the actual test
         results = self.search.text_search(q='test')
-        self.assertIn(test_response, results)
+        self.assertEqual(
+            results,
+            [{'s': 'thing1', 'score': '0.01953125', 'description': 'Here is a thing', 'name': 'thing'}, {'s': 'thing2', 'score': '0.01953124', 'description': 'Here is a less relevant thing', 'name': 'thing the second'}]
+        )
 
+    # gross, but requests-mock does not touch the requests
+    # that SPARQLWrapper makes using good old urllib
+    # for some reason, even if I try to capture
+    # every request, so here we are creating fake file handles
+    # because that's what the response object that
+    # SPARQLWrapper knows how to work with expects
     @patch('SPARQLWrapper.Wrapper.urlopener')
     def test_search_error(self, urlopen):
+        with patch("builtins.open", mock_open(read_data=test_response)) as file_patch:
+            test_response_fp = open("foo")
+
         resp = addinfourl(
-            self.test_response_fp, # our fake file pointer
+            test_response_fp, # our fake file pointer
             {}, # empty headers
             self.search.SPARQL_ENDPOINT
         )
         resp.code = 500
         urlopen.return_value = resp
         urlopen.side_effect = HTTPError(
-            "oh no", 500, {}, {}, self.test_response_fp
+            "oh no", 500, {}, {}, test_response_fp
         )
         with self.assertRaises(SPARQLExceptions.EndPointInternalError):
             results = self.search.text_search(q='test')

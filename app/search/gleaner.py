@@ -14,14 +14,14 @@ class GleanerSearch(SearcherBase):
 
 
     def text_search(self, **kwargs):
-        # todo: what other types aside from schema:Dataset do we want?
+        # todo: filter these so we just get whole URLS: OPTIONAL {{ ?s schema:identifier / schema:value ?identifier_url . }}
         text = kwargs.pop('q', '')
 
         self.sparql.setQuery(
             f"""
             PREFIX schema: <https://schema.org/>
 
-            SELECT DISTINCT ?s ?score ?description ?name ?headline ?url
+            SELECT DISTINCT ?s ?score ?description ?name ?headline ?url ?boundingbox ?temporalCoverage
             {{
                ?lit bds:search "{text}" .
                ?lit bds:matchAllTerms "false" .
@@ -30,12 +30,15 @@ class GleanerSearch(SearcherBase):
 
                graph ?g {{
                 ?s ?p ?lit .
-                VALUES ?type {{ schema:Dataset }}
-                ?x rdf:type ?type
+                VALUES ?type {{ schema:Organization }} .
+                MINUS {{ ?s rdf:type ?type }}
                 OPTIONAL {{ ?s schema:name ?name .   }}
                 OPTIONAL {{ ?s schema:headline ?headline .   }}
                 OPTIONAL {{ ?s schema:url ?url .   }}
                 OPTIONAL {{ ?s schema:description ?description .    }}
+                OPTIONAL {{ ?s schema:spatialCoverage/schema:geo/schema:box ?boundingbox . }}
+                OPTIONAL {{ ?s schema:temporalCoverage ?temporalCoverage . }}
+
               }}
             }}
             ORDER BY DESC(?score)
@@ -45,6 +48,5 @@ class GleanerSearch(SearcherBase):
         )
         self.sparql.setReturnFormat(JSON)
         data = self.sparql.query().convert()
-
         return list(map(convert_result, data['results']['bindings']))
         # todo: show the number of documents and offset in my results query
