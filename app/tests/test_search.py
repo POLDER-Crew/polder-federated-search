@@ -1,5 +1,6 @@
 import unittest
 from unittest.mock import patch, mock_open, Mock
+import json
 import re
 import requests
 import requests_mock
@@ -10,7 +11,7 @@ from urllib.response import addinfourl
 
 from app.search import dataone, gleaner
 
-test_response = "[{'some': 'result'}, {'another': 'result'}]"
+test_response = json.loads('{"response": {"numFound": 0, "start": 0, "maxScore": 0.0, "docs": [{"some": "result"}, {"another": "result"}]}}')
 
 class TestSolrDirectSearch(unittest.TestCase):
     def setUp(self):
@@ -23,7 +24,7 @@ class TestSolrDirectSearch(unittest.TestCase):
             json=test_response
         )
         results = self.search.text_search(q='test')
-        self.assertEqual(results, test_response)
+        self.assertEqual(results, test_response['response'])
 
         # Did we make the query we expected?
         solr_url = m.request_history[0].url
@@ -44,9 +45,17 @@ class TestSolrDirectSearch(unittest.TestCase):
         with self.assertRaises(requests.exceptions.HTTPError):
             results = self.search.text_search(q='test')
 
-    def test_missing_kwargs(self):
+    @requests_mock.Mocker()
+    def test_missing_kwargs(self, m):
+        m.get(
+            dataone.SolrDirectSearch.SOLR_ENDPOINT,
+            json=test_response
+        )
         results = self.search.text_search()
-
+        self.assertIn(
+            f'&fq={dataone.SolrDirectSearch.LATITUDE_FILTER}',
+            unquote(m.request_history[0].url)
+        )
 
 class TestGleanerSearch(unittest.TestCase):
     def setUp(self):
@@ -93,7 +102,7 @@ class TestGleanerSearch(unittest.TestCase):
     # SPARQLWrapper knows how to work with expects
     @patch('SPARQLWrapper.Wrapper.urlopener')
     def test_search_error(self, urlopen):
-        with patch("builtins.open", mock_open(read_data=test_response)) as file_patch:
+        with patch("builtins.open", mock_open(read_data="some data")) as file_patch:
             test_response_fp = open("foo")
 
         resp = addinfourl(

@@ -15,5 +15,18 @@ def text_search():
     dataone_results = SolrDirectSearch().text_search(q=text)
     gleaner_results = GleanerSearch().text_search(q=text)
 
-    # todo: collate results
-    return json.dumps(gleaner_results)
+    dataone_number = dataone_results['numFound']
+    dataone_start = dataone_results['start']
+
+    results = sorted(
+        # put together our results lists...
+        dataone_results['docs'] + gleaner_results,
+        # and sort them by score...
+        key=lambda x: float(x['score']),
+        # in descending order.
+        reverse=True
+    )
+    return json.dumps(results)
+
+    # todo: I have no idea how SPARQL / Blazegraph relevance scores and Solr relevance scores
+    # compare to each other, so some calibration will be needed.
