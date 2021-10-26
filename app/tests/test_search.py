@@ -11,7 +11,9 @@ from urllib.response import addinfourl
 
 from app.search import dataone, gleaner, search
 
-test_response = json.loads('{"response": {"numFound": 1, "start": 5, "maxScore": 0.0, "docs": [{"some": "result"}, {"another": "result"}]}}')
+test_response = json.loads(
+    '{"response": {"numFound": 1, "start": 5, "maxScore": 0.0, "docs": [{"some": "result"}, {"another": "result"}]}}')
+
 
 class TestSolrDirectSearch(unittest.TestCase):
     def setUp(self):
@@ -62,6 +64,7 @@ class TestSolrDirectSearch(unittest.TestCase):
             unquote(m.request_history[0].url)
         )
 
+
 class TestGleanerSearch(unittest.TestCase):
     def setUp(self):
         self.search = gleaner.GleanerSearch()
@@ -80,7 +83,7 @@ class TestGleanerSearch(unittest.TestCase):
                     'description': {'type': 'literal', 'value': "Here is a thing"},
                     'name': {'type': 'literal', 'value': 'thing'}
                 },
-                                {
+                {
                     's': {'type': 'bnode', 'value': 'thing2'},
                     'score': {'datatype': 'http://www.w3.org/2001/XMLSchema#double', 'type': 'literal', 'value': '0.01953124'},
                     'description': {'type': 'literal', 'value': "Here is a less relevant thing"},
@@ -96,9 +99,10 @@ class TestGleanerSearch(unittest.TestCase):
         expected = search.SearchResultSet(
             total_results=2,
             page_start=0,
-            results=[{'s': 'thing1', 'score': '0.01953125', 'description': 'Here is a thing', 'name': 'thing'}, {'s': 'thing2', 'score': '0.01953124', 'description': 'Here is a less relevant thing', 'name': 'thing the second'}]
+            results=[{'s': 'thing1', 'score': '0.01953125', 'description': 'Here is a thing', 'name': 'thing'}, {
+                's': 'thing2', 'score': '0.01953124', 'description': 'Here is a less relevant thing', 'name': 'thing the second'}]
 
-            )
+        )
         results = self.search.text_search(q='test')
         self.assertEqual(results, expected)
 
@@ -114,8 +118,8 @@ class TestGleanerSearch(unittest.TestCase):
             test_response_fp = open("foo")
 
         resp = addinfourl(
-            test_response_fp, # our fake file pointer
-            {}, # empty headers
+            test_response_fp,  # our fake file pointer
+            {},  # empty headers
             self.search.ENDPOINT_URL
         )
         resp.code = 500
@@ -125,3 +129,48 @@ class TestGleanerSearch(unittest.TestCase):
         )
         with self.assertRaises(SPARQLExceptions.EndPointInternalError):
             results = self.search.text_search(q='test')
+
+
+class TestSearchResultSet(unittest.TestCase):
+    def test_equal(self):
+        results = ['a', 'b', 'c']
+
+        a = search.SearchResultSet(
+            total_results=42, page_start=9, results=results)
+        b = search.SearchResultSet(
+            total_results=42, page_start=9, results=results)
+        c = search.SearchResultSet(
+            total_results=3, page_start=9, results=results)
+        d = search.SearchResultSet(
+            total_results=42, page_start=0, results=results)
+        e = search.SearchResultSet(
+            total_results=42, page_start=9, results=['d', 'e', 'f'])
+
+        self.assertEqual(a, b)
+        self.assertEqual(a, a)
+        self.assertNotEqual(a, c)
+        self.assertNotEqual(a, d)
+        self.assertNotEqual(a, e)
+        self.assertNotEqual(c, b)
+
+    def test_collate(self):
+        results_a = [{'thing': 'a', 'score': 3}, {'thing': 'b', 'score': 1}]
+        results_b = [{'thing': 'c', 'score': 2}, {'thing': 'd', 'score': 0}]
+
+        a = search.SearchResultSet(
+            total_results=2, page_start=3, results=results_a)
+        b = search.SearchResultSet(
+            total_results=2, page_start=0, results=results_b)
+
+        c = search.SearchResultSet.collate(a, b)
+
+        expected = search.SearchResultSet(
+            total_results=4,
+            page_start=0,
+            results=[
+                {'thing': 'a', 'score': 3},
+                {'thing': 'c', 'score': 2},
+                {'thing': 'b', 'score': 1},
+                {'thing': 'd', 'score': 0}])
+
+        self.assertEqual(c, expected)

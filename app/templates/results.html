@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+ Total results: {{ result_set.total_results }}
+ <ol>
+ {% for result in result_set.results %}
+  <li>Score: {{ result.score }} - {{ result.title }}</li>
+ {% endfor %}
+</ol>
+{% endblock %}

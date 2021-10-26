@@ -1,17 +1,18 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
 from .search import SearcherBase, SearchResultSet
 
+
 def convert_result(sparql_result_dict):
     result = {}
     for k, v in sparql_result_dict.items():
         result[k] = v['value']
     return result
 
+
 class GleanerSearch(SearcherBase):
     # todo: this DEFINITELY needs to go in a config
-    ENDPOINT_URL="http://localhost:9999/blazegraph/namespace/polder/sparql"
+    ENDPOINT_URL = "http://localhost:9999/blazegraph/namespace/polder/sparql"
     sparql = SPARQLWrapper(ENDPOINT_URL)
-
 
     def text_search(self, **kwargs):
         # todo: filter these so we just get whole URLS: OPTIONAL {{ ?s schema:identifier / schema:value ?identifier_url . }}
@@ -50,8 +51,7 @@ class GleanerSearch(SearcherBase):
         data = self.sparql.query().convert()
         result_set = SearchResultSet(
             total_results=len(data['results']['bindings']),
-            page_start=0, # for now
+            page_start=0,  # for now
             results=list(map(convert_result, data['results']['bindings']))
         )
         return result_set
-

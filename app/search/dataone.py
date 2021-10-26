@@ -2,6 +2,7 @@ import json
 import requests
 from .search import SearcherBase, SearchResultSet
 
+
 class SolrDirectSearch(SearcherBase):
     ENDPOINT_URL = "https://search.dataone.org/cn/v2/query/solr/"
     LATITUDE_FILTER = "(northBoundCoord:[50 TO *] OR southBoundCoord:[* TO -50])"
