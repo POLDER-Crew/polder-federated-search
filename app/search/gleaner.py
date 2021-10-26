@@ -1,5 +1,5 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
-from .searcher_base import SearcherBase
+from .search import SearcherBase, SearchResultSet
 
 def convert_result(sparql_result_dict):
     result = {}
@@ -9,8 +9,8 @@ def convert_result(sparql_result_dict):
 
 class GleanerSearch(SearcherBase):
     # todo: this DEFINITELY needs to go in a config
-    SPARQL_ENDPOINT="http://localhost:9999/blazegraph/namespace/polder/sparql"
-    sparql = SPARQLWrapper(SPARQL_ENDPOINT)
+    ENDPOINT_URL="http://localhost:9999/blazegraph/namespace/polder/sparql"
+    sparql = SPARQLWrapper(ENDPOINT_URL)
 
 
     def text_search(self, **kwargs):
@@ -43,10 +43,15 @@ class GleanerSearch(SearcherBase):
             }}
             ORDER BY DESC(?score)
             OFFSET 0
-            LIMIT 100
+            LIMIT {self.PAGE_SIZE}
         """
         )
         self.sparql.setReturnFormat(JSON)
         data = self.sparql.query().convert()
-        return list(map(convert_result, data['results']['bindings']))
-        # todo: show the number of documents and offset in my results query
+        result_set = SearchResultSet(
+            total_results=len(data['results']['bindings']),
+            page_start=0, # for now
+            results=list(map(convert_result, data['results']['bindings']))
+        )
+        return result_set
+

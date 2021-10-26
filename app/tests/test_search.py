@@ -9,9 +9,9 @@ from urllib.error import HTTPError
 from urllib.parse import unquote
 from urllib.response import addinfourl
 
-from app.search import dataone, gleaner
+from app.search import dataone, gleaner, search
 
-test_response = json.loads('{"response": {"numFound": 0, "start": 0, "maxScore": 0.0, "docs": [{"some": "result"}, {"another": "result"}]}}')
+test_response = json.loads('{"response": {"numFound": 1, "start": 5, "maxScore": 0.0, "docs": [{"some": "result"}, {"another": "result"}]}}')
 
 class TestSolrDirectSearch(unittest.TestCase):
     def setUp(self):
@@ -20,11 +20,16 @@ class TestSolrDirectSearch(unittest.TestCase):
     @requests_mock.Mocker()
     def test_text_search(self, m):
         m.get(
-            dataone.SolrDirectSearch.SOLR_ENDPOINT,
+            dataone.SolrDirectSearch.ENDPOINT_URL,
             json=test_response
         )
+        expected = search.SearchResultSet(
+            total_results=1,
+            page_start=5,
+            results=test_response['response']['docs']
+        )
         results = self.search.text_search(q='test')
-        self.assertEqual(results, test_response['response'])
+        self.assertEqual(results, expected)
 
         # Did we make the query we expected?
         solr_url = m.request_history[0].url
@@ -39,7 +44,7 @@ class TestSolrDirectSearch(unittest.TestCase):
     @requests_mock.Mocker()
     def test_search_error(self, m):
         m.get(
-            dataone.SolrDirectSearch.SOLR_ENDPOINT,
+            dataone.SolrDirectSearch.ENDPOINT_URL,
             status_code=500
         )
         with self.assertRaises(requests.exceptions.HTTPError):
@@ -48,7 +53,7 @@ class TestSolrDirectSearch(unittest.TestCase):
     @requests_mock.Mocker()
     def test_missing_kwargs(self, m):
         m.get(
-            dataone.SolrDirectSearch.SOLR_ENDPOINT,
+            dataone.SolrDirectSearch.ENDPOINT_URL,
             json=test_response
         )
         results = self.search.text_search()
@@ -88,11 +93,14 @@ class TestGleanerSearch(unittest.TestCase):
         query.return_value = mock_query
 
         # Do the actual test
+        expected = search.SearchResultSet(
+            total_results=2,
+            page_start=0,
+            results=[{'s': 'thing1', 'score': '0.01953125', 'description': 'Here is a thing', 'name': 'thing'}, {'s': 'thing2', 'score': '0.01953124', 'description': 'Here is a less relevant thing', 'name': 'thing the second'}]
+
+            )
         results = self.search.text_search(q='test')
-        self.assertEqual(
-            results,
-            [{'s': 'thing1', 'score': '0.01953125', 'description': 'Here is a thing', 'name': 'thing'}, {'s': 'thing2', 'score': '0.01953124', 'description': 'Here is a less relevant thing', 'name': 'thing the second'}]
-        )
+        self.assertEqual(results, expected)
 
     # gross, but requests-mock does not touch the requests
     # that SPARQLWrapper makes using good old urllib
@@ -108,7 +116,7 @@ class TestGleanerSearch(unittest.TestCase):
         resp = addinfourl(
             test_response_fp, # our fake file pointer
             {}, # empty headers
-            self.search.SPARQL_ENDPOINT
+            self.search.ENDPOINT_URL
         )
         resp.code = 500
         urlopen.return_value = resp
