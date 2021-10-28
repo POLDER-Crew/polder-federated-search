@@ -4,10 +4,10 @@ from flask import Flask
 
 # create and configure the app
 app = Flask(__name__, instance_relative_config=True)
-app.config.from_mapping(
-    SECRET_KEY='dev',
-    # todo: add minio creds as well
-)
+
+# Because we have so many different kinds of deployments available,
+# we're using environment variables for some of the config here.
+
 
 # ensure the instance folder exists
 try:
