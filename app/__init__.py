@@ -1,13 +1,10 @@
 import os
-
 from flask import Flask
 
 # create and configure the app
-app = Flask(__name__, instance_relative_config=True)
+app = Flask(__name__)
 
-# Because we have so many different kinds of deployments available,
-# we're using environment variables for some of the config here.
-
+app.config.from_pyfile('app_config.cfg')
 
 # ensure the instance folder exists
 try:

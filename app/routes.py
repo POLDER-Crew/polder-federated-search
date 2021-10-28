@@ -15,7 +15,7 @@ def home():
 def text_search():
     text = request.args.get('text')
     dataone = SolrDirectSearch().text_search(q=text)
-    gleaner = GleanerSearch().text_search(q=text)
+    gleaner = GleanerSearch(endpoint_url=app.config['GLEANER_ENDPOINT_URL']).text_search(q=text)
 
     results = SearchResultSet.collate(dataone, gleaner)
     return render_template('results.html', result_set=results)
