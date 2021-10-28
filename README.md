@@ -17,7 +17,9 @@ The web app itself that hosts the UI and does the searches is built using [Flask
 
 ### Deployment
 Assuming that you're starting from **this directory**:
-To build the Docker image for this app, run `docker build -f docker/Dockerfile . `. Then, you can run it using `docker run`.
+To build the Docker image for this app, run `docker image build . `. Then, you can run it using `docker run`.
+
+A pre-built image is on Docker Hub as nein09/polder-federated-search.
 
 #### Setup
 Assuming that you're starting from **this directory**:

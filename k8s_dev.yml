@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: polder-federated-search-service
+spec:
+   selector:
+      app: polder-federated-search
+   ports:
+   - protocol: "TCP"
+     port: 7000
+     targetPort: 5000
+   type: NodePort
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+    name: polder-federated-search
+    labels:
+      app: polder-federated-search
+spec:
+   containers:
+   - name: federated-search
+     image: nein09/polder-federated-search:latest
+     ports:
+     - containerPort: 5000
