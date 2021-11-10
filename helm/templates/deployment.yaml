@@ -1,0 +1,124 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "polder-federated-search.fullname" . }}
+  labels:
+    {{- include "polder-federated-search.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "polder-federated-search.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "polder-federated-search.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "polder-federated-search.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+      - name: triplestore-volume
+        emptyDir: {} # TODO: persistent storage would be nicer.
+      - name: s3system-volume
+        emptyDir: {}
+      containers:
+      - name: triplestore
+        image: nawer/blazegraph
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        volumeMounts:
+        - mountPath: /var/lib/blazegraph
+          name: triplestore-volume
+        ports:
+        - containerPort: 9999
+        env:
+        - name: JAVA_XMS
+          value: {{ .Values.javaXMS }}
+        - name: JAVA_XMX
+          value: {{ .Values.javaXmx }}
+        - name: JAVA_OPTS
+          value: {{ .Values.javaOpts }}
+      - name: s3system
+        image: minio/minio:latest
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        volumeMounts:
+        - mountPath: /data
+          name: s3system-volume
+        ports:
+        - containerPort: 54321
+        - containerPort: 9000
+        env:
+        - name: MINIO_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              key:  minioAccessKey
+              name: {{ .Release.Name }}-secrets
+        - name: MINIO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              key:  minioSecretKey
+              name: {{ .Release.Name }}-secrets
+        args: ["server", "/data", "--console-address", ":54321"]
+      - name: headless
+        image: chromedp/headless-shell:latest
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 9222
+        env:
+        - name: SERVICE_PORTS
+          value: "9222"
+      - name: {{ .Chart.Name }}
+        securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+        - name: GLEANER_ENDPOINT_URL
+          value: {{ .Values.gleanerUrl }}
+        - name: FLASK_APP
+          value: {{ .Values.flaskApp }}
+        - name: FLASK_RUN_HOST
+          value: {{ .Values.flaskRunHost }}
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              key:  flaskSecretKey
+              name: {{ .Release.Name }}-secrets
+        - name: FLASK_ENV
+          value: {{ .Values.flaskEnv }}
+        ports:
+        - name: http
+          containerPort: 5000
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
