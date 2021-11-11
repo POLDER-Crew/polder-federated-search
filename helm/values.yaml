@@ -6,10 +6,9 @@ replicaCount: 1
 
 image:
   repository: nein09/polder-federated-search
-  tag: latest
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: latest
 
 imagePullSecrets: []
 nameOverride: ""
