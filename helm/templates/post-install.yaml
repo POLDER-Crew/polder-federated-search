@@ -34,4 +34,4 @@ spec:
         - name: config
           mountPath: /config/blazegraphNamespace.xml
           subPath: blazegraphNamespace.xml
-        command: ["curl", "-X", "POST", "-H", "'Content-type: application/xml'", "--data", "@/config/blazegraphNamespace.xml", "{{ .spec.clusterIP }}:9999/blazegraph/namespace"]
+        command: ["curl", "-X", "POST", "-H", "'Content-type: application/xml'", "--data", "@/config/blazegraphNamespace.xml", "http://triplestore:9999/blazegraph/namespace/"]
