@@ -84,7 +84,6 @@ affinity: {}
 javaXMS: 2g
 javaXmx: 8g
 javaOpts: -Xmx6g -Xms2g --XX:+UseG1GC
-gleanerUrl: http://triplestore:9999/blazegraph/namespace/polder/sparql
 flaskApp: federated_search.py
 flaskRunHost: 0.0.0.0
 flaskEnv: production

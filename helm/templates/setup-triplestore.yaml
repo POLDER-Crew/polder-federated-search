@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: setup-triplestore
+spec:
+  template:
+    metadata:
+      name: setup-triplestore
+    spec:
+      restartPolicy: Never
+      volumes:
+      - name: config
+        hostPath:
+          path: .
+      initContainers:
+      - name: wait-for-triplestore-up # yes, this is how it has to work, no I am not happy about it
+        image: curlimages/curl
+        command:
+        - /bin/sh
+        - -c
+        - >
+          set -x;
+          while [ $(curl -sw '%{http_code}' "{{ include "gleaner.triplestore.endpoint" . }}" -o /dev/null) -ne 200 ]; do
+            sleep 15;
+          done
+      containers:
+      - name: setup-triplestore
+        image: curlimages/curl
+        workingDir: /config
+        volumeMounts:
+        - name: config
+          mountPath: /config/blazegraphNamespace.xml
+          subPath: blazegraphNamespace.xml
+        # If Blazegraph responds with "Content-Type not recognized as RDF: application/x-www-form-urlencoded", it means you got the file path wrong. How intuitive.
+        command: [curl, -X, POST, -H, 'Content-type: application/xml', --data, '@blazegraphNamespace.xml', '{{- include "gleaner.triplestore.endpoint" . }}namespace']
