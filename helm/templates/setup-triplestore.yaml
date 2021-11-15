@@ -8,16 +8,13 @@ spec:
       name: setup-triplestore
     spec:
       restartPolicy: Never
-      volumes:
-      - name: config
-        hostPath:
-          path: .
       initContainers:
-      - name: wait-for-triplestore-up # yes, this is how it has to work, no I am not happy about it
+      - name: wait-for-triplestore-up
         image: curlimages/curl
         command:
         - /bin/sh
         - -c
+        # yes, this is how it has to work, no I am not happy about it
         - >
           set -x;
           while [ $(curl -sw '%{http_code}' "{{ include "gleaner.triplestore.endpoint" . }}" -o /dev/null) -ne 200 ]; do
@@ -26,10 +23,28 @@ spec:
       containers:
       - name: setup-triplestore
         image: curlimages/curl
-        workingDir: /config
-        volumeMounts:
-        - name: config
-          mountPath: /config/blazegraphNamespace.xml
-          subPath: blazegraphNamespace.xml
-        # If Blazegraph responds with "Content-Type not recognized as RDF: application/x-www-form-urlencoded", it means you got the file path wrong. How intuitive.
-        command: [curl, -X, POST, -H, 'Content-type: application/xml', --data, '@blazegraphNamespace.xml', '{{- include "gleaner.triplestore.endpoint" . }}namespace']
+        command:
+        - curl
+        - -X
+        - POST
+        - -H
+        - 'Content-type: application/xml'
+        - --data
+        - >
+          <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+            <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+            <properties>
+              <entry key="com.bigdata.rdf.store.AbstractTripleStore.textIndex">true</entry>
+              <entry key="com.bigdata.rdf.store.AbstractTripleStore.axiomsClass">com.bigdata.rdf.axioms.NoAxioms</entry>
+              <entry key="com.bigdata.rdf.sail.isolatableIndices">false</entry>
+              <entry key="com.bigdata.rdf.sail.truthMaintenance">false</entry>
+              <entry key="com.bigdata.rdf.store.AbstractTripleStore.justify">false</entry>
+              <entry key="com.bigdata.rdf.sail.namespace">polder</entry>
+              <entry key="com.bigdata.rdf.store.AbstractTripleStore.quads">true</entry>
+              <entry key="com.bigdata.namespace.polder.spo.com.bigdata.btree.BTree.branchingFactor">1024</entry>
+              <entry key="com.bigdata.journal.Journal.groupCommit">false</entry>
+              <entry key="com.bigdata.namespace.polder.lex.com.bigdata.btree.BTree.branchingFactor">400</entry>
+              <entry key="com.bigdata.rdf.store.AbstractTripleStore.geoSpatial">true</entry>
+              <entry key="com.bigdata.rdf.store.AbstractTripleStore.statementIdentifiers">false</entry>
+            </properties>
+        - '{{- include "gleaner.triplestore.endpoint" . }}namespace'
