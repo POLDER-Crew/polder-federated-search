@@ -12,6 +12,9 @@ spec:
       - name: gleaner-config
         configMap:
           name: gleaner-config
+          items:
+          - key: gleaner.yaml
+            path: gleaner.yaml
       initContainers:
       - name: wait-for-triplestore-up
         image: curlimages/curl
@@ -74,3 +77,4 @@ spec:
         volumeMounts:
         - name: gleaner-config
           mountPath: /config/gleaner.yaml
+          subPath: gleaner.yaml

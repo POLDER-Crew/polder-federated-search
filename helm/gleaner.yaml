@@ -1,6 +1,5 @@
----
 minio:
-  address: {{- include "gleaner.s3system.endpoint" . }}
+  address: http://s3system-svc.{{ .Release.Namespace }}.svc.cluster.local:9000
   port: 9000   
   accessKey: worldsbestaccesskey # todo: put these in an environment variable
   secretKey: worldsbestsecretkey
