@@ -86,3 +86,6 @@ Complicated service URLS
 {{- define "gleaner.triplestore.endpoint" -}}
 http://triplestore-svc.{{ .Release.Namespace }}.svc.cluster.local:9999/blazegraph/
 {{- end }}
+{{- define "gleaner.s3system.endpoint" -}}
+http://s3system-svc.{{ .Release.Namespace }}.svc.cluster.local:9000
+{{- end }}

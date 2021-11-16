@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: s3system-svc
+  labels:
+    run: s3system-svc
+spec:
+  type: NodePort
+  ports:
+    - port: 9000
+      targetPort: 9000
+      nodePort: 30002
+      protocol: TCP
+  selector:
+    {{- include "gleaner.selectorLabels" . | nindent 4 }}

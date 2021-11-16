@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gleaner-config
+data:
+  gleaner.yaml: |-
+{{ .Files.Get "gleaner.yaml" | indent 4 }}

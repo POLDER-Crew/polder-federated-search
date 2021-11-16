@@ -8,6 +8,10 @@ spec:
       name: setup-triplestore
     spec:
       restartPolicy: Never
+      volumes:
+      - name: gleaner-config
+        configMap:
+          name: gleaner-onfig
       initContainers:
       - name: wait-for-triplestore-up
         image: curlimages/curl
@@ -20,7 +24,6 @@ spec:
           while [ $(curl -sw '%{http_code}' "{{ include "gleaner.triplestore.endpoint" . }}" -o /dev/null) -ne 200 ]; do
             sleep 15;
           done
-      containers:
       - name: setup-triplestore
         image: curlimages/curl
         command:
@@ -48,3 +51,26 @@ spec:
               <entry key="com.bigdata.rdf.store.AbstractTripleStore.statementIdentifiers">false</entry>
             </properties>
         - '{{- include "gleaner.triplestore.endpoint" . }}namespace'
+      containers:
+      - name: gleaner-setup
+        image: fils/gleaner:latest
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command:
+        - -cfg
+        - gleaner
+        - -setup
+        env:
+        - name: MINIO_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              key:  minioAccessKey
+              name: {{ .Release.Name }}-secrets
+        - name: MINIO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              key:  minioSecretKey
+              name: {{ .Release.Name }}-secrets
+        workingDir: /config
+        volumeMounts:
+        - name: gleaner-config
+          mountPath: /config/gleaner.yaml
