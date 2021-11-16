@@ -1,17 +1,17 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: setup-triplestore
+  name: setup-gleaner
 spec:
   template:
     metadata:
-      name: setup-triplestore
+      name: setup-gleaner
     spec:
       restartPolicy: Never
       volumes:
       - name: gleaner-config
         configMap:
-          name: gleaner-onfig
+          name: gleaner-config
       initContainers:
       - name: wait-for-triplestore-up
         image: curlimages/curl
@@ -53,9 +53,9 @@ spec:
         - '{{- include "gleaner.triplestore.endpoint" . }}namespace'
       containers:
       - name: gleaner-setup
-        image: fils/gleaner:latest
+        image: fils/gleaner
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        command:
+        args:
         - -cfg
         - gleaner
         - -setup
