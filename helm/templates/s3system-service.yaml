@@ -6,6 +6,7 @@ metadata:
     run: s3system-svc
 spec:
   type: NodePort
+  clusterIP: {{ .Values.s3systemIP }}
   ports:
     - port: 9000
       targetPort: 9000

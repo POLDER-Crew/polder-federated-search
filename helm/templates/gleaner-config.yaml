@@ -7,7 +7,7 @@ metadata:
 data:
   gleaner.yaml: |-
     minio:
-      address: http://s3system-svc.{{ .Release.Namespace }}.svc.cluster.local
+      address: {{ .Values.s3systemIP }}
       port: 9000
       accessKey: worldsbestaccesskey # todo: put these in an environment variable so they can be removed from this yaml file
       secretKey: worldsbestsecretkey
@@ -45,9 +45,3 @@ data:
       headless: false
       properName: National Snow and Ice Data Center
       domain: https://nsidc.org
-    - name: adc
-      url: https://arcticdata.io/sitemap_index.xml
-      headless: true
-      pid: https://www.re3data.org/repository/r3d100011973
-      properName: Arctic Data Center
-      domain: https://arcticdata.io

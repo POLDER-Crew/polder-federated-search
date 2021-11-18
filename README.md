@@ -16,10 +16,14 @@ This tool uses docker to manage the different services that it depends on. One o
 The web app itself that hosts the UI and does the searches is built using [Flask](https://flask.palletsprojects.com), which is a Python web framework. I chose Python because DataOne has [client libraries](https://dataone-python.readthedocs.io/en/latest/#python-libraries-for-software-developers) written in Python, and Python has good support for RDF and SPARQL operations with [RDFLib](https://rdflib.dev/).
 
 ### Deployment
+
+#### Docker
 Assuming that you're starting from **this directory**:
 To build the Docker image for this app, run `docker image build . `. Then, you can run it using `docker run`.
 
 A pre-built image is on Docker Hub as nein09/polder-federated-search.
+
+#### Helm/Kubernetes
 
 #### Setup
 Assuming that you're starting from **this directory**:

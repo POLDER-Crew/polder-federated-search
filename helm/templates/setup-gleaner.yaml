@@ -12,9 +12,8 @@ spec:
       - name: gleaner-config
         configMap:
           name: gleaner-config
-          items:
-          - key: gleaner.yaml
-            path: gleaner.yaml
+      - name: gleaner-context
+        emptyDir: {}
       initContainers:
       - name: wait-for-triplestore-up
         image: curlimages/curl
@@ -54,7 +53,6 @@ spec:
               <entry key="com.bigdata.rdf.store.AbstractTripleStore.statementIdentifiers">false</entry>
             </properties>
         - '{{- include "gleaner.triplestore.endpoint" . }}namespace'
-      containers:
       - name: gleaner-setup
         image: fils/gleaner
         imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -78,3 +76,38 @@ spec:
         - name: gleaner-config
           mountPath: /config/gleaner.yaml
           subPath: gleaner.yaml
+      - name: get-contextfiles
+        image: curlimages/curl
+        command:
+        - curl
+        - -O
+        - https://schema.org/version/latest/schemaorg-current-https.jsonld
+        volumeMounts:
+        - name: gleaner-context
+          mountPath: /context
+        workingDir: /context
+      containers:
+      - name: gleaner-initial-index
+        image: fils/gleaner
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        args:
+        - -cfg
+        - gleaner
+        env:
+        - name: MINIO_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              key:  minioAccessKey
+              name: {{ .Release.Name }}-secrets
+        - name: MINIO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              key:  minioSecretKey
+              name: {{ .Release.Name }}-secrets
+        workingDir: /config
+        volumeMounts:
+        - name: gleaner-config
+          mountPath: /config/gleaner.yaml
+          subPath: gleaner.yaml
+        - name: gleaner-context
+          mountPath: /config

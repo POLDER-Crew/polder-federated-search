@@ -1,0 +1,55 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: crawl
+spec:
+  schedule: "0 0 * * 3"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          name: crawl
+        spec:
+          restartPolicy: Never
+          volumes:
+          - name: gleaner-config
+            configMap:
+              name: gleaner-config
+          - name: gleaner-context
+            emptyDir: {}
+          initContainers:
+          - name: get-contextfiles
+            image: curlimages/curl
+            command:
+            - curl
+            - -O
+            - https://schema.org/version/latest/schemaorg-current-https.jsonld
+            volumeMounts:
+            - name: gleaner-context
+              mountPath: /context
+            workingDir: /context
+          containers:
+          - name: gleaner-index
+            image: fils/gleaner
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
+            args:
+            - -cfg
+            - gleaner
+            env:
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  key:  minioAccessKey
+                  name: {{ .Release.Name }}-secrets
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  key:  minioSecretKey
+                  name: {{ .Release.Name }}-secrets
+            workingDir: /config
+            volumeMounts:
+            - name: gleaner-config
+              mountPath: /config/gleaner.yaml
+              subPath: gleaner.yaml
+            - name: gleaner-context
+              mountPath: /config
