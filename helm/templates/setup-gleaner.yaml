@@ -12,9 +12,13 @@ spec:
       - name: gleaner-config
         configMap:
           name: gleaner-config
+      - name: nabu-config
+        configMap:
+          name: nabu-config
       - name: gleaner-context
         emptyDir: {}
       initContainers:
+        # Literally wait for Blazegraph to come up so we can create a namespace
       - name: wait-for-triplestore-up
         image: curlimages/curl
         command:
@@ -26,6 +30,7 @@ spec:
           while [ $(curl -sw '%{http_code}' "{{ include "gleaner.triplestore.endpoint" . }}" -o /dev/null) -ne 200 ]; do
             sleep 15;
           done
+      # Next, create the blazegraph namespace that we want to use for this app
       - name: setup-triplestore
         image: curlimages/curl
         command:
@@ -53,13 +58,14 @@ spec:
               <entry key="com.bigdata.rdf.store.AbstractTripleStore.statementIdentifiers">false</entry>
             </properties>
         - '{{- include "gleaner.triplestore.endpoint" . }}namespace'
+      # Run gleaner setup, which creates cloud storage buckets
       - name: gleaner-setup
-        image: fils/gleaner
+        image: nein09/gleaner:latest #todo: replace this with fils/gleaner when that is up to date
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         args:
+        - -setup
         - -cfg
         - gleaner
-        - -setup
         env:
         - name: MINIO_ACCESS_KEY
           valueFrom:
@@ -76,6 +82,7 @@ spec:
         - name: gleaner-config
           mountPath: /config/gleaner.yaml
           subPath: gleaner.yaml
+      # We need the latest schema.org context, so fetch it
       - name: get-contextfiles
         image: curlimages/curl
         command:
@@ -86,9 +93,9 @@ spec:
         - name: gleaner-context
           mountPath: /context
         workingDir: /context
-      containers:
+      # Finally, index our data repositories!
       - name: gleaner-initial-index
-        image: fils/gleaner
+        image: nein09/gleaner:latest #todo: replace this with fils/gleaner when that is up to date
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         args:
         - -cfg
@@ -111,3 +118,58 @@ spec:
           subPath: gleaner.yaml
         - name: gleaner-context
           mountPath: /config
+      containers:
+      - name: write-to-triplestore
+        image: bitnami/minio-client
+        env:
+        - name: MINIO_CLIENT_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              key:  minioAccessKey
+              name: {{ .Release.Name }}-secrets
+        - name: MINIO_CLIENT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              key:  minioSecretKey
+              name: {{ .Release.Name }}-secrets
+        - name: MINIO_SERVER_HOST
+          value: s3system-svc.{{ .Release.Namespace }}.svc.cluster.local
+        - name: MINIO_SERVER_PORT_NUMBER
+          value: "9000"
+        command:
+        # the first line of the following bash command is supposed to happen automatically, according to
+        # the documentation on docker hub, but it does not.
+        - /bin/bash
+        - -c
+        - >
+          mc config host add minio "http://${MINIO_SERVER_HOST}:${MINIO_SERVER_PORT_NUMBER}" "${MINIO_CLIENT_ACCESS_KEY}" "${MINIO_CLIENT_SECRET_KEY}" &&
+          for i in $(mc find minio/gleaner/milled); do
+            mc cat $i | curl -X POST -H 'Content-Type:text/x-nquads' --data-binary  @- {{ include "gleaner.triplestore.endpoint" . }}namespace/kb/sparql
+          done
+
+      # Write the data to Blazegraph so we can query it.
+      # When nabu is ready, we'll be able to use it. For now,
+      # this shell script will have to do.
+      # - name: nabu-write
+      #   image: fils/nabu
+      #   imagePullPolicy: {{ .Values.image.pullPolicy }}
+          # env:
+          # - name: MINIO_ACCESS_KEY
+          #   valueFrom:
+          #     secretKeyRef:
+          #       key:  minioAccessKey
+          #       name: {{ .Release.Name }}-secrets
+          # - name: MINIO_SECRET_KEY
+          #   valueFrom:
+          #     secretKeyRef:
+          #       key:  minioSecretKey
+          #       name: {{ .Release.Name }}-secrets
+        #   args:
+      #   - prefix
+      #   - -cfg
+      #   - nabu
+      #   workingDir: /config
+      #   volumeMounts:
+      #   - name: nabu-config
+      #     mountPath: /config/nabu.yaml
+      #     subPath: nabu.yaml

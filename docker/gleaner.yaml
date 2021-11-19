@@ -2,8 +2,6 @@
 minio:
   address: s3system
   port: 9000   
-  accessKey: worldsbestaccesskey # todo: put these in an environment variable
-  secretKey: worldsbestsecretkey
   ssl: false
   bucket: gleaner
 gleaner:
@@ -28,19 +26,28 @@ summoner:
 millers:
   graph: true
 sources:
-# - name: aadc
-#   url: https://data.aad.gov.au/metadata/sitemap.xml
-#   headless: false
-#   properName: Australian Antarctic Data Centre
-#   domain: https://data.aad.gov.au/
-# - name: nsidc
-#   url: https://nsidc.org/sitemap.xml
-#   headless: false
-#   properName: National Snow and Ice Data Center
-#   domain: https://nsidc.org
-- name: adc
-  url: https://arcticdata.io/sitemap_index.xml
-  headless: true
-  pid: https://www.re3data.org/repository/r3d100011973
-  properName: Arctic Data Center
-  domain: https://arcticdata.io
+- name: aadc
+  type: sitemap
+  url: https://data.aad.gov.au/metadata/sitemap.xml
+  headless: false
+  properName: Australian Antarctic Data Centre
+  domain: https://data.aad.gov.au/
+  active: true
+- name: nsidc
+  url: https://nsidc.org/sitemap.xml
+  headless: false
+  properName: National Snow and Ice Data Center
+  domain: https://nsidc.org
+  type: sitemap
+  active: true
+# - name: adc
+#   url: https://arcticdata.io/sitemap_index.xml
+#   headless: true
+#   pid: https://www.re3data.org/repository/r3d100011973
+#   properName: Arctic Data Center
+#   domain: https://arcticdata.io
+- name: bco-dmo
+  url: https://www.bco-dmo.org/sitemap.xml
+  domain: https://www.bco-dmo.org
+  type: sitemap
+  headless: false

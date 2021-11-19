@@ -1,7 +1,7 @@
 services:
 
   gleaner-setup:
-    image: fils/gleaner
+    image: nein09/gleaner
     command: -cfg gleaner -setup
     depends_on:
       - triplestore
@@ -17,7 +17,7 @@ services:
     working_dir: /config
 
   gleaner:
-    image: fils/gleaner
+    image: nein09/gleaner
     # This should be a cron job or something
     command: -cfg gleaner
     depends_on:

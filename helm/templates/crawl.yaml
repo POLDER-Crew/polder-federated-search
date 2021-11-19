@@ -12,6 +12,8 @@ spec:
         spec:
           restartPolicy: Never
           volumes:
+          # todo: this is a shared config file with the initial index,
+          # and it does a full index. Maybe just do a partial one?
           - name: gleaner-config
             configMap:
               name: gleaner-config

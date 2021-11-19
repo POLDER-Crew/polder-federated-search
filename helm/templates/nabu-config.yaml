@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nabu-config
+  labels:
+    app: nabu
+data:
+  gleaner.yaml: |-
+    minio:
+      address: {{ .Values.s3systemIP }}
+      port: 9000
+      ssl: false
+      bucket: gleaner
+    objects:
+      bucket: gleaner
+      # gleaner default
+      domain: us-east-1
+      prefix:
+      - milled/aadc
+      - prov/aadc
+      - org
+      - milled/nsidc
+      - prov/nsidc
+      prefixoff:
+    sparql:
+      endpoint: {{ include "gleaner.triplestore.endpoint" . }}/namespace/polder/sparql/
+      authenticate: false
+      username: ""
+      password: ""

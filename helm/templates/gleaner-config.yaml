@@ -9,8 +9,6 @@ data:
     minio:
       address: {{ .Values.s3systemIP }}
       port: 9000
-      accessKey: worldsbestaccesskey # todo: put these in an environment variable so they can be removed from this yaml file
-      secretKey: worldsbestsecretkey
       ssl: false
       bucket: gleaner
     gleaner:
@@ -39,9 +37,13 @@ data:
       url: https://data.aad.gov.au/metadata/sitemap.xml
       headless: false
       properName: Australian Antarctic Data Centre
-      domain: https://data.aad.gov.au/
+      domain: https://data.aad.gov.au
+      active: true
+      type: sitemap
     - name: nsidc
       url: https://nsidc.org/sitemap.xml
       headless: false
       properName: National Snow and Ice Data Center
       domain: https://nsidc.org
+      active: true
+      type: sitemap
