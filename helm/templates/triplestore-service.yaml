@@ -5,10 +5,10 @@ metadata:
   labels:
     run: triplestore-svc
 spec:
-  type: NodePort
+  type: {{ .Values.triplestore_service.type }}
   ports:
-    - port: 9999
-      targetPort: 9999
+    - port: {{ .Values.triplestore_service.port }}
+      targetPort: {{ .Values.triplestore_service.port }}
       nodePort: 30001
       protocol: TCP
   selector:

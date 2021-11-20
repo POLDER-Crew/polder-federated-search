@@ -12,7 +12,7 @@ def convert_result(sparql_result_dict):
 class GleanerSearch(SearcherBase):
 
     def __init__(self, **kwargs):
-        ENDPOINT_URL = kwargs.pop('endpoint_url', "http://triplestore:9999/blazegraph/namespace/polder/sparql")
+        ENDPOINT_URL = kwargs.pop('endpoint_url')
         self.sparql = SPARQLWrapper(ENDPOINT_URL)
 
     def text_search(self, **kwargs):

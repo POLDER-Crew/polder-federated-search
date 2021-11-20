@@ -39,7 +39,7 @@ spec:
         - mountPath: /var/lib/blazegraph
           name: triplestore-volume
         ports:
-        - containerPort: 9999
+        - containerPort: {{ .Values.triplestore_service.port }}
         env:
         - name: JAVA_XMS
           value: {{ .Values.javaXMS }}
@@ -54,8 +54,8 @@ spec:
         - mountPath: /data
           name: s3system-volume
         ports:
-        - containerPort: 54321
-        - containerPort: 9000
+        - containerPort: {{ .Values.s3system_service.ui_port }}
+        - containerPort: {{ .Values.s3system_service.api_port }}
         env:
         - name: MINIO_ACCESS_KEY
           valueFrom:
@@ -67,15 +67,17 @@ spec:
             secretKeyRef:
               key:  minioSecretKey
               name: {{ .Release.Name }}-secrets
-        args: ["server", "/data", "--console-address", ":54321"]
-      - name: headless
-        image: chromedp/headless-shell:latest
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        ports:
-        - containerPort: 9222
-        env:
-        - name: SERVICE_PORTS
-          value: "9222"
+        args: ["server", "/data", "--console-address", ":{{ .Values.s3system_service.ui_port }}"]
+      # When we want to index repos that require a headless browser,
+      # we can turn this on.
+      # - name: headless
+      #   image: chromedp/headless-shell:latest
+      #   imagePullPolicy: {{ .Values.image.pullPolicy }}
+      #   ports:
+      #   - containerPort: 9222
+      #   env:
+      #   - name: SERVICE_PORTS
+      #     value: "9222"
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

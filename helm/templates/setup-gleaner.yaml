@@ -49,11 +49,11 @@ spec:
               <entry key="com.bigdata.rdf.sail.isolatableIndices">false</entry>
               <entry key="com.bigdata.rdf.sail.truthMaintenance">false</entry>
               <entry key="com.bigdata.rdf.store.AbstractTripleStore.justify">false</entry>
-              <entry key="com.bigdata.rdf.sail.namespace">polder</entry>
+              <entry key="com.bigdata.rdf.sail.namespace">{{ .Values.storageNamespace }}</entry>
               <entry key="com.bigdata.rdf.store.AbstractTripleStore.quads">true</entry>
-              <entry key="com.bigdata.namespace.polder.spo.com.bigdata.btree.BTree.branchingFactor">1024</entry>
+              <entry key="com.bigdata.namespace.{{ .Values.storageNamespace }}.spo.com.bigdata.btree.BTree.branchingFactor">1024</entry>
               <entry key="com.bigdata.journal.Journal.groupCommit">false</entry>
-              <entry key="com.bigdata.namespace.polder.lex.com.bigdata.btree.BTree.branchingFactor">400</entry>
+              <entry key="com.bigdata.namespace.{{ .Values.storageNamespace }}.lex.com.bigdata.btree.BTree.branchingFactor">400</entry>
               <entry key="com.bigdata.rdf.store.AbstractTripleStore.geoSpatial">true</entry>
               <entry key="com.bigdata.rdf.store.AbstractTripleStore.statementIdentifiers">false</entry>
             </properties>
@@ -133,9 +133,9 @@ spec:
               key:  minioSecretKey
               name: {{ .Release.Name }}-secrets
         - name: MINIO_SERVER_HOST
-          value: s3system-svc.{{ .Release.Namespace }}.svc.cluster.local
+          value: {{ include "gleaner.s3system.endpoint" . }}
         - name: MINIO_SERVER_PORT_NUMBER
-          value: "9000"
+          value: "{{ .Values.s3system_service.api_port }}"
         command:
         # the first line of the following bash command is supposed to happen automatically, according to
         # the documentation on docker hub, but it does not.
@@ -143,8 +143,8 @@ spec:
         - -c
         - >
           mc config host add minio "http://${MINIO_SERVER_HOST}:${MINIO_SERVER_PORT_NUMBER}" "${MINIO_CLIENT_ACCESS_KEY}" "${MINIO_CLIENT_SECRET_KEY}" &&
-          for i in $(mc find minio/gleaner/milled); do
-            mc cat $i | curl -X POST -H 'Content-Type:text/x-nquads' --data-binary  @- {{ include "gleaner.triplestore.endpoint" . }}namespace/kb/sparql
+          for i in $(mc find minio/{{ .Values.storageNamespace }}/milled); do
+            mc cat $i | curl -X POST -H 'Content-Type:text/x-nquads' --data-binary  @- {{ include "gleaner.triplestore.endpoint" . }}namespace/{{ .Values.storageNamespace }}/sparql
           done
 
       # Write the data to Blazegraph so we can query it.

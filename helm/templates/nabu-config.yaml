@@ -7,12 +7,12 @@ metadata:
 data:
   gleaner.yaml: |-
     minio:
-      address: {{ .Values.s3systemIP }}
-      port: 9000
+      address: {{ .Values.s3system_service.ip_address }}
+      port: {{ .Values.s3system_service.api_port }}
       ssl: false
-      bucket: gleaner
+      bucket: {{ .Values.storageNamespace }}
     objects:
-      bucket: gleaner
+      bucket: {{ .Values.storageNamespace }}
       # gleaner default
       domain: us-east-1
       prefix:
@@ -23,7 +23,7 @@ data:
       - prov/nsidc
       prefixoff:
     sparql:
-      endpoint: {{ include "gleaner.triplestore.endpoint" . }}/namespace/polder/sparql/
+      endpoint: {{ include "gleaner.triplestore.endpoint" . }}/namespace/{{ .Values.storageNamespace }}/sparql/
       authenticate: false
       username: ""
       password: ""

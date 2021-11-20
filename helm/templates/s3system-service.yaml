@@ -6,10 +6,10 @@ metadata:
     run: s3system-svc
 spec:
   type: NodePort
-  clusterIP: {{ .Values.s3systemIP }}
+  clusterIP: {{ .Values.s3system_service.ip_address }}
   ports:
-    - port: 9000
-      targetPort: 9000
+    - port: {{ .Values.s3system_service.api_port }}
+      targetPort: {{ .Values.s3system_service.api_port }}
       nodePort: 30002
       protocol: TCP
   selector:

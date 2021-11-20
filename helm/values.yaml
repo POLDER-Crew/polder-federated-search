@@ -40,6 +40,22 @@ service:
   type: ClusterIP
   port: 5000
 
+triplestore_service:
+  type: NodePort
+  port: 9999
+
+s3system_service:
+  type: NodePort
+  ui_port: 54321
+  api_port: 9000
+# It's not normally a great idea to hardcode a service IP address. However, in this case, we have
+# a configMap for Gleaner that needs to know where this endpoint is (it's under minio:address in
+# setup-gleaner.yaml), and which will only accept an IP address, which means that we can't use the
+# service DNS name for this. We could use helm's lookup function for this, EXCEPT that ConfigMaps are
+# evaluated before everything else - which means that the service does not have an IP address when
+# the ConfigMap is constructed. The workaround is to decide on an IP address and assign one.
+  ip_address: 10.96.0.12
+
 ingress:
   enabled: false
   className: ""
@@ -87,10 +103,5 @@ javaOpts: -Xmx6g -Xms2g --XX:+UseG1GC
 flaskApp: federated_search.py
 flaskRunHost: 0.0.0.0
 flaskEnv: production
-# It's not normally a great idea to hardcode a service IP address. However, in this case, we have
-# a configMap for Gleaner that needs to know where this endpoint is (it's under minio:address in
-# setup-gleaner.yaml), and which will only accept an IP address, which means that we can't use the
-# service DNS name for this. We could use helm's lookup function for this, EXCEPT that ConfigMaps are
-# evaluated before everything else - which means that the service does not have an IP address when
-# the ConfigMap is constructed. The workaround is to decide on an IP address and assign one.
-s3systemIP: 10.96.0.12
+
+storageNamespace: polder

@@ -7,13 +7,13 @@ metadata:
 data:
   gleaner.yaml: |-
     minio:
-      address: {{ .Values.s3systemIP }}
-      port: 9000
+      address: {{ .Values.s3system_service.ip_address }}
+      port: {{ .Values.s3system_service.api_port }}
       ssl: false
-      bucket: gleaner
+      bucket: {{ .Values.storageNamespace }}
     gleaner:
-      runid: polder # Run ID used in prov and a few others
-      summon: true # do we want to visit the web sites and pull down the files
+      runid: {{ .Values.storageNamespace }}
+      summon: true
       mill: true
     context:
       cache: true
@@ -25,7 +25,7 @@ data:
     - prefix: "http://schema.org"
       file: "./schemaorg-current-https.jsonld"
     summoner:
-      after: ""      # "21 May 20 10:00 UTC"
+      after: ""
       mode: full  # full || diff:  If diff compare what we have currently in gleaner to sitemap, get only new, delete missing
       threads: 5
       delay:  # milliseconds (1000 = 1 second) to delay between calls (will FORCE threads to 1)
