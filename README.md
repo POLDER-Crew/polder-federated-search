@@ -37,7 +37,6 @@ If you're using Docker Desktop, you can use the UI to open the docker-webapp ima
 
 #### Helm/Kubernetes
 
-1. To build and run the web app, Helm needs to know about some environment variables. There are examples ones in `dev.env` - copy it to `.env` and fill in the correct values for you. Save the file and then run `source .env`.
 1. Install helm (on OS X, something like `brew install helm`), or visit the [Helm website](http://helm.sh) for instructions.
 1. This Helm chart uses an ingress controller, which you need to install, like this:
     ```
