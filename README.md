@@ -57,6 +57,8 @@ If you're using Docker Desktop, you can use the UI to open the docker-webapp ima
     1. Writes the resulting indexed metadata to Blazegraph so we can search it
 1. If you're using Docker desktop for all this, you can visit [http://localhost](http://localhost) and see it running!
 
+The Helm chart also includes a Kubernetes `CronJob` that tells Gleaner to index [once a week](https://cron.help/#0_0_*_*_3).
+
 ### Development
 I'd love for people to use this for all kinds of scientific data repository searches - please feel free to fork it, submit a PR, or ask questions.
 
