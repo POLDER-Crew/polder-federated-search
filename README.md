@@ -11,9 +11,9 @@
 - [National Snow and Ice Data Center](https://nsidc.org])
 
 ### Architecture
-This tool uses docker to manage the different services that it depends on. One of those is [Gleaner](https://gleaner.io).
+This tool uses Docker images to manage the different services that it depends on. One of those is [Gleaner](https://gleaner.io).
 
-The web app itself that hosts the UI and does the searches is built using [Flask](https://flask.palletsprojects.com), which is a Python web framework. I chose Python because DataOne has [client libraries](https://dataone-python.readthedocs.io/en/latest/#python-libraries-for-software-developers) written in Python, and Python has good support for RDF and SPARQL operations with [RDFLib](https://rdflib.dev/).
+The web app itself that hosts the UI and does the searches is built using [Flask](https://flask.palletsprojects.com), which is a Python web framework. I chose Python because Python has good support for RDF and SPARQL operations with [RDFLib](https://rdflib.dev/).
 
 ### Deployment
 
@@ -31,6 +31,9 @@ A pre-built image is on Docker Hub as nein09/polder-federated-search.
   --repo https://kubernetes.github.io/ingress-nginx \
   --namespace ingress-nginx --create-namespace
   ```
+1. This app needs some secrets to run. Inside `helm/templates`, create a file named `secrets.yaml`. It's listed in `.gitignore`, so it won't get checked in.
+  Take a look at `example.secrets.yaml` to see how it needs to be structured. If you open it up, you can see that the values of the secrets are base64 encoded - in order to do this, run ` echo -n 'mysecretkey' | base64` on your command line for each value, and paste the result in where the key goes.
+  You can read more about secrets [here](https://kubernetes.io/docs/concepts/configuration/secret/).
 1. Assuming that you're starting from **this directory**, run `helm install polder ./helm` ; the `polder` can be replaced with whatever you want.
 1. The cluster will take a few minutes to spin up. In addition to downloading all these Docker images and starting the web app, it does the following:
   1. Starts a Blazegraph Triplestore and creates a namespace in it
