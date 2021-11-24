@@ -35,7 +35,7 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
         - name: GLEANER_ENDPOINT_URL
-          value: {{ include "gleaner.triplestore.endpoint" . }}/namespace/polder/sparql/
+          value: {{ include "gleaner.triplestore.endpoint" . }}namespace/polder/sparql/
         - name: FLASK_APP
           value: {{ .Values.flaskApp }}
         - name: FLASK_RUN_HOST
@@ -49,7 +49,7 @@ spec:
           value: {{ .Values.flaskEnv }}
         ports:
         - name: http
-          containerPort: {{ .Values.service.port }}
+          containerPort: {{ .Values.service.targetPort }}
           protocol: TCP
         livenessProbe:
           httpGet:

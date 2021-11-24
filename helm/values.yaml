@@ -38,7 +38,8 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 5000
+  port: 80
+  targetPort: 5000
 
 triplestore_service:
   type: NodePort
@@ -57,10 +58,10 @@ s3system_service:
   ip_address: 10.96.0.12
 
 ingress:
-  enabled: false
+  enabled: true
   className: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
+  annotations:
+    kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
     - host: polder-federated-search.local
@@ -100,8 +101,5 @@ affinity: {}
 javaXMS: 2g
 javaXmx: 8g
 javaOpts: -Xmx6g -Xms2g --XX:+UseG1GC
-flaskApp: federated_search.py
-flaskRunHost: 0.0.0.0
-flaskEnv: production
 
 storageNamespace: polder

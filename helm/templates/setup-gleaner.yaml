@@ -63,9 +63,9 @@ spec:
         image: nein09/gleaner:latest #todo: replace this with fils/gleaner when that is up to date
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         args:
-        - -setup
         - -cfg
         - gleaner
+        - -setup
         env:
         - name: MINIO_ACCESS_KEY
           valueFrom:

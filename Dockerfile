@@ -1,4 +1,4 @@
-FROM python:3.8-slim-buster
+FROM python:3.9
 
 WORKDIR /app
 
@@ -8,4 +8,4 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 EXPOSE 5000
-CMD ["flask", "run"]
+CMD ["gunicorn", "--conf", "gunicorn_conf.py", "--bind", "0.0.0.0:5000", "main:app"]
