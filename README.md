@@ -16,25 +16,23 @@ This tool uses Docker images to manage the different services that it depends on
 The web app itself that hosts the UI and does the searches is built using [Flask](https://flask.palletsprojects.com), which is a Python web framework. I chose Python because Python has good support for RDF and SPARQL operations with [RDFLib](https://rdflib.dev/).
 
 ### Deployment
-A pre-built image for the web app is on Docker Hub as nein09/polder-federated-search, and that is what all of the Helm/Kubernetes and Docker files in this
-repository are referencing. If you want to modify this project and build your own ones, you're welcome to.
+A pre-built image for the web app is on Docker Hub as [nein09/polder-federated-search](https://hub.docker.com/repository/docker/nein09/polder-federated-search), and that is what all of the Helm/Kubernetes and Docker files in this repository are referencing. If you want to modify this project and build your own ones, you're welcome to.
 
 #### Docker
 Assuming that you're starting from **this directory**:
-To build and run the web app, Docker needs to know about some environment variables. There are examples ones in `dev.env` - copy it to `.env` and fill in the correct values for you. Save the file and then run `source .env`.
-
+1. To build and run the web app, Docker needs to know about some environment variables. There are examples ones in `dev.env` - copy it to `.env` and fill in the correct values for you. Save the file and then run `source .env`.
 1. Install [Docker](https://docker.com)
-
 1. `cd docker`
 1. `docker-compose up -d`
-1. Go to your [local Blazegraph instance](http://localhost:9999/blazegraph/#namespaces) and add a new namespace - this is because the default one does not come with a full text index. Name it `polder` (or whatever you want, but you will need to change the GLEANER_ENDPOINT_URL environment variable if you don't name it that), and check the text boxes after "Full text index" and "Enable geospatial".
+1. Go to your [local Blazegraph instance](http://localhost:9999/blazegraph/#namespaces) and add a new namespace - this is because the default one does not come with a full text index. Name it `polder` (or whatever you want, but you will need to change the GLEANER_ENDPOINT_URL environment variable if you don't name it that). Select 'quads' in the mode dropdown menu, and check the text boxes after "Full text index" and "Enable geospatial".
 1. If you want to try queries out on Blazegraph directly, be sure to click 'Use' next to your new namespace after you create it.
 1. `docker-compose --profile setup up -d` in order to start all of the necessary services and set up Gleaner for indexing.
-1. Do a crawl:
-    - `cd docker`
+1. Do a crawl (these instructions assume you are in the `docker` directory):
     - `curl -O https://schema.org/version/latest/schemaorg-current-https.jsonld`
     - `docker-compose --profile crawl up -d`
 1. Run the web app: `docker-compose --profile web up -d`
+
+If you're using Docker Desktop, you can use the UI to open the docker-webapp image in a browser.
 
 
 #### Helm/Kubernetes
@@ -69,5 +67,9 @@ To build the Docker image for the web app, run `docker image build . `.
 #### Setup
 Assuming that you're starting from **this directory**:
 
-The easiest thing to do, in my opinion, is to bring up the dependencies for the web app using `docker-compose up -d`, and then run the app in development mode with `flask run`. Follow the steps in the Deployment section under Docker, but skip the last one, and do `flask run` instead, to run the web app from your development directory.
+The easiest setup for development on the web app itself is to use docker-compose for the dependencies, like Gleaner and Blazegraph, and run the app itself directly in Flask. To do that, follow the steps in the Deployment section under Docker, but skip the last one. Instead, do:
+1. `cd ../` (to get back to **this directory**)
+1. `flask run`
+
+You should see Flask's startup message, and get an address for your locally running web app.
 
