@@ -28,8 +28,8 @@ Assuming that you're starting from **this directory**:
 1. If you want to try queries out on Blazegraph directly, be sure to click 'Use' next to your new namespace after you create it.
 1. `docker-compose --profile setup up -d` in order to start all of the necessary services and set up Gleaner for indexing.
 1. Do a crawl (these instructions assume you are in the `docker` directory):
-    - `curl -O https://schema.org/version/latest/schemaorg-current-https.jsonld`
-    - `docker-compose --profile crawl up -d`
+    1. `curl -O https://schema.org/version/latest/schemaorg-current-https.jsonld`
+    1. `docker-compose --profile crawl up -d`
 1. Run the web app: `docker-compose --profile web up -d`
 
 If you're using Docker Desktop, you can use the UI to open the docker-webapp image in a browser.
@@ -50,11 +50,11 @@ If you're using Docker Desktop, you can use the UI to open the docker-webapp ima
   You can read more about secrets [here](https://kubernetes.io/docs/concepts/configuration/secret/).
 1. Assuming that you're starting from **this directory**, run `helm install polder ./helm` ; the `polder` can be replaced with whatever you want.
 1. The cluster will take a few minutes to spin up. In addition to downloading all these Docker images and starting the web app, it does the following:
-  - Starts a Blazegraph Triplestore and creates a namespace in it
-  - Starts a Minio / S3 storage system
-  - Initializes Gleaner
-  - Kicks off a Gleaner index of the data repositories we want to get from there
-  - Writes the resulting indexed metadata to Blazegraph so we can search it
+    1. Starts a Blazegraph Triplestore and creates a namespace in it
+    1. Starts a Minio / S3 storage system
+    1. Initializes Gleaner
+    1. Kicks off a Gleaner index of the data repositories we want to get from there
+    1. Writes the resulting indexed metadata to Blazegraph so we can search it
 1. If you're using Docker desktop for all this, you can visit [http://localhost](http://localhost) and see it running!
 
 ### Development
