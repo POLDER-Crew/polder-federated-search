@@ -75,7 +75,7 @@ services:
     profiles:
       - web
     ports:
-      - 5000:5000
+      - 80:80
     environment:
       # Overrides the environment variable so that we get the service endpoint IP from Docker.
       - GLEANER_ENDPOINT_URL=http://triplestore:9999/blazegraph/namespace/polder/sparql
