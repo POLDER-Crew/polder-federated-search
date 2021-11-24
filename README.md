@@ -27,12 +27,13 @@ A pre-built image is on Docker Hub as nein09/polder-federated-search.
 
 1. Install helm (on OS X, something like `brew install helm`), or visit the [Helm website](http://helm.sh) for instructions.
 1. This Helm chart uses an ingress controller, which you need to install, like this:
-    ```helm upgrade --install ingress-nginx ingress-nginx \
+```
+    helm upgrade --install ingress-nginx ingress-nginx \
   --repo https://kubernetes.github.io/ingress-nginx \
   --namespace ingress-nginx --create-namespace
-  ```
+```
 1. This app needs some secrets to run. Inside `helm/templates`, create a file named `secrets.yaml`. It's listed in `.gitignore`, so it won't get checked in.
-  Take a look at `example.secrets.yaml` to see how it needs to be structured. If you open it up, you can see that the values of the secrets are base64 encoded - in order to do this, run ` echo -n 'mysecretkey' | base64` on your command line for each value, and paste the result in where the key goes.
+  Take a look at `example.secrets.yaml` to see how it needs to be structured. If you open it up, you can see that the values of the secrets are base64 encoded - in order to do this, run ` echo -n 'mysecretkey' | base64` on your command line for each value, and paste the result in where the key goes. Don't check in your real secrets anywhere!
   You can read more about secrets [here](https://kubernetes.io/docs/concepts/configuration/secret/).
 1. Assuming that you're starting from **this directory**, run `helm install polder ./helm` ; the `polder` can be replaced with whatever you want.
 1. The cluster will take a few minutes to spin up. In addition to downloading all these Docker images and starting the web app, it does the following:
