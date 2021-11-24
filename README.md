@@ -25,6 +25,21 @@ A pre-built image is on Docker Hub as nein09/polder-federated-search.
 
 #### Helm/Kubernetes
 
+1. Install helm (on OS X, something like `brew install helm`), or visit the [Helm website](http://helm.sh) for instructions.
+1. This Helm chart uses an ingress controller, which you need to install, like this:
+    ```helm upgrade --install ingress-nginx ingress-nginx \
+  --repo https://kubernetes.github.io/ingress-nginx \
+  --namespace ingress-nginx --create-namespace
+  ```
+1. Assuming that you're starting from **this directory**, run `helm install polder ./helm` ; the `polder` can be replaced with whatever you want.
+1. The cluster will take a few minutes to spin up. In addition to downloading all these Docker images and starting the web app, it does the following:
+  1. Starts a Blazegraph Triplestore and creates a namespace in it
+  1. Starts a Minio / S3 storage system
+  1. Initializes Gleaner
+  1. Kicks off a Gleaner index of the data repositories we want to get from there
+  1. Writes the resulting indexed metadata to Blazegraph so we can search it
+1. If you're using Docker desktop for all this, you can visit [http://localhost](http://localhost) and see it running!
+
 #### Setup
 Assuming that you're starting from **this directory**:
 
