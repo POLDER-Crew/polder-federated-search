@@ -10,9 +10,10 @@ def convert_result(sparql_result_dict):
 
 
 class GleanerSearch(SearcherBase):
-    # todo: this DEFINITELY needs to go in a config
-    ENDPOINT_URL = "http://localhost:9999/blazegraph/namespace/polder/sparql"
-    sparql = SPARQLWrapper(ENDPOINT_URL)
+
+    def __init__(self, **kwargs):
+        ENDPOINT_URL = kwargs.pop('endpoint_url')
+        self.sparql = SPARQLWrapper(ENDPOINT_URL)
 
     def text_search(self, **kwargs):
         # todo: filter these so we just get whole URLS: OPTIONAL {{ ?s schema:identifier / schema:value ?identifier_url . }}

@@ -1,0 +1,148 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: setup-gleaner
+spec:
+  template:
+    metadata:
+      name: setup-gleaner
+    spec:
+      restartPolicy: Never
+      volumes:
+      - name: gleaner-config
+        configMap:
+          name: gleaner-config
+      - name: nabu-config
+        configMap:
+          name: nabu-config
+      - name: gleaner-context
+        emptyDir: {}
+      initContainers:
+        # Literally wait for Blazegraph to come up so we can create a namespace
+      - name: wait-for-triplestore-up
+        image: curlimages/curl:7.80.0
+        command:
+        - /bin/sh
+        - -c
+        # yes, this is how it has to work, no I am not happy about it
+        - >
+          set -x;
+          while [ $(curl -sw '%{http_code}' "{{ include "gleaner.triplestore.endpoint" . }}" -o /dev/null) -ne 200 ]; do
+            sleep 15;
+          done
+      # Next, create the blazegraph namespace that we want to use for this app
+      - name: setup-triplestore
+        image: curlimages/curl:7.80.0
+        command:
+        - curl
+        - -X
+        - POST
+        - -H
+        - 'Content-type: application/xml'
+        - --data
+        - >
+          <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+            <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+            <properties>
+              <entry key="com.bigdata.rdf.store.AbstractTripleStore.textIndex">true</entry>
+              <entry key="com.bigdata.rdf.store.AbstractTripleStore.axiomsClass">com.bigdata.rdf.axioms.NoAxioms</entry>
+              <entry key="com.bigdata.rdf.sail.isolatableIndices">false</entry>
+              <entry key="com.bigdata.rdf.sail.truthMaintenance">false</entry>
+              <entry key="com.bigdata.rdf.store.AbstractTripleStore.justify">false</entry>
+              <entry key="com.bigdata.rdf.sail.namespace">{{ .Values.storageNamespace }}</entry>
+              <entry key="com.bigdata.rdf.store.AbstractTripleStore.quads">true</entry>
+              <entry key="com.bigdata.namespace.{{ .Values.storageNamespace }}.spo.com.bigdata.btree.BTree.branchingFactor">1024</entry>
+              <entry key="com.bigdata.journal.Journal.groupCommit">false</entry>
+              <entry key="com.bigdata.namespace.{{ .Values.storageNamespace }}.lex.com.bigdata.btree.BTree.branchingFactor">400</entry>
+              <entry key="com.bigdata.rdf.store.AbstractTripleStore.geoSpatial">true</entry>
+              <entry key="com.bigdata.rdf.store.AbstractTripleStore.statementIdentifiers">false</entry>
+            </properties>
+        - '{{- include "gleaner.triplestore.endpoint" . }}namespace'
+      # Run gleaner setup, which creates cloud storage buckets
+      - name: gleaner-setup
+        image: fils/gleaner:v3.0.3-developement
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        args:
+        - -cfg
+        - gleaner
+        - -setup
+        env:
+        - name: MINIO_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              key:  minioAccessKey
+              name: {{ .Release.Name }}-secrets
+        - name: MINIO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              key:  minioSecretKey
+              name: {{ .Release.Name }}-secrets
+        workingDir: /config
+        volumeMounts:
+        - name: gleaner-config
+          mountPath: /config/gleaner.yaml
+          subPath: gleaner.yaml
+      # We need the latest schema.org context, so fetch it
+      - name: get-contextfiles
+        image: curlimages/curl:7.80.0
+        command:
+        - curl
+        - -O
+        - https://schema.org/version/latest/schemaorg-current-https.jsonld
+        volumeMounts:
+        - name: gleaner-context
+          mountPath: /context
+        workingDir: /context
+      # Finally, index our data repositories!
+      - name: gleaner-initial-index
+        image: fils/gleaner:v3.0.3-developement
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        args:
+        - -cfg
+        - gleaner
+        env:
+        - name: MINIO_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              key:  minioAccessKey
+              name: {{ .Release.Name }}-secrets
+        - name: MINIO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              key:  minioSecretKey
+              name: {{ .Release.Name }}-secrets
+        workingDir: /config
+        volumeMounts:
+        - name: gleaner-config
+          mountPath: /config/gleaner.yaml
+          subPath: gleaner.yaml
+        - name: gleaner-context
+          mountPath: /config
+      containers:
+      - name: write-to-triplestore
+        image: bitnami/minio-client:2021.11.16
+        env:
+        - name: MINIO_CLIENT_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              key:  minioAccessKey
+              name: {{ .Release.Name }}-secrets
+        - name: MINIO_CLIENT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              key:  minioSecretKey
+              name: {{ .Release.Name }}-secrets
+        - name: MINIO_SERVER_HOST
+          value: {{ include "gleaner.s3system.endpoint" . }}
+        - name: MINIO_SERVER_PORT_NUMBER
+          value: "{{ .Values.s3system_service.api_port }}"
+        command:
+        # the first line of the following bash command is supposed to happen automatically, according to
+        # the documentation on docker hub, but it does not.
+        - /bin/bash
+        - -c
+        - >
+          mc config host add minio "http://${MINIO_SERVER_HOST}:${MINIO_SERVER_PORT_NUMBER}" "${MINIO_CLIENT_ACCESS_KEY}" "${MINIO_CLIENT_SECRET_KEY}" &&
+          for i in $(mc find minio/{{ .Values.storageNamespace }}/milled); do
+            mc cat $i | curl -X POST -H 'Content-Type:text/x-nquads' --data-binary  @- {{ include "gleaner.triplestore.endpoint" . }}namespace/{{ .Values.storageNamespace }}/sparql
+          done

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: triplestore-svc
+  labels:
+    run: triplestore-svc
+spec:
+  type: {{ .Values.triplestore_service.type }}
+  ports:
+    - port: {{ .Values.triplestore_service.port }}
+      targetPort: {{ .Values.triplestore_service.port }}
+      protocol: TCP
+  selector:
+    {{- include "gleaner.selectorLabels" . | nindent 4 }}

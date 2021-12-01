@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "gleaner.fullname" . }}
+  labels:
+    {{- include "gleaner.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "gleaner.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "gleaner.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+      - name: triplestore-volume
+        emptyDir: {} # TODO: persistent storage would be nicer.
+      - name: s3system-volume
+        emptyDir: {}
+      containers:
+      - name: triplestore
+        image: nawer/blazegraph
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        volumeMounts:
+        - mountPath: /var/lib/blazegraph
+          name: triplestore-volume
+        ports:
+        - containerPort: {{ .Values.triplestore_service.port }}
+        env:
+        - name: JAVA_XMS
+          value: {{ .Values.javaXMS }}
+        - name: JAVA_XMX
+          value: {{ .Values.javaXmx }}
+        - name: JAVA_OPTS
+          value: {{ .Values.javaOpts }}
+      - name: s3system
+        image: minio/minio:latest
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        volumeMounts:
+        - mountPath: /data
+          name: s3system-volume
+        ports:
+        - containerPort: {{ .Values.s3system_service.ui_port }}
+        - containerPort: {{ .Values.s3system_service.api_port }}
+        env:
+        - name: MINIO_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              key:  minioAccessKey
+              name: {{ .Release.Name }}-secrets
+        - name: MINIO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              key:  minioSecretKey
+              name: {{ .Release.Name }}-secrets
+        args: ["server", "/data", "--console-address", ":{{ .Values.s3system_service.ui_port }}"]
+      # When we want to index repos that require a headless browser,
+      # we can turn this on.
+      # - name: headless
+      #   image: chromedp/headless-shell:latest
+      #   imagePullPolicy: {{ .Values.image.pullPolicy }}
+      #   ports:
+      #   - containerPort: 9222
+      #   env:
+      #   - name: SERVICE_PORTS
+      #     value: "9222"
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
