@@ -21,7 +21,7 @@ spec:
             emptyDir: {}
           initContainers:
           - name: get-contextfiles
-            image: curlimages/curl
+            image: curlimages/curl:7.80.0
             command:
             - curl
             - -O
@@ -30,9 +30,8 @@ spec:
             - name: gleaner-context
               mountPath: /context
             workingDir: /context
-          containers:
           - name: gleaner-index
-            image: fils/gleaner
+            image: nein09/gleaner:latest #todo: replace this with fils/gleaner when that has the specific bugfix I want
             imagePullPolicy: {{ .Values.image.pullPolicy }}
             args:
             - -cfg
@@ -55,3 +54,31 @@ spec:
               subPath: gleaner.yaml
             - name: gleaner-context
               mountPath: /config
+          containers:
+          - name: write-to-triplestore
+            image: bitnami/minio-client:2021.11.16
+            env:
+            - name: MINIO_CLIENT_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  key:  minioAccessKey
+                  name: {{ .Release.Name }}-secrets
+            - name: MINIO_CLIENT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  key:  minioSecretKey
+                  name: {{ .Release.Name }}-secrets
+            - name: MINIO_SERVER_HOST
+              value: {{ include "gleaner.s3system.endpoint" . }}
+            - name: MINIO_SERVER_PORT_NUMBER
+              value: "{{ .Values.s3system_service.api_port }}"
+            command:
+            # the first line of the following bash command is supposed to happen automatically, according to
+            # the documentation on docker hub, but it does not.
+            - /bin/bash
+            - -c
+            - >
+              mc config host add minio "http://${MINIO_SERVER_HOST}:${MINIO_SERVER_PORT_NUMBER}" "${MINIO_CLIENT_ACCESS_KEY}" "${MINIO_CLIENT_SECRET_KEY}" &&
+              for i in $(mc find minio/{{ .Values.storageNamespace }}/milled); do
+                mc cat $i | curl -X POST -H 'Content-Type:text/x-nquads' --data-binary  @- {{ include "gleaner.triplestore.endpoint" . }}namespace/{{ .Values.storageNamespace }}/sparql
+              done

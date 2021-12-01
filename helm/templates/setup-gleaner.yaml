@@ -20,7 +20,7 @@ spec:
       initContainers:
         # Literally wait for Blazegraph to come up so we can create a namespace
       - name: wait-for-triplestore-up
-        image: curlimages/curl
+        image: curlimages/curl:7.80.0
         command:
         - /bin/sh
         - -c
@@ -32,7 +32,7 @@ spec:
           done
       # Next, create the blazegraph namespace that we want to use for this app
       - name: setup-triplestore
-        image: curlimages/curl
+        image: curlimages/curl:7.80.0
         command:
         - curl
         - -X
@@ -60,7 +60,7 @@ spec:
         - '{{- include "gleaner.triplestore.endpoint" . }}namespace'
       # Run gleaner setup, which creates cloud storage buckets
       - name: gleaner-setup
-        image: nein09/gleaner:latest #todo: replace this with fils/gleaner when that is up to date
+        image: nein09/gleaner:latest #todo: replace this with fils/gleaner when that has the specific bugfix I want
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         args:
         - -cfg
@@ -84,7 +84,7 @@ spec:
           subPath: gleaner.yaml
       # We need the latest schema.org context, so fetch it
       - name: get-contextfiles
-        image: curlimages/curl
+        image: curlimages/curl:7.80.0
         command:
         - curl
         - -O
@@ -95,7 +95,7 @@ spec:
         workingDir: /context
       # Finally, index our data repositories!
       - name: gleaner-initial-index
-        image: nein09/gleaner:latest #todo: replace this with fils/gleaner when that is up to date
+        image: nein09/gleaner:latest #todo: replace this with fils/gleaner when that has the specific bugfix I want
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         args:
         - -cfg
@@ -120,7 +120,7 @@ spec:
           mountPath: /config
       containers:
       - name: write-to-triplestore
-        image: bitnami/minio-client
+        image: bitnami/minio-client:2021.11.16
         env:
         - name: MINIO_CLIENT_ACCESS_KEY
           valueFrom:
