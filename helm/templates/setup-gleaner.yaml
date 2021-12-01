@@ -60,7 +60,7 @@ spec:
         - '{{- include "gleaner.triplestore.endpoint" . }}namespace'
       # Run gleaner setup, which creates cloud storage buckets
       - name: gleaner-setup
-        image: nein09/gleaner:latest #todo: replace this with fils/gleaner when that has the specific bugfix I want
+        image: fils/gleaner:v3.0.3-developement
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         args:
         - -cfg
@@ -95,7 +95,7 @@ spec:
         workingDir: /context
       # Finally, index our data repositories!
       - name: gleaner-initial-index
-        image: nein09/gleaner:latest #todo: replace this with fils/gleaner when that has the specific bugfix I want
+        image: fils/gleaner:v3.0.3-developement
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         args:
         - -cfg
@@ -146,30 +146,3 @@ spec:
           for i in $(mc find minio/{{ .Values.storageNamespace }}/milled); do
             mc cat $i | curl -X POST -H 'Content-Type:text/x-nquads' --data-binary  @- {{ include "gleaner.triplestore.endpoint" . }}namespace/{{ .Values.storageNamespace }}/sparql
           done
-
-      # Write the data to Blazegraph so we can query it.
-      # When nabu is ready, we'll be able to use it. For now,
-      # this shell script will have to do.
-      # - name: nabu-write
-      #   image: fils/nabu
-      #   imagePullPolicy: {{ .Values.image.pullPolicy }}
-          # env:
-          # - name: MINIO_ACCESS_KEY
-          #   valueFrom:
-          #     secretKeyRef:
-          #       key:  minioAccessKey
-          #       name: {{ .Release.Name }}-secrets
-          # - name: MINIO_SECRET_KEY
-          #   valueFrom:
-          #     secretKeyRef:
-          #       key:  minioSecretKey
-          #       name: {{ .Release.Name }}-secrets
-        #   args:
-      #   - prefix
-      #   - -cfg
-      #   - nabu
-      #   workingDir: /config
-      #   volumeMounts:
-      #   - name: nabu-config
-      #     mountPath: /config/nabu.yaml
-      #     subPath: nabu.yaml

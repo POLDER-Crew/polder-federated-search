@@ -31,7 +31,7 @@ spec:
               mountPath: /context
             workingDir: /context
           - name: gleaner-index
-            image: nein09/gleaner:latest #todo: replace this with fils/gleaner when that has the specific bugfix I want
+            image: fils/gleaner:v3.0.3-developement
             imagePullPolicy: {{ .Values.image.pullPolicy }}
             args:
             - -cfg

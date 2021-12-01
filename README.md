@@ -29,7 +29,8 @@ Assuming that you're starting from **this directory**:
 1. `docker-compose --profile setup up -d` in order to start all of the necessary services and set up Gleaner for indexing.
 1. Do a crawl (these instructions assume you are in the `docker` directory):
     1. `curl -O https://schema.org/version/latest/schemaorg-current-https.jsonld`
-    1. `docker-compose --profile crawl up -d`
+    1. `docker-compose --profile crawl up -d
+    NOTE: There is a missing step here. The crawled results need to be written to the triplestore.
 1. Run the web app: `docker-compose --profile web up -d`
 
 If you're using Docker Desktop, you can use the UI to open the docker-webapp image in a browser.

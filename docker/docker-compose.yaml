@@ -1,7 +1,7 @@
 services:
 
   gleaner-setup:
-    image: nein09/gleaner #todo: fils/gleaner is the official one
+    image: fils/gleaner:v3.0.3-developement
     command: -cfg gleaner -setup
     depends_on:
       - triplestore
@@ -16,8 +16,38 @@ services:
       - ./:/config
     working_dir: /config
 
+  triplestore-setup:
+    image: curlimages/curl:7.80.0
+    depends_on:
+    - triplestore
+    command:
+    - curl
+    - -X
+    - POST
+    - -H
+    - 'Content-type: application/xml'
+    - --data
+    - >
+      <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+        <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+        <properties>
+          <entry key="com.bigdata.rdf.store.AbstractTripleStore.textIndex">true</entry>
+          <entry key="com.bigdata.rdf.store.AbstractTripleStore.axiomsClass">com.bigdata.rdf.axioms.NoAxioms</entry>
+          <entry key="com.bigdata.rdf.sail.isolatableIndices">false</entry>
+          <entry key="com.bigdata.rdf.sail.truthMaintenance">false</entry>
+          <entry key="com.bigdata.rdf.store.AbstractTripleStore.justify">false</entry>
+          <entry key="com.bigdata.rdf.sail.namespace">polder</entry>
+          <entry key="com.bigdata.rdf.store.AbstractTripleStore.quads">true</entry>
+          <entry key="com.bigdata.namespace.polder.spo.com.bigdata.btree.BTree.branchingFactor">1024</entry>
+          <entry key="com.bigdata.journal.Journal.groupCommit">false</entry>
+          <entry key="com.bigdata.namespace.polder.lex.com.bigdata.btree.BTree.branchingFactor">400</entry>
+          <entry key="com.bigdata.rdf.store.AbstractTripleStore.geoSpatial">true</entry>
+          <entry key="com.bigdata.rdf.store.AbstractTripleStore.statementIdentifiers">false</entry>
+        </properties>
+    - 'http://triplestore:9999/blazegraph/namespace'
+
   gleaner:
-    image: nein09/gleaner # todo: fils/gleaner is the official one
+    image: fils/gleaner:v3.0.3-developement
     # This should be a cron job or something
     command: -cfg gleaner
     depends_on:
@@ -32,8 +62,6 @@ services:
     volumes:
       - ./:/config
     working_dir: /config
-
-# Todo: add nabu into the mix
 
   triplestore:
     image: nawer/blazegraph
