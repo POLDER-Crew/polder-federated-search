@@ -1,15 +1,19 @@
 FROM python:3.9
 
-WORKDIR /app
-
 COPY ./requirements.txt .
+COPY ./package.json .
 
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-RUN apt-get install yarn
+WORKDIR /app
+
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
+    apt-get update && \
+    apt-get install -qq -y yarn
 RUN yarn install
-RUN yarn build
+RUN yarn docker
 
 COPY . .
 EXPOSE 8000

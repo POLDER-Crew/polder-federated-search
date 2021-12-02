@@ -5,7 +5,8 @@
   "author": "Melinda Minch <melinda@melindaminch.com>",
   "scripts": {
     "build": "parcel build app/static/src/*.js --dist-dir app/static/dist --public-url /static/",
-    "watch": "parcel watch app/static/src/*.js --dist-dir app/static/dist --public-url /static/"
+    "watch": "parcel watch app/static/src/*.js --dist-dir app/static/dist --public-url /static/",
+    "docker": "parcel build app/static/src/*.js --dist-dir app/static/dist --public-url /static/ --no-cache"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.4",
