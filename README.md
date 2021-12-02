@@ -30,7 +30,7 @@ Assuming that you're starting from **this directory**:
 1. Do a crawl (these instructions assume you are in the `docker` directory):
     1. `curl -O https://schema.org/version/latest/schemaorg-current-https.jsonld`
     1. `docker-compose --profile crawl up -d
-    NOTE: There is a missing step here. The crawled results need to be written to the triplestore.
+    NOTE: There is a missing step here. The crawled results need to be written to the triplestore. For now, you can run `./write-to-triplestore.sh`.
 1. Run the web app: `docker-compose --profile web up -d`
 
 If you're using Docker Desktop, you can use the UI to open the docker-webapp image in a browser.
@@ -83,6 +83,8 @@ Assuming that you're starting from **this directory**:
 
 The easiest setup for development on the web app itself is to use docker-compose for the dependencies, like Gleaner and Blazegraph, and run the app itself directly in Flask. To do that, follow the steps in the Deployment section under Docker, but skip the last one. Instead, do:
 1. `cd ../` (to get back to **this directory**)
+1. `source venv/bin/activate`
+1. `pip install -r requirements.txt`
 1. `flask run`
 
 You should see Flask's startup message, and get an address for your locally running web app.

@@ -48,7 +48,6 @@ services:
 
   gleaner:
     image: fils/gleaner:v3.0.3-developement
-    # This should be a cron job or something
     command: -cfg gleaner
     depends_on:
       - triplestore

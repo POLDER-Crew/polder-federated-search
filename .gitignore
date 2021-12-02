@@ -156,3 +156,6 @@ cython_debug/
 secret.yaml
 polder.config
 
+# Node modules and front-end build stuff
+.parcel-cache
+node_modules/

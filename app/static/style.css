@@ -6,3 +6,7 @@ html {
 body { 
     height:  100vh;
 }
+
+.results {
+    list-style:  none;
+}

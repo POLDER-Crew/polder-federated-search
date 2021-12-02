@@ -2,9 +2,16 @@
 
 {% block content %}
  Total results: {{ result_set.total_results }}
- <ol>
+ <ul class="results">
  {% for result in result_set.results %}
-  <li>Score: {{ result.score }} - {{ result.title }}</li>
+  <li class="result" data-score={{ result.score }}>
+    <h4>{{ result.title }}</h4>
+    {% for url in result.webUrl %}
+        {% if loop.first %}Get this data from:{% endif %}
+        <a href="{{ url }}" target="_blank" rel="noopener">{{ url.rpartition("//")[-1].partition("/")[0] }}</a>
+    {% endfor %}
+    <p>{{ result.abstract }}</p>
+  </li>
  {% endfor %}
-</ol>
+</ul>
 {% endblock %}

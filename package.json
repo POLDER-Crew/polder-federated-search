@@ -1,0 +1,17 @@
+{
+  "name": "polder-federated-search",
+  "version": "1.17.0",
+  "description": "A starter for web apps using Flask and Parcel",
+  "author": "Melinda Minch <melinda@melindaminch.com>",
+  "scripts": {
+    "build": "parcel build app/static/src/*.js --dist-dir app/static/dist --public-url /static/",
+    "watch": "parcel watch app/static/src/*.js --dist-dir app/static/dist --public-url /static/"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.16.4",
+    "parcel": "^2.0.1"
+  },
+  "dependencies": {
+    "jquery": "^3.6.0"
+  }
+}
