@@ -7,13 +7,17 @@
     <head>
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
         <title>
-            {% block title %}{% endblock %} - POLDER Federated Search
+            {% block title %}Home{% endblock %} - POLDER Federated Search
         </title>
     </head>
     <body>
+        {% block nav %}
         <nav>
-          <h1>POLDER Federated Search</h1>
+          <a href="/">
+            <h1>POLDER Federated Search</h1>
+          </a>
         </nav>
+        {% endblock %}
         <section class="content">
           <header>
             {% block header %}{% endblock %}
