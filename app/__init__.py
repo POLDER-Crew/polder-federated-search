@@ -1,4 +1,5 @@
 import os
+import logging
 from flask import Flask
 
 # create and configure the app
@@ -16,4 +17,5 @@ from app import routes
 
 if __name__ == "__main__":
     # Only for debugging while developing
+    app.logger.setLevel(logging.DEBUG)
     app.run(host='0.0.0.0', debug=True, port=5000)
