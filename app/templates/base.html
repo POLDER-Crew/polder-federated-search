@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
     <head>
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/style.css') }}" />
         <title>
             {% block title %}Home{% endblock %} - POLDER Federated Search
         </title>
@@ -13,7 +13,7 @@
     <body>
         {% block nav %}
         <nav>
-          <a href="/">
+          <a href="/" class="nav__link">
             <h1>POLDER Federated Search</h1>
           </a>
         </nav>
@@ -27,6 +27,6 @@
           {% endfor %}
           {% block content %}{% endblock %}
         </section>
-        <script type="module" src="{{ url_for('static', filename='dist/index.js') }}"></script>
+        <script type="module" src="{{ url_for('static', filename='dist/js/index.js') }}"></script>
     </body>
 </html>

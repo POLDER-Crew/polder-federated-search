@@ -4,12 +4,13 @@
   "description": "A starter for web apps using Flask and Parcel",
   "author": "Melinda Minch <melinda@melindaminch.com>",
   "scripts": {
-    "build": "parcel build app/static/src/*.js --dist-dir app/static/dist --public-url /static/",
-    "watch": "parcel watch app/static/src/*.js --dist-dir app/static/dist --public-url /static/",
-    "docker": "parcel build app/static/src/*.js --dist-dir app/static/dist --public-url /static/ --no-cache"
+    "build": "parcel build app/static/js/*.js app/static/css/*.scss --dist-dir app/static/dist --public-url /static/",
+    "watch": "parcel watch app/static/js/*.js app/static/css/*.scss --dist-dir app/static/dist --public-url /static/",
+    "docker": "parcel build app/static/js/*.js app/static/css/*.scss --dist-dir app/static/dist --public-url /static/ --no-cache"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.4",
+    "@parcel/transformer-sass": "^2.0.1",
     "parcel": "^2.0.1"
   },
   "dependencies": {
