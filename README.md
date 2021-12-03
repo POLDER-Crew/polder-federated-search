@@ -47,7 +47,19 @@ If you're using Docker Desktop, you can use the UI to open the docker-webapp ima
     ```
     You may need some additional steps for minikube or MicroK8s - see the [ingress-nginx documentation](https://kubernetes.github.io/ingress-nginx/deploy/#environment-specific-instructions) for more details.
 1. This app needs some secrets to run. Inside `helm/templates`, create a file named `secrets.yaml`. It's listed in `.gitignore`, so it won't get checked in.
-  Take a look at `example.secrets.yaml` to see how it needs to be structured. If you open it up, you can see that the values of the secrets are base64 encoded - in order to do this, run ` echo -n 'mysecretkey' | base64` on your command line for each value, and paste the result in where the key goes. Don't check in your real secrets anywhere!
+That file will be structured like this:
+
+```
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: {{ .Release.Name }}-secrets
+    data:
+      minioAccessKey: <your base64 encoded value here>
+      minioSecretKey: <your base64 encoded value here>
+      flaskSecretKey: <your base64 encoded value here>
+```
+You can see that the values of the secrets are base64 encoded - in order to do this, run ` echo -n 'mysecretkey' | base64` on your command line for each value, and paste the result in where the key goes. Don't check in your real secrets anywhere!
   You can read more about secrets [here](https://kubernetes.io/docs/concepts/configuration/secret/).
 1. Assuming that you're starting from **this directory**, run `helm install polder ./helm` ; the `polder` can be replaced with whatever you want.
 1. The cluster will take a few minutes to spin up. In addition to downloading all these Docker images and starting the web app, it does the following:
