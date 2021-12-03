@@ -1,5 +1,5 @@
 apiVersion: v2
-name: polder-federated-search
+name: polder
 description: A Helm chart to deploy the Polder Federated Search app to Kubernetes
 
 # A chart can be either an 'application' or a 'library' chart.

@@ -5,12 +5,11 @@ metadata:
   labels:
     run: s3system-svc
 spec:
-  type: NodePort
+  type: {{ .Values.s3system_service.type }}
   clusterIP: {{ .Values.s3system_service.ip_address }}
   ports:
     - port: {{ .Values.s3system_service.api_port }}
       targetPort: {{ .Values.s3system_service.api_port }}
-      nodePort: 30002
       protocol: TCP
   selector:
     {{- include "gleaner.selectorLabels" . | nindent 4 }}

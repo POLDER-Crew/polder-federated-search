@@ -154,4 +154,5 @@ cython_debug/
 
 # Kubernetes secrets
 secret.yaml
+polder.config
 
