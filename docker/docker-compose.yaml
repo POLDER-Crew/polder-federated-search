@@ -96,15 +96,14 @@ services:
      - SERVICE_PORTS=9222
 
   webapp:
-    image: nein09/polder-federated-search:latest
+    image: nein09/polder-federated-search:1.21.0
     depends_on:
       - triplestore
       - s3system
     profiles:
       - web
     ports:
-      # Change this to 80:80 to run in production, probably
-      - 8079:80
+      - 8000:80
     environment:
       # Overrides the environment variable so that we get the service endpoint IP from Docker.
       - GLEANER_ENDPOINT_URL=http://triplestore:9999/blazegraph/namespace/polder/sparql
