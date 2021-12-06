@@ -1,5 +1,4 @@
-{% block content %}
- Total results: {{ result_set.total_results }}
+ Showing {{ result_set.results|length }} results of {{ result_set.total_results }}
  <ul class="results">
  {% for result in result_set.results %}
   <li class="result" data-score={{ result.score }}>
@@ -7,9 +6,14 @@
     {% for url in result.webUrl %}
         {% if loop.first %}Get this data from:{% endif %}
         <a href="{{ url }}" target="_blank" rel="noopener">{{ url.rpartition("//")[-1].partition("/")[0] }}</a>
+        {% if not loop.last %}, {% endif %}
     {% endfor %}
-    <p>{{ result.abstract }}</p>
+    <p class="abstract abstract--truncated" aria-expanded="false">
+      {{ result.abstract | truncate(500) }}
+    </p>
+    <p class="abstract abstract--full" aria-hidden="true">
+      {{ result.abstract }}
+    </p>
   </li>
  {% endfor %}
 </ul>
-{% endblock %}
