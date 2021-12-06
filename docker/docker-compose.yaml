@@ -103,7 +103,8 @@ services:
     profiles:
       - web
     ports:
-      - 8000:80
+      # Change 8096 to 80 if you want to put this on a web server in production.
+      - 8096:8000
     environment:
       # Overrides the environment variable so that we get the service endpoint IP from Docker.
       - GLEANER_ENDPOINT_URL=http://triplestore:9999/blazegraph/namespace/polder/sparql
@@ -111,3 +112,5 @@ services:
       - FLASK_RUN_HOST
       - SECRET_KEY
       - FLASK_ENV
+      - SERVER_NAME=None
+      - SCRIPT_NAME=/polder
