@@ -9,7 +9,7 @@ function searchFormSubmit(event) {
 
     $.ajax({
       type: "GET",
-      url: "/api/search",
+      url: $resultsContainer.data('api-url'),
       data: $(event.delegateTarget).serialize(),
       processData: false
     }).done(function (data) {

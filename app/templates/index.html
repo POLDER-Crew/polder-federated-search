@@ -3,7 +3,7 @@
 {% block content %}
 
 <!-- in the absence of JS, the form displays results at /search -->
-<form class="search" method="get" action="{{ url_for('text_search') }}">
+<form class="search" method="get" action="{{ url_for('nojs_text_search') }}" data-api-url="{{ url_for('text_search') }}">
     <label for="text">Perform a full-text search</label>
     <input name="text" id="text" required>
   </form>
