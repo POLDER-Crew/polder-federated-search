@@ -34,6 +34,9 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
+        # All of the '/polder' stuff below is to run in a subdirectory
+        # named '/polder'. You can delete the SCRIPT_NAME and SERVER_NAME
+        # environment variables if you don't want to do that.
         - name: SCRIPT_NAME
           value: /polder
         - name: SERVER_NAME

@@ -112,5 +112,7 @@ services:
       - FLASK_RUN_HOST
       - SECRET_KEY
       - FLASK_ENV
+      # These are both for running in a subdirectory. IF you don't want to do that,
+      # you can delete the next two lines.
       - SERVER_NAME=None
       - SCRIPT_NAME=/polder
