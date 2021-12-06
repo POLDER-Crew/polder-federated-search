@@ -23,7 +23,7 @@ class GleanerSearch(SearcherBase):
             f"""
             PREFIX schema: <https://schema.org/>
 
-            SELECT DISTINCT ?s ?score ?description ?name ?headline ?url ?boundingbox ?temporalCoverage
+            SELECT DISTINCT ?s ?score ?description ?name ?headline ?url ?boundingbox ?temporalCoverage ?type
             {{
                ?lit bds:search "{text}" .
                ?lit bds:matchAllTerms "false" .

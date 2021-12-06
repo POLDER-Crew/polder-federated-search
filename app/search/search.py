@@ -26,6 +26,8 @@ class SearchResultSet:
         """
         results = sorted(
             # put together our results lists...
+            # By turning them into a set first and the
+            # a list, we remove duplicates
             a.results + b.results,
             # and sort them by score...
             key=lambda x: float(x['score']),
