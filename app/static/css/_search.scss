@@ -1,0 +1,24 @@
+@use 'constants';
+
+/* Search results */
+.results__container {
+    margin-top: 2rem;
+}
+
+.results {
+    list-style:  none;
+}
+
+.result {
+    background-color: constants.$white;
+    padding: 0.5rem;
+    margin: 1rem 0;
+}
+
+.abstract {
+    cursor: pointer;
+}
+
+.abstract--full {
+    display: none;
+}

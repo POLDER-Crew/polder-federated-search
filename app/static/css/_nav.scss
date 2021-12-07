@@ -1,0 +1,10 @@
+@use 'constants';
+
+/* Nav */
+.nav__link {
+    color: constants.$soft-black;
+    text-decoration: none;
+    &:visited {
+        color: constants.$soft-black;
+    }
+}
