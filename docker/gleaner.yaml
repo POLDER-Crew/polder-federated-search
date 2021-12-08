@@ -40,16 +40,10 @@ sources:
   domain: https://nsidc.org
   type: sitemap
   active: false
-- name: adc
-  url: https://arcticdata.io/sitemap_index.xml
-  headless: true
-  pid: https://www.re3data.org/repository/r3d100011973
-  properName: Arctic Data Center
-  domain: https://arcticdata.io
-  active: false
-- name: bco-dmo
-  url: https://www.bco-dmo.org/sitemap.xml
-  domain: https://www.bco-dmo.org
+- name: usap-dc
   type: sitemap
   headless: false
-  active: false
+  url: https://www.usap-dc.org/view/dataset/sitemap.xml
+  properName: U.S. Antarctic Program Data Center
+  domain: https://www.usap-dc.org
+  active: true
