@@ -32,14 +32,14 @@ sources:
   headless: false
   properName: Australian Antarctic Data Centre
   domain: https://data.aad.gov.au/
-  active: true
+  active: false
 - name: nsidc
   url: https://nsidc.org/sitemap.xml
   headless: false
   properName: National Snow and Ice Data Center
   domain: https://nsidc.org
   type: sitemap
-  active: true
+  active: false
 - name: adc
   url: https://arcticdata.io/sitemap_index.xml
   headless: true

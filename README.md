@@ -13,7 +13,7 @@
 ### Architecture
 This tool uses Docker images to manage the different services that it depends on. One of those is [Gleaner](https://gleaner.io).
 
-The web app itself that hosts the UI and does the searches is built using [Flask](https://flask.palletsprojects.com), which is a Python web framework. I chose Python because Python has good support for RDF and SPARQL operations with [RDFLib](https://rdflib.dev/).
+The web app itself that hosts the UI and does the searches is built using [Flask](https://flask.palletsprojects.com), which is a Python web framework. I chose Python because Python has good support for RDF and SPARQL operations with [RDFLib](https://rdflib.dev/). The frontend dependencies are built using [Parcel](https://parceljs.org/).
 
 ### Deployment
 A pre-built image for the web app is on Docker Hub as [nein09/polder-federated-search](https://hub.docker.com/repository/docker/nein09/polder-federated-search), and that is what all of the Helm/Kubernetes and Docker files in this repository are referencing. If you want to modify this project and build your own ones, you're welcome to.
@@ -30,7 +30,7 @@ Assuming that you're starting from **this directory**:
 1. Do a crawl (these instructions assume you are in the `docker` directory):
     1. `curl -O https://schema.org/version/latest/schemaorg-current-https.jsonld`
     1. `docker-compose --profile crawl up -d
-    NOTE: There is a missing step here. The crawled results need to be written to the triplestore.
+    NOTE: There is a missing step here. The crawled results need to be written to the triplestore. For now, you can run `./write-to-triplestore.sh`.
 1. Run the web app: `docker-compose --profile web up -d`
 
 If you're using Docker Desktop, you can use the UI to open the docker-webapp image in a browser.
@@ -83,6 +83,10 @@ Assuming that you're starting from **this directory**:
 
 The easiest setup for development on the web app itself is to use docker-compose for the dependencies, like Gleaner and Blazegraph, and run the app itself directly in Flask. To do that, follow the steps in the Deployment section under Docker, but skip the last one. Instead, do:
 1. `cd ../` (to get back to **this directory**)
+1. `source venv/bin/activate`
+1. `pip install -r requirements.txt`
+1. `yarn install`
+1. `yarn watch` (assuming that you want to make JavaScript or CSS changes - if not, `yarn build` will do)
 1. `flask run`
 
 You should see Flask's startup message, and get an address for your locally running web app.

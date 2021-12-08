@@ -1,0 +1,16 @@
+# Ignore the helm charts and docker-compose stuff
+helm/
+docker/
+
+
+# Ignoring node_modules and dist folder will help get rid of some weird behavior
+node_modules/
+dist/
+
+# Some other things that don't go in here
+instance/
+venv/
+.env
+dev.env
+.parcel-cache
+.gitignore

@@ -10,6 +10,7 @@ cryptography==35.0.0
 dataone.common==3.5.0
 dataone.libclient==3.5.0
 Flask==2.0.2
+Flask-CacheBuster==1.0.0
 gunicorn==20.1.0
 idna==3.3
 iso8601==0.1.16
@@ -32,6 +33,7 @@ six==1.16.0
 SPARQLWrapper==1.8.5
 typing-extensions==3.10.0.2
 urllib3==1.26.7
+uWSGI==2.0.20
 Werkzeug==2.0.2
 yarl==1.7.0
 zipstream==1.1.4
