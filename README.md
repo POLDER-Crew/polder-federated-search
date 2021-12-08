@@ -13,7 +13,7 @@
 ### Architecture
 This tool uses Docker images to manage the different services that it depends on. One of those is [Gleaner](https://gleaner.io).
 
-The web app itself that hosts the UI and does the searches is built using [Flask](https://flask.palletsprojects.com), which is a Python web framework. I chose Python because Python has good support for RDF and SPARQL operations with [RDFLib](https://rdflib.dev/).
+The web app itself that hosts the UI and does the searches is built using [Flask](https://flask.palletsprojects.com), which is a Python web framework. I chose Python because Python has good support for RDF and SPARQL operations with [RDFLib](https://rdflib.dev/). The frontend dependencies are built using [Parcel](https://parceljs.org/).
 
 ### Deployment
 A pre-built image for the web app is on Docker Hub as [nein09/polder-federated-search](https://hub.docker.com/repository/docker/nein09/polder-federated-search), and that is what all of the Helm/Kubernetes and Docker files in this repository are referencing. If you want to modify this project and build your own ones, you're welcome to.
@@ -85,6 +85,8 @@ The easiest setup for development on the web app itself is to use docker-compose
 1. `cd ../` (to get back to **this directory**)
 1. `source venv/bin/activate`
 1. `pip install -r requirements.txt`
+1. `yarn install`
+1. `yarn watch` (assuming that you want to make JavaScript or CSS changes - if not, `yarn build` will do)
 1. `flask run`
 
 You should see Flask's startup message, and get an address for your locally running web app.
