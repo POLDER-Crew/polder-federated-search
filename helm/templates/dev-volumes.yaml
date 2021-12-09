@@ -1,7 +1,7 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: prod-volume-triplestore
+  name: dev-volume-triplestore
   annotations:
     "helm.sh/resource-policy": keep
 spec:
@@ -17,7 +17,7 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: prod-volume-s3system
+  name: dev-volume-s3system
   annotations:
     "helm.sh/resource-policy": keep
 spec:
