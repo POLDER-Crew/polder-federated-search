@@ -1,0 +1,29 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: prod-volume-triplestore
+  annotations:
+    "helm.sh/resource-policy": keep
+spec:
+  storageClassName: ceph-rbd
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: prod-volume-s3system
+  annotations:
+    "helm.sh/resource-policy": keep
+spec:
+  storageClassName: ceph-rbd
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 30Gi

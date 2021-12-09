@@ -89,14 +89,3 @@ http://triplestore-svc.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.tri
 {{- define "gleaner.s3system.endpoint" -}}
 s3system-svc.{{ .Release.Namespace }}.svc.cluster.local
 {{- end }}
-
-{{/*
-Figure out a persistent volume claim
-*/}}
-{{- define "gleaner.volumeClaim" -}}
-{{- if .Values.persistence.enabled }}
-{{ .Values.persistence.existingClaimName }}
-{{- else }}
-local-volume
-{{- end }}
-{{- end }}

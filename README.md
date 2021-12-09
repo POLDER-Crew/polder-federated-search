@@ -72,6 +72,8 @@ You can see that the values of the secrets are base64 encoded - in order to do t
 
 The Helm chart also includes a Kubernetes `CronJob` that tells Gleaner to index [once a week](https://cron.help/#0_0_*_*_3).
 
+Take a look at `helm/values.yaml` to customize this setup. Pay particular attention to `dataLocation` at the bottom.
+
 ### Development
 I'd love for people to use this for all kinds of scientific data repository searches - please feel free to fork it, submit a PR, or ask questions.
 
