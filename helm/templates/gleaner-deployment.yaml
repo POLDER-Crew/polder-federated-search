@@ -28,9 +28,13 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       volumes:
       - name: triplestore-volume
-        emptyDir: {} # TODO: persistent storage would be nicer.
+        persistentVolumeClaim:
+          claimName: local-volume-triplestore
+          readOnly: false
       - name: s3system-volume
-        emptyDir: {}
+        persistentVolumeClaim:
+          claimName: local-volume-s3system
+          readOnly: false
       containers:
       - name: triplestore
         image: nawer/blazegraph

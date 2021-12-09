@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  annotations:
+    "helm.sh/resource-policy": keep
+  name: local-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data"
+    type: DirectoryOrCreate
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: local-volume-triplestore
+  annotations:
+    "helm.sh/resource-policy": keep
+spec:
+  storageClassName: hostpath
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: local-volume-s3system
+  annotations:
+    "helm.sh/resource-policy": keep
+spec:
+  storageClassName: hostpath
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi

@@ -38,12 +38,19 @@ data:
       headless: false
       properName: Australian Antarctic Data Centre
       domain: https://data.aad.gov.au
-      active: true
+      active: false
       type: sitemap
     - name: nsidc
       url: https://nsidc.org/sitemap.xml
       headless: false
       properName: National Snow and Ice Data Center
       domain: https://nsidc.org
-      active: true
+      active: false
       type: sitemap
+    - name: usap-dc
+      type: sitemap
+      headless: false
+      url: https://www.usap-dc.org/view/dataset/sitemap.xml
+      properName: U.S. Antarctic Program Data Center
+      domain: https://www.usap-dc.org
+      active: true

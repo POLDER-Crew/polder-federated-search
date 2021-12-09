@@ -105,3 +105,9 @@ javaXmx: 8g
 javaOpts: -Xmx6g -Xms2g --XX:+UseG1GC
 
 storageNamespace: polder
+
+## Persist data to a persistent volume
+persistence:
+  enabled: false
+  ## If enabled and defined: existingClaimName is used, else use emptyDir
+  existingClaimName: "timedb-pv-claim"

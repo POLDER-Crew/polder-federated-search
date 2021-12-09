@@ -159,3 +159,6 @@ polder.config
 # Node modules and front-end build stuff
 .parcel-cache
 node_modules/
+
+# docker stuff
+gleaner.db
