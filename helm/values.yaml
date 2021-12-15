@@ -109,4 +109,4 @@ storageNamespace: polder
 ## Where are we storing the files we index and the triplestore data? 'local' is
 ## on your dev machine; 'prod' or 'dev' is on a cluster (probably DataONE's) that has a
 ## Ceph PersistentVolume created for you.
-dataLocation: local
+dataLocation: dev

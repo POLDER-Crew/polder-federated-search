@@ -1,3 +1,4 @@
+{{ if eq .Values.dataLocation "local" }}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -46,3 +47,4 @@ spec:
   resources:
     requests:
       storage: 5Gi
+{{ end }}
