@@ -105,3 +105,10 @@ javaXmx: 8g
 javaOpts: -Xmx6g -Xms2g --XX:+UseG1GC
 
 storageNamespace: polder
+
+## Persist data to a persistent volume.
+## Where are we storing the files we index and the triplestore data?
+# Setting 'existing' to true means you're running on a cluster (probably DataONE's) that has a
+## PersistentVolumeClaim. created for you.
+persistence:
+  existing: true

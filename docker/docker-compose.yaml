@@ -1,3 +1,7 @@
+volumes:
+  s3system:
+  triplestore:
+
 services:
 
   gleaner-setup:
@@ -71,7 +75,7 @@ services:
     ports:
       - 9999:9999
     volumes:
-      - ${GLEANER_GRAPH}:/var/lib/blazegraph
+      - triplestore:/var/lib/blazegraph
 
   s3system:
     image: minio/minio:latest
@@ -79,7 +83,7 @@ services:
       - 54321:54321
       - 9000:9000
     volumes:
-      - ${GLEANER_OBJECTS}:/data
+      - s3system:/data
     environment:
       - MINIO_ACCESS_KEY
       - MINIO_SECRET_KEY

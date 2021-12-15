@@ -39,7 +39,7 @@ If you're using Docker Desktop, you can use the UI to open the docker-webapp ima
 #### Helm/Kubernetes
 
 1. Install helm (on OS X, something like `brew install helm`), or visit the [Helm website](http://helm.sh) for instructions.
-1. This Helm chart uses an ingress controller, which you need to install, like this:
+1. This Helm chart uses an ingress controller. If you are running it in your own environment (like on your own dev machine), you need to install it like this
     ```
         helm upgrade --install ingress-nginx ingress-nginx \
       --repo https://kubernetes.github.io/ingress-nginx \
@@ -71,6 +71,8 @@ You can see that the values of the secrets are base64 encoded - in order to do t
 1. If you're using Docker desktop for all this, you can visit [http://localhost](http://localhost) and see it running!
 
 The Helm chart also includes a Kubernetes `CronJob` that tells Gleaner to index [once a week](https://cron.help/#0_0_*_*_3).
+
+Take a look at `helm/values.yaml` to customize this setup. Pay particular attention to `persistence` at the bottom; if you're running locally, you probably want `existing: false` in there.
 
 ### Development
 I'd love for people to use this for all kinds of scientific data repository searches - please feel free to fork it, submit a PR, or ask questions.

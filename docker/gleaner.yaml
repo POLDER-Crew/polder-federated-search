@@ -26,13 +26,6 @@ summoner:
 millers:
   graph: true
 sources:
-- name: aadc
-  type: sitemap
-  url: https://data.aad.gov.au/metadata/sitemap.xml
-  headless: false
-  properName: Australian Antarctic Data Centre
-  domain: https://data.aad.gov.au/
-  active: false
 - name: nsidc
   url: https://nsidc.org/sitemap.xml
   headless: false
@@ -40,16 +33,24 @@ sources:
   domain: https://nsidc.org
   type: sitemap
   active: false
-- name: adc
-  url: https://arcticdata.io/sitemap_index.xml
-  headless: true
-  pid: https://www.re3data.org/repository/r3d100011973
-  properName: Arctic Data Center
-  domain: https://arcticdata.io
-  active: false
-- name: bco-dmo
-  url: https://www.bco-dmo.org/sitemap.xml
-  domain: https://www.bco-dmo.org
+- name: usap-dc
   type: sitemap
   headless: false
+  url: https://www.usap-dc.org/view/dataset/sitemap.xml
+  properName: U.S. Antarctic Program Data Center
+  domain: https://www.usap-dc.org
+  active: false
+- name: npdc
+  type: sitemap
+  headless: false
+  url: https://npdc.nl/sitemap/dataset.xml
+  properName:  Netherlands Polar Data Center
+  domain: https://npdc.nl
+  active: true
+- name: gem
+  type: sitemap
+  headless: false
+  url: https://data.g-e-m.dk/sitemap
+  properName: Greenland Ecosystem Monitoring Database
+  domain: https://data.g-e-m.dk
   active: false
