@@ -1,5 +1,10 @@
+class SearchResult:
+    """ A class representing each search result, so that we can have
+    a common representation between search endpoints and technologies.
+    """
+
 class SearchResultSet:
-    """ A class to represent a set of search results, so that we cna
+    """ A class to represent a set of search results, so that we can
     have a common representation between search endpoints and technologies.
     """
 

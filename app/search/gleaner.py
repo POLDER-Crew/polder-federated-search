@@ -19,39 +19,22 @@ class GleanerSearch(SearcherBase):
         # todo: filter these so we just get whole URLS: OPTIONAL {{ ?s schema:identifier / schema:value ?identifier_url . }}
         text = kwargs.pop('q', '')
 
-# this does better for npdc - let's see what we can do here
-# PREFIX schema: <http://schema.org/>
-
-# SELECT DISTINCT ?s ?score ?lit ?description ?name ?headline ?url ?boundingbox ?temporalCoverage ?type
-# {
-#   BIND(schema:Dataset AS ?type)
-#   ?s a ?o
-#   FILTER(?o=?type)
-
-#   ?lit bds:search "ice" .
-#   ?lit bds:matchAllTerms "false" .
-#   ?lit bds:relevance ?score .
-#   ?a rdf:type schema:Dataset .
-#   ?s ?p ?lit .
-
-#   graph ?g {
-#     ?s ?p ?lit .
-#    OPTIONAL { ?s schema:name ?name .   }
-#     OPTIONAL { ?s schema:headline ?headline .   }
-#     OPTIONAL { ?s schema:url ?url .   }
-#     OPTIONAL { ?s schema:description ?description .    }
-#     OPTIONAL { ?s schema:spatialCoverage/schema:geo/schema:box ?boundingbox . }
-#     OPTIONAL { ?s schema:temporalCoverage ?temporalCoverage . }
-#  }
-#       }
-
-# LIMIT 100
         self.sparql.setQuery(
             f"""
-            PREFIX schema: <https://schema.org/>
+            PREFIX sschema: <https://schema.org/>
+            PREFIX schema: <http://schema.org/>
 
-            SELECT DISTINCT ?s ?score ?description ?name ?headline ?url ?boundingbox ?temporalCoverage ?type
+            SELECT DISTINCT ?score ?abstract ?title ?url ?sameAs ?boundingbox ?temporalCoverage ?identifier
             {{
+               {{
+                   BIND(schema:Dataset AS ?type)
+                   ?s a ?o
+                   FILTER(?o=?type)
+                }} UNION {{
+                   BIND(sschema:Dataset AS ?type)
+                   ?s a ?o
+                   FILTER(?o=?type)
+                }}
                ?lit bds:search "{text}" .
                ?lit bds:matchAllTerms "false" .
                ?lit bds:relevance ?score .
@@ -59,15 +42,13 @@ class GleanerSearch(SearcherBase):
 
                graph ?g {{
                 ?s ?p ?lit .
-                VALUES ?type {{ schema:Organization }} .
-                MINUS {{ ?s rdf:type ?type }}
-                OPTIONAL {{ ?s schema:name ?name .   }}
-                OPTIONAL {{ ?s schema:headline ?headline .   }}
+                OPTIONAL {{ ?s schema:name ?title .   }}
                 OPTIONAL {{ ?s schema:url ?url .   }}
-                OPTIONAL {{ ?s schema:description ?description .    }}
+                OPTIONAL {{ ?s schema:description ?abstract .    }}
                 OPTIONAL {{ ?s schema:spatialCoverage/schema:geo/schema:box ?boundingbox . }}
                 OPTIONAL {{ ?s schema:temporalCoverage ?temporalCoverage . }}
-
+                OPTIONAL {{ ?s schema:identifier ?identifier . }}
+                OPTIONAL {{ ?s schema:sameAs ?sameAs . }}
               }}
             }}
             ORDER BY DESC(?score)
