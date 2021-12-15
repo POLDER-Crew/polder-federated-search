@@ -1,4 +1,4 @@
-{{ if eq .Values.dataLocation "local" }}
+{{ if not .Values.persistence.existing }}
 apiVersion: v1
 kind: PersistentVolume
 metadata:

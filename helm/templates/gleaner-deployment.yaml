@@ -29,11 +29,11 @@ spec:
       volumes:
       - name: triplestore-volume
         persistentVolumeClaim:
-          claimName: {{ .Values.dataLocation }}-volume-triplestore
+          claimName: {{ if .Values.persistence.existing }}polder-pvc-01{{ else }}local-volume-triplestore{{ end }}
           readOnly: false
       - name: s3system-volume
         persistentVolumeClaim:
-          claimName: {{ .Values.dataLocation }}-volume-s3system
+          claimName: {{ if .Values.persistence.existing }}polder-pvc-02{{ else }}local-volume-s3system{{ end }}
           readOnly: false
       containers:
       - name: triplestore

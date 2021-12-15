@@ -89,3 +89,21 @@ http://triplestore-svc.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.tri
 {{- define "gleaner.s3system.endpoint" -}}
 s3system-svc.{{ .Release.Namespace }}.svc.cluster.local
 {{- end }}
+
+{{/* Volume claim locations
+*/}}
+{{- define "gleaner.persistentStorage.triplestore" -}}
+{{- if .Values.persistence.existing }}
+polder-pvc-01
+{{- else }}
+local-volume-triplestore
+{{- end }}
+{{- end }}
+
+{{- define "gleaner.persistentStorage.s3system" -}}
+{{- if .Values.persistence.existing }}
+polder-pvc-02
+{{- else }}
+local-volume-s3system
+{{- end }}
+{{- end }}
