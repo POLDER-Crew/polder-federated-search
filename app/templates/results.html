@@ -1,8 +1,7 @@
  Showing {{ result_set.results|length }} results of {{ result_set.total_results }}
  <ul class="results">
  {% for result in result_set.results %}
-  <li class="result" data-score={{ result.score }}>
-    {{ result.source }}
+  <li class="result" data-score={{ result.score }} data-source="{{ result.source }}">
     <h4>{{ result.title }}</h4>
     {% for url in result.urls %}
         {% if loop.first %}Get this data from:{% endif %}
