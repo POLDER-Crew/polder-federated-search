@@ -46,6 +46,10 @@ class SearchResult:
     def __ne__(self, other):
         return self.__hash__ != other.__hash__
 
+    """ So debugging is a bit easier """
+    def __str__(self):
+        return f"Search Result from {self.source}: {self.id} with score {self.score}"
+
 
 class SearchResultSet:
     """ A class to represent a set of search results, so that we can
@@ -67,11 +71,14 @@ class SearchResultSet:
                 self.total_results == other.total_results and
                 self.page_start == other.page_start and
                 len(self.results) == len(other.results) and
-                all(list(map(
-                    lambda i, o:
-                    repr(self.results[i]) == repr(o),
-                    enumerate(other.results)
-                )))
+                all(
+                    (
+                        self.results[i].id == o.id and
+                        self.results[i].score == o.score and
+                        self.results[i].source == o.source and
+                        self.results[i].title == o.title
+                    ) for i, o in enumerate(other.results)
+                )
             )
 
         else:

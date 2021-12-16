@@ -12,7 +12,7 @@ from urllib.response import addinfourl
 from app.search import dataone, gleaner, search
 
 test_response = json.loads(
-    '{"response": {"numFound": 1, "start": 5, "maxScore": 0.0, "docs": [{"some": "result", "score": "0"}, {"another": "result", "score": "0"}]}}')
+    '{"response": {"numFound": 1, "start": 5, "maxScore": 0.0, "docs": [{"some": "result", "score": "0", "id": "test1"}, {"another": "result", "score": "0", "id": "test2"}]}}')
 
 
 class TestSolrDirectSearch(unittest.TestCase):
@@ -28,7 +28,11 @@ class TestSolrDirectSearch(unittest.TestCase):
         expected = search.SearchResultSet(
             total_results=1,
             page_start=5,
-            results=test_response['response']['docs']
+            results=[
+                search.SearchResult(score=0, id="test1", source="DataONE"),
+                search.SearchResult(score=0, id="test2", source="DataONE"),
+            ]
+
         )
         results = self.search.text_search('test')
         self.assertEqual(results, expected)
@@ -146,14 +150,19 @@ class TestGleanerSearch(unittest.TestCase):
             'id': {'type': 'literal', 'value': 'urn:uuid:696f9141-4e1a-5270-8c94-b0aabe0bbee7'}
         }
         result = self.search.convert_result(test_result)
-        self.assertIs(result, search.SearchResult)
+        self.assertIsInstance(result, search.SearchResult)
         self.assertEqual(result.urls, ['url1', 'url2'])
         self.assertEqual(result.source, "Gleaner")
 
 
 class TestSearchResultSet(unittest.TestCase):
     def test_equal(self):
-        results = ['a', 'b', 'c']
+        result1 = search.SearchResult(id='a', score=3)
+        result2 = search.SearchResult(id='b', score=1)
+        result3 = search.SearchResult(id='c', score=2)
+        result4 = search.SearchResult(id='d', score=0)
+
+        results = [result1, result2, result3]
 
         a = search.SearchResultSet(
             total_results=42, page_start=9, results=results)
@@ -164,7 +173,7 @@ class TestSearchResultSet(unittest.TestCase):
         d = search.SearchResultSet(
             total_results=42, page_start=0, results=results)
         e = search.SearchResultSet(
-            total_results=42, page_start=9, results=['d', 'e', 'f'])
+            total_results=42, page_start=9, results=[result2, result3, result4])
 
         self.assertEqual(a, b)
         self.assertEqual(a, a)
