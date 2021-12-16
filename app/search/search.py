@@ -1,4 +1,4 @@
-import textwrap
+
 
 class SearchResult:
     """ A class representing each search result, so that we can have
@@ -20,7 +20,9 @@ class SearchResult:
         self.id = kwargs.pop('id')
         self.spatial_coverage = kwargs.pop('spatial_coverage', None)
         self.temporal_coverage = kwargs.pop('temporal_coverage', None)
-        self.score = kwargs.pop('score')
+        self.score = float(kwargs.pop('score'))
+        # Good for debugging
+        self.source = kwargs.pop('source', 'Anonymous')
 
     """ Methods to make these sortable """
 
@@ -91,5 +93,20 @@ class SearcherBase:
     ENDPOINT_URL = ""
     PAGE_SIZE = 50
 
-    def text_search(self, **kwargs):
+    def text_search(self, text):
+        """ Makes a call to some search endpoint with the relevant text query"""
         raise NotImplementedError
+
+    def convert_result(self, result):
+        """
+        Convert an individual result from the underlying search endpoint to
+        a SearchResult object.
+        Used as a map on the set of results that the endpoint returns."""
+        raise NotImplementedError
+
+    def convert_results(self, raw_result_set):
+        """
+        A convenience method; takes in a raw result set and returns a list
+        of SearchResult objects.
+        """
+        return list(map(self.convert_result, raw_result_set))

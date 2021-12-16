@@ -1,12 +1,5 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
-from .search import SearcherBase, SearchResultSet
-
-
-def convert_result(sparql_result_dict):
-    result = {}
-    for k, v in sparql_result_dict.items():
-        result[k] = v['value']
-    return result
+from .search import SearcherBase, SearchResultSet, SearchResult
 
 
 class GleanerSearch(SearcherBase):
@@ -15,16 +8,14 @@ class GleanerSearch(SearcherBase):
         ENDPOINT_URL = kwargs.pop('endpoint_url')
         self.sparql = SPARQLWrapper(ENDPOINT_URL)
 
-    def text_search(self, **kwargs):
+    def text_search(self, text):
         # todo: filter these so we just get whole URLS: OPTIONAL {{ ?s schema:identifier / schema:value ?identifier_url . }}
-        text = kwargs.pop('q', '')
-
         self.sparql.setQuery(
             f"""
             PREFIX sschema: <https://schema.org/>
             PREFIX schema: <http://schema.org/>
 
-            SELECT DISTINCT ?score ?abstract ?title ?url ?sameAs ?boundingbox ?temporalCoverage ?identifier
+            SELECT DISTINCT ?score ?abstract ?title ?url ?sameAs ?spatial_coverage ?temporal_coverage ?id
             {{
                {{
                    BIND(schema:Dataset AS ?type)
@@ -45,9 +36,9 @@ class GleanerSearch(SearcherBase):
                 OPTIONAL {{ ?s schema:name ?title .   }}
                 OPTIONAL {{ ?s schema:url ?url .   }}
                 OPTIONAL {{ ?s schema:description ?abstract .    }}
-                OPTIONAL {{ ?s schema:spatialCoverage/schema:geo/schema:box ?boundingbox . }}
-                OPTIONAL {{ ?s schema:temporalCoverage ?temporalCoverage . }}
-                OPTIONAL {{ ?s schema:identifier ?identifier . }}
+                OPTIONAL {{ ?s schema:spatialCoverage/schema:geo/schema:box ?spatial_coverage . }}
+                OPTIONAL {{ ?s schema:temporalCoverage ?temporal_coverage . }}
+                OPTIONAL {{ ?s schema:identifier ?id . }}
                 OPTIONAL {{ ?s schema:sameAs ?sameAs . }}
               }}
             }}
@@ -61,6 +52,14 @@ class GleanerSearch(SearcherBase):
         result_set = SearchResultSet(
             total_results=len(data['results']['bindings']),
             page_start=0,  # for now
-            results=list(map(convert_result, data['results']['bindings']))
+            results=self.convert_results(data['results']['bindings'])
         )
         return result_set
+
+    def convert_result(self, sparql_result_dict):
+        result = {}
+        for k, v in sparql_result_dict.items():
+            result[k] = v['value']
+        result['urls'] = [result.pop('url', None), result.pop('sameAs', None)]
+        result['source'] = "Gleaner"
+        return SearchResult(**result)

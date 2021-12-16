@@ -2,16 +2,13 @@
  <ul class="results">
  {% for result in result_set.results %}
   <li class="result" data-score={{ result.score }}>
-    {{ result }}
+    {{ result.source }}
     <h4>{{ result.title }}</h4>
-    {% for url in result.webUrl %}
+    {% for url in result.urls %}
         {% if loop.first %}Get this data from:{% endif %}
         <a href="{{ url }}" target="_blank" rel="noopener">{{ url.rpartition("//")[-1].partition("/")[0] }}</a>
         {% if not loop.last %}, {% endif %}
     {% endfor %}
-    {% if result.url %}
-    Get this data from: <a href="{{ result.url }}" target="_blank" rel="noopener">{{ result.url.rpartition("//")[-1].partition("/")[0] }}</a>
-    {% endif %}
     <p class="abstract abstract--truncated" aria-expanded="false">
       {{ result.abstract | truncate(500) }}
     </p>
