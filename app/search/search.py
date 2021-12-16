@@ -1,7 +1,49 @@
+import textwrap
+
 class SearchResult:
     """ A class representing each search result, so that we can have
     a common representation between search endpoints and technologies.
+
+    These objects should not be treated as mutable.
     """
+
+    def __init__(self, **kwargs):
+        if not 'id' in kwargs:
+            raise ValueError('Search results must have an id.')
+
+        if not 'score' in kwargs:
+            raise ValueError('Search results must have a score.')
+
+        self.title = kwargs.pop('title', None)
+        self.urls = kwargs.pop('urls', [])
+        self.abstract = kwargs.pop('abstract', "")
+        self.id = kwargs.pop('id')
+        self.spatial_coverage = kwargs.pop('spatial_coverage', None)
+        self.temporal_coverage = kwargs.pop('temporal_coverage', None)
+        self.score = kwargs.pop('score')
+
+    """ Methods to make these sortable """
+
+    def __lt__(self, other):
+        return self.score < other.score
+
+    def __gt__(self, other):
+        return self.score > other.score
+
+    def __ge__(self, other):
+        return self.score >= other.score
+
+    """ Methods to make these hashable """
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return self.__hash__ == other.__hash__
+
+    def __ne__(self, other):
+        return self.__hash__ != other.__hash__
+
 
 class SearchResultSet:
     """ A class to represent a set of search results, so that we can
@@ -33,9 +75,7 @@ class SearchResultSet:
             # put together our results lists...
             # By turning them into a set first and the
             # a list, we remove duplicates
-            a.results + b.results,
-            # and sort them by score...
-            key=lambda x: float(x['score']),
+            list(set(a.results + b.results)),
             # in descending order.
             reverse=True
         )

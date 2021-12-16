@@ -154,8 +154,14 @@ class TestSearchResultSet(unittest.TestCase):
         self.assertNotEqual(c, b)
 
     def test_collate(self):
-        results_a = [{'thing': 'a', 'score': 3}, {'thing': 'b', 'score': 1}]
-        results_b = [{'thing': 'c', 'score': 2}, {'thing': 'd', 'score': 0}]
+        result1 = search.SearchResult(id='a', score=3)
+        result2 = search.SearchResult(id='b', score=1)
+        result3 = search.SearchResult(id='c', score=2)
+        result4 = search.SearchResult(id='d', score=0)
+
+        results_a = [result1, result2]
+
+        results_b = [result3, result4]
 
         a = search.SearchResultSet(
             total_results=2, page_start=3, results=results_a)
@@ -168,9 +174,84 @@ class TestSearchResultSet(unittest.TestCase):
             total_results=4,
             page_start=0,
             results=[
-                {'thing': 'a', 'score': 3},
-                {'thing': 'c', 'score': 2},
-                {'thing': 'b', 'score': 1},
-                {'thing': 'd', 'score': 0}])
+                result1,
+                result3,
+                result2,
+                result4
+            ])
 
         self.assertEqual(c, expected)
+
+
+class TestSearchResult(unittest.TestCase):
+    def test_init(self):
+        kwargs_dict = {
+            'title': 'A test title',
+            'urls': ['url1', 'url2', 'url3'],
+            'abstract': """Now, we're going to fluff this cloud. Trees get lonely too, so we'll give him a little friend. Poor old tree. Every day I learn. Put your feelings into it, your heart, it's your world.
+
+                        Let your heart take you to wherever you want to be. Absolutely no pressure. You are just a whisper floating across a mountain. Once you learn the technique, ohhh! Turn you loose on the world; you become a tiger. Let's have a happy little tree in here. Trees cover up a multitude of sins. And maybe, maybe, maybe...
+
+                        With something so strong, a little bit can go a long way. Just go out and talk to a tree. Make friends with it. Decide where your cloud lives. Maybe he lives right in here. You're meant to have fun in life. Maybe, just to play a little, we'll put a little tree here. There it is.
+
+                        It's important to me that you're happy. That's a crooked tree. We'll send him to Washington. Just go back and put one little more happy tree in there.
+
+                        This is probably the greatest thing to happen in my life - to be able to share this with you. Have fun with it. We don't make mistakes we just have happy little accidents.
+
+                        Play with the angles. La- da- da- da- dah. Just be happy. If you do too much it's going to lose its effectiveness.
+
+                        The only prerequisite is that it makes you happy. If it makes you happy then it's good. Everybody needs a friend. We have all at one time or another mixed some mud. Just let go - and fall like a little waterfall.
+
+                        """,
+            'id': 'an identifier',
+            'spatial_coverage': 'some spatial coverage object',
+            'temporal_coverage': 'some temporal coverage object',
+            'score': 42
+        }
+        test_obj = search.SearchResult(**kwargs_dict)
+        self.assertEqual(test_obj.title, kwargs_dict['title'])
+        self.assertEqual(test_obj.urls, kwargs_dict['urls'])
+        self.assertEqual(test_obj.abstract, kwargs_dict['abstract'])
+        self.assertEqual(test_obj.id, kwargs_dict['id'])
+        self.assertEqual(test_obj.spatial_coverage,
+                         kwargs_dict['spatial_coverage'])
+        self.assertEqual(test_obj.temporal_coverage,
+                         kwargs_dict['temporal_coverage'])
+        self.assertEqual(test_obj.score, kwargs_dict['score'])
+
+    def test_init_missing_id(self):
+        with self.assertRaises(ValueError):
+            test_obj = search.SearchResult(score=7)
+
+    def test_init_missing_score(self):
+        with self.assertRaises(ValueError):
+            test_obj = search.SearchResult(id='some id')
+
+    def test_init_defaults(self):
+        test_obj = search.SearchResult(id='test test test', score=10.5)
+        self.assertEqual(test_obj.title, None)
+        self.assertEqual(test_obj.urls, [])
+        self.assertEqual(test_obj.abstract, "")
+        self.assertEqual(test_obj.id, 'test test test')
+        self.assertEqual(test_obj.spatial_coverage, None)
+        self.assertEqual(test_obj.temporal_coverage, None)
+        self.assertEqual(test_obj.score, 10.5)
+
+    def test_operators(self):
+        a = search.SearchResult(id='a', score=1)
+        b = search.SearchResult(id='b', score=2)
+        c = search.SearchResult(id='c', score=1)
+        d = search.SearchResult(id='c', score=1)
+
+        self.assertTrue(a < b)
+        self.assertFalse(b < a)
+        self.assertTrue(b > a)
+        self.assertFalse(a > b)
+        self.assertTrue(b >= c)
+        self.assertTrue(a >= c)
+        self.assertTrue(c >= a)
+        self.assertFalse(c >= b)
+        self.assertFalse(a == b)
+        self.assertFalse(d == c)
+        self.assertTrue(a == a)
+        self.assertTrue(a is a)
