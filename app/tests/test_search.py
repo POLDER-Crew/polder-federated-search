@@ -12,7 +12,7 @@ from urllib.response import addinfourl
 from app.search import dataone, gleaner, search
 
 test_response = json.loads(
-    '{"response": {"numFound": 1, "start": 5, "maxScore": 0.0, "docs": [{"some": "result"}, {"another": "result"}]}}')
+    '{"response": {"numFound": 1, "start": 5, "maxScore": 0.0, "docs": [{"some": "result", "score": "0"}, {"another": "result", "score": "0"}]}}')
 
 
 class TestSolrDirectSearch(unittest.TestCase):
@@ -30,7 +30,7 @@ class TestSolrDirectSearch(unittest.TestCase):
             page_start=5,
             results=test_response['response']['docs']
         )
-        results = self.search.text_search(q='test')
+        results = self.search.text_search('test')
         self.assertEqual(results, expected)
 
         # Did we make the query we expected?
@@ -50,7 +50,7 @@ class TestSolrDirectSearch(unittest.TestCase):
             status_code=500
         )
         with self.assertRaises(requests.exceptions.HTTPError):
-            results = self.search.text_search(q='test')
+            results = self.search.text_search('test')
 
     @requests_mock.Mocker()
     def test_missing_kwargs(self, m):
@@ -75,21 +75,23 @@ class TestGleanerSearch(unittest.TestCase):
         # Set up our mock SPARQLWrapper results. We have mocked out the query() method from
         # SPARQLWrapper, but that method returns an object that we immediately call convert() on,
         # and the results of that are what we work with.
-        mock_convert = Mock(return_value={"results": {
-            "bindings": [
-                {
+        result1 = {
                     's': {'type': 'bnode', 'value': 'thing1'},
                     'score': {'datatype': 'http://www.w3.org/2001/XMLSchema#double', 'type': 'literal', 'value': '0.01953125'},
-                    'description': {'type': 'literal', 'value': "Here is a thing"},
-                    'name': {'type': 'literal', 'value': 'thing'}
-                },
-                {
+                    'abstract': {'type': 'literal', 'value': "Here is a thing"},
+                    'title': {'type': 'literal', 'value': 'thing'},
+                    'id': {'type': 'literal', 'value': 'urn:uuid:asdfasdfasdf'}
+                }
+        result2 = {
                     's': {'type': 'bnode', 'value': 'thing2'},
                     'score': {'datatype': 'http://www.w3.org/2001/XMLSchema#double', 'type': 'literal', 'value': '0.01953124'},
-                    'description': {'type': 'literal', 'value': "Here is a less relevant thing"},
-                    'name': {'type': 'literal', 'value': 'thing the second'}
+                    'abstract': {'type': 'literal', 'value': "Here is a less relevant thing"},
+                    'title': {'type': 'literal', 'value': 'thing the second'},
+                    'id': {'type': 'literal', 'value': 'urn:uuid:some long thing'}
+
                 }
-            ]
+        mock_convert = Mock(return_value={"results": {
+            "bindings": [result1, result2]
         }})
         mock_query = Mock()
         mock_query.convert = mock_convert
@@ -99,11 +101,13 @@ class TestGleanerSearch(unittest.TestCase):
         expected = search.SearchResultSet(
             total_results=2,
             page_start=0,
-            results=[{'s': 'thing1', 'score': '0.01953125', 'description': 'Here is a thing', 'name': 'thing'}, {
-                's': 'thing2', 'score': '0.01953124', 'description': 'Here is a less relevant thing', 'name': 'thing the second'}]
+            results=[
+                self.search.convert_result(result1),
+                self.search.convert_result(result2)
+            ]
 
         )
-        results = self.search.text_search(q='test')
+        results = self.search.text_search('test')
         self.assertEqual(results, expected)
 
     # gross, but requests-mock does not touch the requests
@@ -128,7 +132,23 @@ class TestGleanerSearch(unittest.TestCase):
             "oh no", 500, {}, {}, test_response_fp
         )
         with self.assertRaises(SPARQLExceptions.EndPointInternalError):
-            results = self.search.text_search(q='test')
+            results = self.search.text_search('test')
+
+    def test_convert_result(self):
+        test_result = {
+            'score': {'datatype': 'http://www.w3.org/2001/XMLSchema#double', 'type': 'literal', 'value': '0.375'},
+            'abstract': {'type': 'literal', 'value': 'This data file contains information'},
+            'title': {'type': 'literal', 'value': 'Iceflux trawl (SUIT & RMT) and ice stations'},
+            'url': {'type': 'literal', 'value': 'url1'},
+            'sameAs': {'type': 'literal', 'value': 'url2'},
+            'spatial_coverage': {'type': 'literal', 'value': '-70.5397 -10.4515 -57.4443 0.018'},
+            'temporal_coverage': {'type': 'literal', 'value': '2015-05-27/2015-06-20'},
+            'id': {'type': 'literal', 'value': 'urn:uuid:696f9141-4e1a-5270-8c94-b0aabe0bbee7'}
+        }
+        result = self.search.convert_result(test_result)
+        self.assertIs(result, search.SearchResult)
+        self.assertEqual(result.urls, ['url1', 'url2'])
+        self.assertEqual(result.source, "Gleaner")
 
 
 class TestSearchResultSet(unittest.TestCase):

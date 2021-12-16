@@ -8,7 +8,7 @@ class GleanerSearch(SearcherBase):
         ENDPOINT_URL = kwargs.pop('endpoint_url')
         self.sparql = SPARQLWrapper(ENDPOINT_URL)
 
-    def text_search(self, text):
+    def text_search(self, text=None):
         # todo: filter these so we just get whole URLS: OPTIONAL {{ ?s schema:identifier / schema:value ?identifier_url . }}
         self.sparql.setQuery(
             f"""

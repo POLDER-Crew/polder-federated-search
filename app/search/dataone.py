@@ -10,7 +10,7 @@ class SolrDirectSearch(SearcherBase):
     ENDPOINT_URL = "https://search.dataone.org/cn/v2/query/solr/"
     LATITUDE_FILTER = "(northBoundCoord:[50 TO *] OR southBoundCoord:[* TO -50])"
 
-    def text_search(self, text):
+    def text_search(self, text=None):
         query = f"{self.ENDPOINT_URL}?q={text}&fq={self.LATITUDE_FILTER}&rows={self.PAGE_SIZE}&wt=json&fl=*,score"
         logger.debug("dataone query: %s", query)
         response = requests.get(query)
@@ -27,7 +27,7 @@ class SolrDirectSearch(SearcherBase):
 
     def convert_result(self, result):
         return SearchResult(
-                    score=result.pop('score', None),
+                    score=result.pop('score'),
                     title=result.pop('title', None),
                     id=result.pop('id', None),
                     abstract=result.pop('abstract', ""),

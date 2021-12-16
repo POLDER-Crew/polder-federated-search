@@ -59,10 +59,21 @@ class SearchResultSet:
         # todo: do we want a shape for each result too? Probably eventually.
 
     # To make writing tests easier, let's say result sets are
-    # equal if their internal attributes are equal.
+    # equal if their internal attributes are equal, and the
+    # representations of their search results are equal.
     def __eq__(self, other):
         if isinstance(other, self.__class__):
-            return self.__dict__ == other.__dict__
+            return (
+                self.total_results == other.total_results and
+                self.page_start == other.page_start and
+                len(self.results) == len(other.results) and
+                all(list(map(
+                    lambda i, o:
+                    repr(self.results[i]) == repr(o),
+                    enumerate(other.results)
+                )))
+            )
+
         else:
             return False
 
@@ -93,7 +104,7 @@ class SearcherBase:
     ENDPOINT_URL = ""
     PAGE_SIZE = 50
 
-    def text_search(self, text):
+    def text_search(self, text=None):
         """ Makes a call to some search endpoint with the relevant text query"""
         raise NotImplementedError
 
