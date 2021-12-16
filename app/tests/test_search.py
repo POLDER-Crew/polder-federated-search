@@ -67,7 +67,7 @@ class TestSolrDirectSearch(unittest.TestCase):
 
 class TestGleanerSearch(unittest.TestCase):
     def setUp(self):
-        self.search = gleaner.GleanerSearch()
+        self.search = gleaner.GleanerSearch(endpoint_url="http://test")
 
     @patch('SPARQLWrapper.SPARQLWrapper.query')
     def test_text_search(self, query):
