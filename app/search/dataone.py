@@ -36,7 +36,7 @@ class SolrDirectSearch(SearcherBase):
                     # But there is also a named place available, which is what is being used here
                     spatial_coverage=result.pop('placeKey', None),
                     # todo: temporal coverage
-                    urls=result.pop('webUrl', []),
+                    urls=result.pop('webUrl', []), # todo: not sure if webUrl is the right thing to use here
                     source="DataONE"
                 )
 
