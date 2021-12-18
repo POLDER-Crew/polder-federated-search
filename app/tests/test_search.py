@@ -12,7 +12,7 @@ from urllib.response import addinfourl
 from app.search import dataone, gleaner, search
 
 test_response = json.loads(
-    '{"response": {"numFound": 1, "start": 5, "maxScore": 0.0, "docs": [{"some": "result", "score": "0", "id": "test1"}, {"another": "result", "score": "0", "id": "test2"}]}}')
+    '{"response": {"numFound": 1, "start": 5, "maxScore": 0.0, "docs": [{"some": "result", "score": 0, "id": "test1"}, {"another": "result", "score": 0, "id": "test2"}]}}')
 
 
 class TestSolrDirectSearch(unittest.TestCase):

@@ -16,6 +16,10 @@ class SolrDirectSearch(SearcherBase):
         response = requests.get(query)
         response.raise_for_status()
         body = response.json()['response']
+        self.max_score = body['maxScore']
+
+        if self.max_score == 0:
+            self.max_score = 0.00001
 
         result_set = SearchResultSet(
             total_results=body['numFound'],
@@ -27,7 +31,11 @@ class SolrDirectSearch(SearcherBase):
 
     def convert_result(self, result):
         return SearchResult(
-                    score=result.pop('score'),
+                    # Because Blazegraph uses normalized query scores, we can approximate search
+                    # ranking by normalizing these as well. However, this does nothing for the
+                    # cases where the DataOne result set is more or less relevant, on average, than
+                    # the one from Blazegraph / Gleaner.
+                    score=(result.pop('score') / self.max_score),
                     title=result.pop('title', None),
                     id=result.pop('id', None),
                     abstract=result.pop('abstract', ""),

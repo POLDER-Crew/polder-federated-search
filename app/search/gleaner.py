@@ -47,6 +47,8 @@ class GleanerSearch(SearcherBase):
             LIMIT {self.PAGE_SIZE}
         """
         )
+        # a note: BlazeGraph relevance scores go from 0.0 to 1.0; all results are normalized.
+
         self.sparql.setReturnFormat(JSON)
         data = self.sparql.query().convert()
         result_set = SearchResultSet(
