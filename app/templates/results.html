@@ -2,7 +2,7 @@
  <ul class="results">
  {% for result in result_set.results %}
   <li class="result" data-score={{ result.score }} data-source="{{ result.source }}">
-    <h4>{{ result.title }}</h4>
+    <h4>{{ result.title }} {{ result.id }}</h4>
     {% for url in result.urls %}
         {% if loop.first %}Get this data from:{% endif %}
         <a href="{{ url }}" target="_blank" rel="noopener">{{ url.rpartition("//")[-1].partition("/")[0] }}</a>

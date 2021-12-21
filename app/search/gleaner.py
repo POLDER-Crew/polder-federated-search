@@ -15,16 +15,23 @@ class GleanerSearch(SearcherBase):
             PREFIX sschema: <https://schema.org/>
             PREFIX schema: <http://schema.org/>
 
-            SELECT DISTINCT ?score ?abstract ?title ?url ?sameAs ?spatial_coverage ?temporal_coverage ?id
+            SELECT ?id
+            (SAMPLE(?score) AS ?score)
+            (SAMPLE(?abstract) AS ?abstract)
+            (SAMPLE(?title) AS ?title)
+            (SAMPLE(?url) AS ?url)
+            (SAMPLE(?sameAs) AS ?sameAs)
+            (SAMPLE(?spatial_coverage) AS ?spatial_coverage)
+            (SAMPLE(?temporal_coverage) AS ?temporal_coverage)
             {{
                {{
                    BIND(schema:Dataset AS ?type)
                    ?s a ?o
                    FILTER(?o=?type)
                 }} UNION {{
-                   BIND(sschema:Dataset AS ?type)
+                   BIND(sschema:Dataset AS ?stype)
                    ?s a ?o
-                   FILTER(?o=?type)
+                   FILTER(?o=?stype)
                 }}
                ?lit bds:search "{text}" .
                ?lit bds:matchAllTerms "false" .
@@ -32,16 +39,16 @@ class GleanerSearch(SearcherBase):
                ?s ?p ?lit .
 
                graph ?g {{
-                ?s ?p ?lit .
+                ?s schema:identifier ?id .
                 OPTIONAL {{ ?s schema:name ?title .   }}
                 OPTIONAL {{ ?s schema:url ?url .   }}
                 OPTIONAL {{ ?s schema:description ?abstract .    }}
                 OPTIONAL {{ ?s schema:spatialCoverage/schema:geo/schema:box ?spatial_coverage . }}
                 OPTIONAL {{ ?s schema:temporalCoverage ?temporal_coverage . }}
-                OPTIONAL {{ ?s schema:identifier ?id . }}
                 OPTIONAL {{ ?s schema:sameAs ?sameAs . }}
               }}
             }}
+            GROUP BY ?id
             ORDER BY DESC(?score)
             OFFSET 0
             LIMIT {self.PAGE_SIZE}
