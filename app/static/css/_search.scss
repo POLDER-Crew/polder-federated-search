@@ -2,15 +2,24 @@
 
 /* Search results */
 .results__container {
-    margin-top: 2rem;
+    background-color: constants.$soft-white;
+    margin: 2rem -1rem;
+}
+
+.results__number {
+    font-weight: 800;
+    padding: 2rem 0 0 1rem;
 }
 
 .results {
+    background-color: constants.$soft-white;
     list-style:  none;
+    padding: 0 2rem;
 }
 
 .result {
     background-color: constants.$white;
+    border-bottom: 2px solid constants.$background;
     padding: 0.5rem;
     margin: 1rem 0;
 }
@@ -21,4 +30,14 @@
 
 .abstract--full {
     display: none;
+}
+
+.result__title {
+    color: constants.$light-blue;
+}
+
+.result__url {
+    color: constants.$dark-blue;
+    text-decoration: none;
+    font-weight: 800;
 }
