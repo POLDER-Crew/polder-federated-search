@@ -256,6 +256,23 @@ class TestSearchResult(unittest.TestCase):
         with self.assertRaises(ValueError):
             test_obj = search.SearchResult(id='some id')
 
+    def test_init_doi(self):
+        test_obj = search.SearchResult(id='doi:test_test', score=4)
+        self.assertEqual(test_obj.id, 'doi:test_test')
+        self.assertEqual(test_obj.doi, 'test_test')
+        self.assertEqual(test_obj.urls, ['http://doi.org/test_test'])
+
+    def test_doi_urls(self):
+        test_obj = search.SearchResult(id='doi:test_test', score=4, urls=['http://test1'])
+        self.assertEqual(test_obj.id, 'doi:test_test')
+        self.assertEqual(test_obj.doi, 'test_test')
+        self.assertEqual(test_obj.urls, ['http://doi.org/test_test', 'http://test1'])
+
+        test_obj_2 = search.SearchResult(id='doi:test2_test2', score=4, urls=['http://test1', 'http://doi.org/test2_test2'])
+        self.assertEqual(test_obj_2.id, 'doi:test2_test2')
+        self.assertEqual(test_obj_2.doi, 'test2_test2')
+        self.assertListEqual(test_obj_2.urls, ['http://doi.org/test2_test2', 'http://test1'])
+
     def test_init_defaults(self):
         test_obj = search.SearchResult(id='test test test', score=10.5)
         self.assertEqual(test_obj.title, None)

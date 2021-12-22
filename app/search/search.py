@@ -18,11 +18,22 @@ class SearchResult:
         self.urls = kwargs.pop('urls', [])
         self.abstract = kwargs.pop('abstract', "")
         self.id = kwargs.pop('id')
+        # May or may not be the same as the ID
+        self.doi = kwargs.pop('doi', None)
         self.spatial_coverage = kwargs.pop('spatial_coverage', None)
         self.temporal_coverage = kwargs.pop('temporal_coverage', None)
         self.score = float(kwargs.pop('score'))
         # Good for debugging
         self.source = kwargs.pop('source', 'Anonymous')
+
+        # If we have a DOI somewhere, use it as much as possible
+        if self.id.startswith('doi:'):
+            self.doi = self.id.lstrip('doi:')
+
+        if self.doi:
+            self.urls.append('http://doi.org/' + self.doi)
+            self.urls = list(set(self.urls))
+
 
     """ Methods to make these sortable """
 
