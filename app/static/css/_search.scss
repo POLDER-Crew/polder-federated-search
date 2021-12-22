@@ -7,7 +7,7 @@
 }
 
 .results__number {
-    font-weight: 800;
+    font-weight: constants.$font-weight-bold;
     padding: 2rem 0 0 1rem;
 }
 
@@ -39,5 +39,9 @@
 .result__url {
     color: constants.$dark-blue;
     text-decoration: none;
-    font-weight: 800;
+    font-weight: constants.$font-weight-bold;
+}
+
+.result__keywords {
+    font-weight: constants.$font-weight-light;
 }
