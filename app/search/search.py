@@ -29,13 +29,12 @@ class SearchResult:
         self.source = kwargs.pop('source', 'Anonymous')
 
         # If we have a DOI somewhere, use it as much as possible
-        if self.id.startswith('doi:'):
+        if not self.doi and self.id.startswith('doi:'):
             self.doi = self.id.lstrip('doi:')
 
         if self.doi:
             self.urls.append('http://doi.org/' + self.doi)
             self.urls = list(set(self.urls))
-
 
     """ Methods to make these sortable """
 
@@ -60,6 +59,7 @@ class SearchResult:
         return self.__hash__ != other.__hash__
 
     """ So debugging is a bit easier """
+
     def __str__(self):
         return f"Search Result from {self.source}: {self.id} with score {self.score}"
 

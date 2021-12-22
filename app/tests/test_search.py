@@ -80,20 +80,20 @@ class TestGleanerSearch(unittest.TestCase):
         # SPARQLWrapper, but that method returns an object that we immediately call convert() on,
         # and the results of that are what we work with.
         result1 = {
-                    's': {'type': 'bnode', 'value': 'thing1'},
-                    'score': {'datatype': 'http://www.w3.org/2001/XMLSchema#double', 'type': 'literal', 'value': '0.01953125'},
-                    'abstract': {'type': 'literal', 'value': "Here is a thing"},
-                    'title': {'type': 'literal', 'value': 'thing'},
-                    'id': {'type': 'literal', 'value': 'urn:uuid:asdfasdfasdf'}
-                }
+            's': {'type': 'bnode', 'value': 'thing1'},
+            'score': {'datatype': 'http://www.w3.org/2001/XMLSchema#double', 'type': 'literal', 'value': '0.01953125'},
+            'abstract': {'type': 'literal', 'value': "Here is a thing"},
+            'title': {'type': 'literal', 'value': 'thing'},
+            'id': {'type': 'literal', 'value': 'urn:uuid:asdfasdfasdf'}
+        }
         result2 = {
-                    's': {'type': 'bnode', 'value': 'thing2'},
-                    'score': {'datatype': 'http://www.w3.org/2001/XMLSchema#double', 'type': 'literal', 'value': '0.01953124'},
-                    'abstract': {'type': 'literal', 'value': "Here is a less relevant thing"},
-                    'title': {'type': 'literal', 'value': 'thing the second'},
-                    'id': {'type': 'literal', 'value': 'urn:uuid:some long thing'}
+            's': {'type': 'bnode', 'value': 'thing2'},
+            'score': {'datatype': 'http://www.w3.org/2001/XMLSchema#double', 'type': 'literal', 'value': '0.01953124'},
+            'abstract': {'type': 'literal', 'value': "Here is a less relevant thing"},
+            'title': {'type': 'literal', 'value': 'thing the second'},
+            'id': {'type': 'literal', 'value': 'urn:uuid:some long thing'}
 
-                }
+        }
         mock_convert = Mock(return_value={"results": {
             "bindings": [result1, result2]
         }})
@@ -263,15 +263,28 @@ class TestSearchResult(unittest.TestCase):
         self.assertEqual(test_obj.urls, ['http://doi.org/test_test'])
 
     def test_doi_urls(self):
-        test_obj = search.SearchResult(id='doi:test_test', score=4, urls=['http://test1'])
+        test_obj = search.SearchResult(
+            id='doi:test_test', score=4, urls=['http://test1'])
         self.assertEqual(test_obj.id, 'doi:test_test')
         self.assertEqual(test_obj.doi, 'test_test')
-        self.assertEqual(test_obj.urls, ['http://doi.org/test_test', 'http://test1'])
+        test_obj.urls.sort()
+        self.assertEqual(
+            test_obj.urls, ['http://doi.org/test_test', 'http://test1'])
 
-        test_obj_2 = search.SearchResult(id='doi:test2_test2', score=4, urls=['http://test1', 'http://doi.org/test2_test2'])
+        test_obj_2 = search.SearchResult(id='doi:test2_test2', score=4, urls=[
+                                         'http://test1', 'http://doi.org/test2_test2'])
         self.assertEqual(test_obj_2.id, 'doi:test2_test2')
         self.assertEqual(test_obj_2.doi, 'test2_test2')
-        self.assertListEqual(test_obj_2.urls, ['http://doi.org/test2_test2', 'http://test1'])
+        test_obj_2.urls.sort()
+        self.assertListEqual(
+            test_obj_2.urls, ['http://doi.org/test2_test2', 'http://test1'])
+
+        test_existing_doi = search.SearchResult(
+            id='doi:test3', score=1, doi='existing_value')
+        self.assertEqual(test_existing_doi.id, 'doi:test3')
+        self.assertEqual(test_existing_doi.doi, 'existing_value')
+        self.assertListEqual(test_existing_doi.urls, [
+            'http://doi.org/existing_value'])
 
     def test_init_defaults(self):
         test_obj = search.SearchResult(id='test test test', score=10.5)
