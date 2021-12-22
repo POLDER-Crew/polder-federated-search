@@ -11,15 +11,11 @@ def home():
     return render_template('index.html')
 
 def _do_text_search(text, template):
-    dataone = SolrDirectSearch().text_search(q=text)
-    gleaner = GleanerSearch(endpoint_url=app.config['GLEANER_ENDPOINT_URL']).text_search(q=text)
+    dataone = SolrDirectSearch().text_search(text)
+    gleaner = GleanerSearch(endpoint_url=app.config['GLEANER_ENDPOINT_URL']).text_search(text)
 
     results = SearchResultSet.collate(dataone, gleaner)
     return render_template(template, result_set=results)
-    # todo: I have no idea how SPARQL / Blazegraph relevance scores and
-    # Solr relevance scores
-    # compare to each other, so some calibration will be needed.
-
 
 @app.route('/search')
 # Redirect to a stand-alone page to display results

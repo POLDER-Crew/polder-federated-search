@@ -1,6 +1,18 @@
 @use 'constants';
 
 /* Nav */
+nav {
+    background-color: constants.$soft-white;
+    border-bottom: 2px solid constants.$light-blue;
+    margin: 0 -1rem 1rem -1rem;
+    padding: 1rem;
+}
+
+h1 {
+    color: constants.$dark-blue;
+    font-size: 2rem;
+}
+
 .nav__link {
     color: constants.$soft-black;
     text-decoration: none;
