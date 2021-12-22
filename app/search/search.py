@@ -17,6 +17,8 @@ class SearchResult:
         self.title = kwargs.pop('title', None)
         self.urls = kwargs.pop('urls', [])
         self.abstract = kwargs.pop('abstract', "")
+        self.keywords = kwargs.pop('keywords', [])
+        self.origin = kwargs.pop('origin', [])
         self.id = kwargs.pop('id')
         # May or may not be the same as the ID
         self.doi = kwargs.pop('doi', None)

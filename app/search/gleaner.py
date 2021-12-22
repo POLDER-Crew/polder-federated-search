@@ -21,6 +21,7 @@ class GleanerSearch(SearcherBase):
             (SAMPLE(?title) AS ?title)
             (SAMPLE(?url) AS ?url)
             (SAMPLE(?sameAs) AS ?sameAs)
+            (SAMPLE(?keywords) AS ?keywords)
             (SAMPLE(?spatial_coverage) AS ?spatial_coverage)
             (SAMPLE(?temporal_coverage) AS ?temporal_coverage)
             {{
@@ -46,6 +47,7 @@ class GleanerSearch(SearcherBase):
                 OPTIONAL {{ ?s schema:spatialCoverage/schema:geo/schema:box ?spatial_coverage . }}
                 OPTIONAL {{ ?s schema:temporalCoverage ?temporal_coverage . }}
                 OPTIONAL {{ ?s schema:sameAs ?sameAs . }}
+                OPTIONAL {{ ?s schema:keywords ?keywords . }}
               }}
             }}
             GROUP BY ?id

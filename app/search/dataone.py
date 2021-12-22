@@ -43,6 +43,8 @@ class SolrDirectSearch(SearcherBase):
                     # westBoundCoord and southBoundCoord in this data source
                     # But there is also a named place available, which is what is being used here
                     spatial_coverage=result.pop('placeKey', None),
+                    keywords=result.pop('keywords', []),
+                    origin=result.pop('origin', []),
                     # todo: temporal coverage
                     urls=result.pop('webUrl', []), # todo: not sure if webUrl is the right thing to use here
                     source="DataONE"
