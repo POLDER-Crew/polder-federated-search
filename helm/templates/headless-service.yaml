@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: headless-svc
+  labels:
+    run: headless-svc
+spec:
+  type: {{ .Values.headless_service.type }}
+  ports:
+    - port: {{ .Values.headless_service.port }}
+      targetPort: {{ .Values.headless_service.port }}
+      protocol: TCP
+  selector:
+    {{- include "gleaner.selectorLabels" . | nindent 4 }}
