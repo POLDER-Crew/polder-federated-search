@@ -29,7 +29,7 @@ data:
       mode: full  # full || diff:  If diff compare what we have currently in gleaner to sitemap, get only new, delete missing
       threads: 5
       delay:  # milliseconds (1000 = 1 second) to delay between calls (will FORCE threads to 1)
-      headless: http://headless:{{ .Values.headless_service.port }}
+      headless: http://headless-svc:{{ .Values.headless_service.port }}
     millers:
       graph: true
     sources:
