@@ -37,7 +37,7 @@ spec:
           readOnly: false
       containers:
       - name: triplestore
-        image: nawer/blazegraph
+        image: nawer/blazegraph:2.1.1
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         volumeMounts:
         - mountPath: /var/lib/blazegraph
@@ -52,7 +52,7 @@ spec:
         - name: JAVA_OPTS
           value: {{ .Values.javaOpts }}
       - name: s3system
-        image: minio/minio:latest
+        image: minio/minio:2021
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         volumeMounts:
         - mountPath: /data
