@@ -71,17 +71,14 @@ spec:
             secretKeyRef:
               key:  minioSecretKey
               name: {{ .Release.Name }}-secrets
-        args: ["server", "/data", "--console-address", ":{{ .Values.s3system_service.ui_port }}"]
-      # When we want to index repos that require a headless browser,
-      # we can turn this on.
-      # - name: headless
-      #   image: chromedp/headless-shell:latest
-      #   imagePullPolicy: {{ .Values.image.pullPolicy }}
-      #   ports:
-      #   - containerPort: 9222
-      #   env:
-      #   - name: SERVICE_PORTS
-      #     value: "9222"
+      - name: headless
+        image: chromedp/headless-shell:97.0.4692.71
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.headless_service.port }}
+        env:
+        - name: SERVICE_PORTS
+          value: "{{ .Values.headless_service.port }}"
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -29,7 +29,7 @@ data:
       mode: full  # full || diff:  If diff compare what we have currently in gleaner to sitemap, get only new, delete missing
       threads: 5
       delay:  # milliseconds (1000 = 1 second) to delay between calls (will FORCE threads to 1)
-      headless: http://headless:9222  # URL for headless see docs/headless
+      headless: http://headless:{{ .Values.headless_service.port }}
     millers:
       graph: true
     sources:
@@ -42,11 +42,11 @@ data:
       active: false
     - name: usap-dc
       type: sitemap
-      headless: false
+      headless: true
       url: https://www.usap-dc.org/view/dataset/sitemap.xml
       properName: U.S. Antarctic Program Data Center
       domain: https://www.usap-dc.org
-      active: false
+      active: true
     - name: npdc
       type: sitemap
       headless: false
@@ -56,8 +56,8 @@ data:
       active: true
     - name: gem
       type: sitemap
-      headless: false
+      headless: true
       url: https://data.g-e-m.dk/sitemap
       properName: Greenland Ecosystem Monitoring Database
       domain: https://data.g-e-m.dk
-      active: false
+      active: true
