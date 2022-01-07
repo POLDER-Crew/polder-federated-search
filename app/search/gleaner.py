@@ -24,22 +24,17 @@ class GleanerSearch(SearcherBase):
             (SAMPLE(?spatial_coverage) AS ?spatial_coverage)
             (SAMPLE(?temporal_coverage) AS ?temporal_coverage)
             {{
-               {{
-                   BIND(schema:Dataset AS ?type)
-                   ?s a ?o
-                   FILTER(?o=?type)
-                }} UNION {{
-                   BIND(sschema:Dataset AS ?stype)
-                   ?s a ?o
-                   FILTER(?o=?stype)
-                }}
+               VALUES ?type {{ schema:Dataset sschema:Dataset }}
+               ?s a ?type .
                ?lit bds:search "{text}" .
                ?lit bds:matchAllTerms "false" .
                ?lit bds:relevance ?score .
                ?s ?p ?lit .
 
+
                graph ?g {{
-                ?s schema:identifier ?id .
+                VALUES ?ids {{ schema:identifier sschema:identifier }}
+                ?s ?ids ?id .
                 OPTIONAL {{ ?s schema:name ?title .   }}
                 OPTIONAL {{ ?s schema:url ?url .   }}
                 OPTIONAL {{ ?s schema:description ?abstract .    }}
@@ -47,7 +42,16 @@ class GleanerSearch(SearcherBase):
                 OPTIONAL {{ ?s schema:temporalCoverage ?temporal_coverage . }}
                 OPTIONAL {{ ?s schema:sameAs ?sameAs . }}
                 OPTIONAL {{ ?s schema:keywords ?keywords . }}
+
+                OPTIONAL {{ ?s sschema:name ?title .   }}
+                OPTIONAL {{ ?s sschema:url ?url .   }}
+                OPTIONAL {{ ?s sschema:description ?abstract .    }}
+                OPTIONAL {{ ?s sschema:spatialCoverage/sschema:geo/sschema:box ?spatial_coverage . }}
+                OPTIONAL {{ ?s sschema:temporalCoverage ?temporal_coverage . }}
+                OPTIONAL {{ ?s sschema:sameAs ?sameAs . }}
+                OPTIONAL {{ ?s sschema:keywords ?keywords . }}
               }}
+
             }}
             GROUP BY ?id
             ORDER BY DESC(?score)
