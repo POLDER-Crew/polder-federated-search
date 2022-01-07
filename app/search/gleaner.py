@@ -21,34 +21,35 @@ class GleanerSearch(SearcherBase):
             (SAMPLE(?url) AS ?url)
             (SAMPLE(?sameAs) AS ?sameAs)
             (SAMPLE(?keywords) AS ?keywords)
-            (SAMPLE(?spatial_coverage) AS ?spatial_coverage)
             (SAMPLE(?temporal_coverage) AS ?temporal_coverage)
             {{
                VALUES ?type {{ schema:Dataset sschema:Dataset }}
-               ?s a ?type .
+               VALUES ?ids {{ schema:identifier sschema:identifier }}
+
+               ?s ?a ?type .
                ?lit bds:search "{text}" .
                ?lit bds:matchAllTerms "false" .
                ?lit bds:relevance ?score .
                ?s ?p ?lit .
 
-
                graph ?g {{
-                VALUES ?ids {{ schema:identifier sschema:identifier }}
                 ?s ?ids ?id .
                 OPTIONAL {{ ?s schema:name ?title .   }}
-                OPTIONAL {{ ?s schema:url ?url .   }}
-                OPTIONAL {{ ?s schema:description ?abstract .    }}
-                OPTIONAL {{ ?s schema:spatialCoverage/schema:geo/schema:box ?spatial_coverage . }}
-                OPTIONAL {{ ?s schema:temporalCoverage ?temporal_coverage . }}
-                OPTIONAL {{ ?s schema:sameAs ?sameAs . }}
-                OPTIONAL {{ ?s schema:keywords ?keywords . }}
-
                 OPTIONAL {{ ?s sschema:name ?title .   }}
+
+                OPTIONAL {{ ?s schema:url ?url .   }}
                 OPTIONAL {{ ?s sschema:url ?url .   }}
+
+                OPTIONAL {{ ?s schema:description ?abstract .    }}
                 OPTIONAL {{ ?s sschema:description ?abstract .    }}
-                OPTIONAL {{ ?s sschema:spatialCoverage/sschema:geo/sschema:box ?spatial_coverage . }}
+
+                OPTIONAL {{ ?s schema:temporalCoverage ?temporal_coverage . }}
                 OPTIONAL {{ ?s sschema:temporalCoverage ?temporal_coverage . }}
+
+                OPTIONAL {{ ?s schema:sameAs ?sameAs . }}
                 OPTIONAL {{ ?s sschema:sameAs ?sameAs . }}
+
+                OPTIONAL {{ ?s schema:keywords ?keywords . }}
                 OPTIONAL {{ ?s sschema:keywords ?keywords . }}
               }}
 
