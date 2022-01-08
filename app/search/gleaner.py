@@ -14,47 +14,40 @@ class GleanerSearch(SearcherBase):
             PREFIX sschema: <https://schema.org/>
             PREFIX schema: <http://schema.org/>
 
-            SELECT ?id
-            (SAMPLE(?score) AS ?score)
-            (SAMPLE(?abstract) AS ?abstract)
-            (SAMPLE(?title) AS ?title)
-            (SAMPLE(?url) AS ?url)
-            (SAMPLE(?sameAs) AS ?sameAs)
-            (SAMPLE(?keywords) AS ?keywords)
-            (SAMPLE(?temporal_coverage) AS ?temporal_coverage)
+            SELECT DISTINCT ?score ?lit ?id ?url ?sameAs ?title ?abstract ?keywords ?temporal_coverage
+
             {{
-               VALUES ?type {{ schema:Dataset sschema:Dataset }}
-               VALUES ?ids {{ schema:identifier sschema:identifier }}
+              VALUES ?type {{ schema:Dataset sschema:Dataset }}
+              VALUES ?ids {{ schema:identifier sschema:identifier }}
+              VALUES ?urls {{ sschema:url schema:url }}
+              VALUES ?titles {{ sschema:name schema:name }}
+              VALUES ?abstracts {{ sschema:description schema:description }}
+              VALUES ?keys {{ sschema:keywords schema:keywords }}
+              VALUES ?sameAsVals {{ sschema:sameAs schema:sameAs }}
+              VALUES ?temporal {{ sschema:temporalCoverage schema:temporalCoverage }}
 
-               ?s ?a ?type .
-               ?lit bds:search "{text}" .
-               ?lit bds:matchAllTerms "false" .
-               ?lit bds:relevance ?score .
-               ?s ?p ?lit .
+              ?s a ?type .
 
-               graph ?g {{
+              ?lit bds:search "Greenland" .
+              ?lit bds:matchAllTerms "false" .
+              ?lit bds:relevance ?score .
+              ?s ?p ?lit .
+
+              graph ?g {{
                 ?s ?ids ?id .
-                OPTIONAL {{ ?s schema:name ?title .   }}
-                OPTIONAL {{ ?s sschema:name ?title .   }}
-
-                OPTIONAL {{ ?s schema:url ?url .   }}
-                OPTIONAL {{ ?s sschema:url ?url .   }}
-
-                OPTIONAL {{ ?s schema:description ?abstract .    }}
-                OPTIONAL {{ ?s sschema:description ?abstract .    }}
-
-                OPTIONAL {{ ?s schema:temporalCoverage ?temporal_coverage . }}
-                OPTIONAL {{ ?s sschema:temporalCoverage ?temporal_coverage . }}
-
-                OPTIONAL {{ ?s schema:sameAs ?sameAs . }}
-                OPTIONAL {{ ?s sschema:sameAs ?sameAs . }}
-
-                OPTIONAL {{ ?s schema:keywords ?keywords . }}
-                OPTIONAL {{ ?s sschema:keywords ?keywords . }}
+                ?s ?p ?lit .
+                ?s ?urls ?url .
+                ?s ?titles ?title .
+                Optional {{
+                    ?s ?abstracts ?abstract .
+                    ?s ?keys ?keywords .
+                    ?s ?sameAsVals ?sameAs .
+                    ?s ?temporal ?temporal_coverage .
+                }}
               }}
 
             }}
-            GROUP BY ?id
+
             ORDER BY DESC(?score)
             OFFSET 0
             LIMIT {self.PAGE_SIZE}
