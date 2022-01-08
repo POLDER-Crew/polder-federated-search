@@ -33,12 +33,12 @@ class GleanerSearch(SearcherBase):
               ?lit bds:relevance ?score .
               ?s ?p ?lit .
 
-              graph ?g {{
+              GRAPH ?g {{
                 ?s ?ids ?id .
                 ?s ?p ?lit .
                 ?s ?urls ?url .
                 ?s ?titles ?title .
-                Optional {{
+                OPTIONAL {{
                     ?s ?abstracts ?abstract .
                     ?s ?keys ?keywords .
                     ?s ?sameAsVals ?sameAs .
