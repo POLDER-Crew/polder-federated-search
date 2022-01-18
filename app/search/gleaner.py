@@ -11,47 +11,52 @@ class GleanerSearch(SearcherBase):
     def text_search(self, text=None):
         self.sparql.setQuery(
             f"""
-            PREFIX sschema: <https://schema.org/>
-            PREFIX schema: <http://schema.org/>
+                PREFIX sschema: <https://schema.org/>
+                PREFIX schema: <http://schema.org/>
 
-            SELECT ?id
-            (SAMPLE(?score) AS ?score)
-            (SAMPLE(?abstract) AS ?abstract)
-            (SAMPLE(?title) AS ?title)
-            (SAMPLE(?url) AS ?url)
-            (SAMPLE(?sameAs) AS ?sameAs)
-            (SAMPLE(?keywords) AS ?keywords)
-            (SAMPLE(?spatial_coverage) AS ?spatial_coverage)
-            (SAMPLE(?temporal_coverage) AS ?temporal_coverage)
-            {{
-               {{
-                   BIND(schema:Dataset AS ?type)
-                   ?s a ?o
-                   FILTER(?o=?type)
-                }} UNION {{
-                   BIND(sschema:Dataset AS ?stype)
-                   ?s a ?o
-                   FILTER(?o=?stype)
+                SELECT
+                    (MAX(?relevance) AS ?score)
+                    ?id
+                    ?url
+                    ?sameAs
+                    ?title
+                    ?abstract
+                    (GROUP_CONCAT(?keyword ; separator=", ") as ?keywords)
+                    (GROUP_CONCAT(?temporal_cov ; separator=", ") as ?temporal_coverage)
+
+                {{
+                  VALUES ?type {{ schema:Dataset sschema:Dataset }}
+                  VALUES ?ids {{ schema:identifier sschema:identifier }}
+                  VALUES ?urls {{ sschema:url schema:url }}
+                  VALUES ?titles {{ sschema:name schema:name }}
+                  VALUES ?abstracts {{ sschema:description schema:description }}
+                  VALUES ?keys {{ sschema:keywords schema:keywords }}
+                  VALUES ?sameAsVals {{ sschema:sameAs schema:sameAs }}
+                  VALUES ?temporal {{ sschema:temporalCoverage schema:temporalCoverage }}
+
+                  ?s a ?type .
+
+                  ?lit bds:search "{text}" .
+                  ?lit bds:matchAllTerms "false" .
+                  ?lit bds:relevance ?relevance .
+                  ?s ?p ?lit .
+
+                  graph ?g {{
+                    ?s ?ids ?id .
+                    ?s ?urls ?url .
+                    ?s ?titles ?title .
+                    Optional {{
+                        ?s ?abstracts ?abstract .
+                        ?s ?keys ?keyword .
+                        ?s ?sameAsVals ?sameAs .
+                        ?s ?temporal ?temporal_cov .
+                    }}
+                  }}
+
                 }}
-               ?lit bds:search "{text}" .
-               ?lit bds:matchAllTerms "false" .
-               ?lit bds:relevance ?score .
-               ?s ?p ?lit .
-
-               graph ?g {{
-                ?s schema:identifier ?id .
-                OPTIONAL {{ ?s schema:name ?title .   }}
-                OPTIONAL {{ ?s schema:url ?url .   }}
-                OPTIONAL {{ ?s schema:description ?abstract .    }}
-                OPTIONAL {{ ?s schema:spatialCoverage/schema:geo/schema:box ?spatial_coverage . }}
-                OPTIONAL {{ ?s schema:temporalCoverage ?temporal_coverage . }}
-                OPTIONAL {{ ?s schema:sameAs ?sameAs . }}
-                OPTIONAL {{ ?s schema:keywords ?keywords . }}
-              }}
-            }}
-            GROUP BY ?id
-            ORDER BY DESC(?score)
-            OFFSET 0
+                GROUP BY ?id ?url ?sameAs ?title ?abstract
+                ORDER BY DESC(?score)
+                OFFSET 0
             LIMIT {self.PAGE_SIZE}
         """
         )
@@ -70,6 +75,13 @@ class GleanerSearch(SearcherBase):
         result = {}
         for k, v in sparql_result_dict.items():
             result[k] = v['value']
-        result['urls'] = [result.pop('url', None), result.pop('sameAs', None)]
+        result['urls'] = []
+        url = result.pop('url', None)
+        sameAs = result.pop('sameAs', None)
+        if url is not None:
+            result['urls'].append(url)
+        if sameAs is not None:
+            result['urls'].append(sameAs)
+        result['keywords'] = result['keywords'].split(',')
         result['source'] = "Gleaner"
         return SearchResult(**result)
