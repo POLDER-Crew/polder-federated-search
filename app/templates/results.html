@@ -12,7 +12,9 @@
     </h4>
     {% for url in result.urls %}
         {% if loop.first %}Get this data from:{% endif %}
-        <a href="{{ url }}" class="result__url" target="_blank" rel="noopener">{{ url.rpartition("//")[-1].partition("/")[0] }}</a>
+          {% if url %}
+            <a href="{{ url }}" class="result__url" target="_blank" rel="noopener">{{ url.rpartition("//")[-1].partition("/")[0] }}</a>
+          {% endif %}
         {% if not loop.last %}, {% endif %}
     {% endfor %}
     <p class="abstract abstract--truncated" aria-expanded="false">
