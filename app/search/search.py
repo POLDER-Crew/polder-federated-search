@@ -29,7 +29,7 @@ class SearchResult:
         self.source = kwargs.pop('source', 'Anonymous')
 
         # If we have a DOI somewhere, use it as much as possible
-        if not self.doi and self.id.startswith('doi:'):
+        if not self.doi and self.id and self.id.startswith('doi:'):
             self.doi = self.id
 
         self.urls = list(set(self.urls))

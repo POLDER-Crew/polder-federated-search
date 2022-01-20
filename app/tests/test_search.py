@@ -68,6 +68,48 @@ class TestSolrDirectSearch(unittest.TestCase):
             unquote(m.request_history[0].url)
         )
 
+    def test_convert_full_result(self):
+        self.search.max_score = 10
+
+        test_result = {
+            'webUrl': ['url1', 'url2', 'url3'],
+            'dataUrl': 'url4',
+            'contentUrl': { 'value': ['url5', 'url6', 'url7']},
+            'seriesId': 'doi:test',
+            'score': 5,
+            'title': 'A title',
+            'id': 'An id',
+            'abstract': 'An abstract',
+            'placeKey': 'a location',
+            'keywords': ['keyword1', 'keyword2', 'keyword3'],
+            'origin': 'an origin',
+        }
+        result = self.search.convert_result(test_result)
+        result.urls.sort()
+        result.keywords.sort()
+        self.assertEqual(result.score, 0.5)
+        self.assertEqual(result.urls, ['url1', 'url2', 'url3', 'url4', 'url5', 'url6', 'url7'])
+        self.assertEqual(result.title, 'A title'),
+        self.assertEqual(result.id, 'An id')
+        self.assertEqual(result.abstract, 'An abstract')
+        self.assertEqual(result.spatial_coverage, 'a location')
+        self.assertEqual(result.keywords, ['keyword1', 'keyword2', 'keyword3'])
+        self.assertEqual(result.doi, 'doi:test')
+        self.assertEqual(result.origin, 'an origin')
+
+    def test_convert_sparse_result(self):
+        self.search.max_score = 10
+
+        test_result = {
+            'score': 4,
+            'seriesId': 'test'
+        }
+        result = self.search.convert_result(test_result)
+        self.assertEqual(result.score, 0.4)
+        self.assertEqual(result.doi, None)
+        self.assertEqual(result.source, 'DataONE')
+        self.assertEqual(result.id, None)
+
 
 class TestGleanerSearch(unittest.TestCase):
     def setUp(self):
@@ -147,12 +189,14 @@ class TestGleanerSearch(unittest.TestCase):
             'sameAs': {'type': 'literal', 'value': 'url2'},
             'spatial_coverage': {'type': 'literal', 'value': '-70.5397 -10.4515 -57.4443 0.018'},
             'temporal_coverage': {'type': 'literal', 'value': '2015-05-27/2015-06-20'},
-            'id': {'type': 'literal', 'value': 'urn:uuid:696f9141-4e1a-5270-8c94-b0aabe0bbee7'}
+            'id': {'type': 'literal', 'value': 'urn:uuid:696f9141-4e1a-5270-8c94-b0aabe0bbee7'},
+            'keywords': {'type': 'literal', 'value': 'keyword1,keyword2,keyword3'}
         }
         result = self.search.convert_result(test_result)
         result.urls.sort()
         self.assertIsInstance(result, search.SearchResult)
         self.assertEqual(result.urls, ['url1', 'url2'])
+        self.assertEqual(result.keywords, ['keyword1', 'keyword2', 'keyword3'])
         self.assertEqual(result.source, "Gleaner")
 
 
