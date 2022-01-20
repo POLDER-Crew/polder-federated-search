@@ -30,6 +30,17 @@ class SolrDirectSearch(SearcherBase):
         return result_set
 
     def convert_result(self, result):
+        urls = []
+        dataUrl = result.pop('dataUrl', None)
+        if dataUrl:
+            urls.append(dataUrl)
+        webUrl = result.pop('webUrl', [])
+        if webUrl:
+            urls.extend(webUrl)
+        contentUrl = result.pop('contentUrl', None)
+        if contentUrl:
+            urls.extend(contentUrl['value'])
+
         return SearchResult(
                     # Because Blazegraph uses normalized query scores, we can approximate search
                     # ranking by normalizing these as well. However, this does nothing for the
@@ -43,10 +54,11 @@ class SolrDirectSearch(SearcherBase):
                     # westBoundCoord and southBoundCoord in this data source
                     # But there is also a named place available, which is what is being used here
                     spatial_coverage=result.pop('placeKey', None),
+                    doi=result.pop('seriesId', None),
                     keywords=result.pop('keywords', []),
                     origin=result.pop('origin', []),
                     # todo: temporal coverage
-                    urls=result.pop('webUrl', []), # todo: not sure if webUrl is the right thing to use here
+                    urls=urls,
                     source="DataONE"
                 )
 
