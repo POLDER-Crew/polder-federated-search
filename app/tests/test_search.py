@@ -150,6 +150,7 @@ class TestGleanerSearch(unittest.TestCase):
             'id': {'type': 'literal', 'value': 'urn:uuid:696f9141-4e1a-5270-8c94-b0aabe0bbee7'}
         }
         result = self.search.convert_result(test_result)
+        result.urls.sort()
         self.assertIsInstance(result, search.SearchResult)
         self.assertEqual(result.urls, ['url1', 'url2'])
         self.assertEqual(result.source, "Gleaner")
@@ -238,6 +239,7 @@ class TestSearchResult(unittest.TestCase):
             'score': 42
         }
         test_obj = search.SearchResult(**kwargs_dict)
+        test_obj.urls.sort()
         self.assertEqual(test_obj.title, kwargs_dict['title'])
         self.assertEqual(test_obj.urls, kwargs_dict['urls'])
         self.assertEqual(test_obj.abstract, kwargs_dict['abstract'])
@@ -259,22 +261,22 @@ class TestSearchResult(unittest.TestCase):
     def test_init_doi(self):
         test_obj = search.SearchResult(id='doi:test_test', score=4)
         self.assertEqual(test_obj.id, 'doi:test_test')
-        self.assertEqual(test_obj.doi, 'test_test')
-        self.assertEqual(test_obj.urls, ['http://doi.org/test_test'])
+        self.assertEqual(test_obj.doi, 'doi:test_test')
+        self.assertEqual(test_obj.urls, [])
 
     def test_doi_urls(self):
         test_obj = search.SearchResult(
             id='doi:test_test', score=4, urls=['http://test1'])
         self.assertEqual(test_obj.id, 'doi:test_test')
-        self.assertEqual(test_obj.doi, 'test_test')
+        self.assertEqual(test_obj.doi, 'doi:test_test')
         test_obj.urls.sort()
         self.assertEqual(
-            test_obj.urls, ['http://doi.org/test_test', 'http://test1'])
+            test_obj.urls, ['http://test1'])
 
         test_obj_2 = search.SearchResult(id='doi:test2_test2', score=4, urls=[
                                          'http://test1', 'http://doi.org/test2_test2'])
         self.assertEqual(test_obj_2.id, 'doi:test2_test2')
-        self.assertEqual(test_obj_2.doi, 'test2_test2')
+        self.assertEqual(test_obj_2.doi, 'doi:test2_test2')
         test_obj_2.urls.sort()
         self.assertListEqual(
             test_obj_2.urls, ['http://doi.org/test2_test2', 'http://test1'])
@@ -283,8 +285,7 @@ class TestSearchResult(unittest.TestCase):
             id='doi:test3', score=1, doi='existing_value')
         self.assertEqual(test_existing_doi.id, 'doi:test3')
         self.assertEqual(test_existing_doi.doi, 'existing_value')
-        self.assertListEqual(test_existing_doi.urls, [
-            'http://doi.org/existing_value'])
+        self.assertListEqual(test_existing_doi.urls, [])
 
     def test_init_defaults(self):
         test_obj = search.SearchResult(id='test test test', score=10.5)
