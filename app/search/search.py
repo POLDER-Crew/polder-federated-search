@@ -28,11 +28,15 @@ class SearchResult:
         # Good for debugging
         self.source = kwargs.pop('source', 'Anonymous')
 
-        # If we have a DOI somewhere, use it as much as possible
-        if not self.doi and self.id and self.id.startswith('doi:'):
-            self.doi = self.id
-
         self.urls = list(set(self.urls))
+
+        # If we have a DOI somewhere, use it as much as possible
+        if not self.doi:
+            if self.id and self.id.startswith('doi:'):
+                self.doi = self.id
+            elif any((match := url).startswith('http://dx.doi.org/') for url in self.urls):
+                self.doi = 'doi:' + match.lstrip('http://dx.doi.org/')
+
 
     """ Methods to make these sortable """
 
