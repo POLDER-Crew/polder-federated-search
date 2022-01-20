@@ -30,11 +30,9 @@ class SearchResult:
 
         # If we have a DOI somewhere, use it as much as possible
         if not self.doi and self.id.startswith('doi:'):
-            self.doi = self.id.lstrip('doi:')
+            self.doi = self.id
 
-        if self.doi:
-            self.urls.append('http://doi.org/' + self.doi)
-            self.urls = list(set(self.urls))
+        self.urls = list(set(self.urls))
 
     """ Methods to make these sortable """
 
