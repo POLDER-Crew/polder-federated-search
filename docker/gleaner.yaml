@@ -40,13 +40,6 @@ sources:
   properName: U.S. Antarctic Program Data Center
   domain: https://www.usap-dc.org
   active: true
-- name: npdc
-  type: sitemap
-  headless: false
-  url: https://npdc.nl/sitemap/dataset.xml
-  properName:  Netherlands Polar Data Center
-  domain: https://npdc.nl
-  active: true
 - name: gem
   type: sitemap
   headless: true

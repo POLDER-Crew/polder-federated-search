@@ -82,6 +82,7 @@ class GleanerSearch(SearcherBase):
             result['urls'].append(url)
         if sameAs is not None:
             result['urls'].append(sameAs)
-        result['keywords'] = result['keywords'].split(',')
+        keywords = result.pop('keywords', '')
+        result['keywords'] = keywords.split(',')
         result['source'] = "Gleaner"
         return SearchResult(**result)

@@ -24,6 +24,17 @@
     margin: 1rem 0;
 }
 
+.doi {
+    padding: 0.25rem;
+    text-align: right;
+}
+
+.doi__link {
+    text-decoration: none;
+    color: constants.$soft-black;
+    font-weight: constants.$font-weight-light;
+}
+
 .abstract {
     cursor: pointer;
 }

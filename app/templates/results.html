@@ -4,6 +4,13 @@
  <ul class="results">
  {% for result in result_set.results %}
   <li class="result" data-score={{ result.score }} data-source="{{ result.source }} data-id= {{ result.id }}">
+    {% if result.doi %}
+      <div class="doi">
+        <a href="http://doi.org/{{ result.doi }}" class="doi__link" target="_blank" rel="noopener">
+          {{ result.doi }}
+        </a>
+      </div>
+    {% endif %}
     <h3 class="result__title">{{ result.title }}</h3>
     <h4 class="result__keywords">
       {% for keyword in result.keywords %}
