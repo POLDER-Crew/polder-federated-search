@@ -3,12 +3,25 @@
 ## A federated search app for and by the polar data community
 
 ### Covered data repositories
+
+There are two ways a repository is included in searches that are made from this application- if the repository is indexed DataONE (and has data within the search parameters), and if the repository is indexed by the app itself.
+
+#### DataONE Repositories
+There are many DataONE repositories, but of particular interest to the polar research community are:
 - [Arctic Data Center]( https://arcticdata.io/)
 - [Netherlands Polar Data Center](https://npdc.nl)
 - [BCO-DMO](https://www.bco-dmo.org/)
-- Todo: If I'm doing global DataOne searches, what else might I cover?
+
+#### Repositories indexed by this app
+- [Greenland Ecosystem Monitoring](https://g-e-m.dk/)
+- [U.S. Antarctic Program Data Center](https://usap-dc.org)
+
+#### Future work
 - [Australian Antarctic Data Centre](https://data.aad.gov.au/)
 - [National Snow and Ice Data Center](https://nsidc.org])
+- CCADI
+- CRITTERBASE
+- BAS (most likely via DataCite)
 
 ### Architecture
 This tool uses Docker images to manage the different services that it depends on. One of those is [Gleaner](https://gleaner.io).
