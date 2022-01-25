@@ -1,3 +1,4 @@
+from datetime import date
 import json
 import logging
 import requests
@@ -12,7 +13,41 @@ class SolrDirectSearch(SearcherBase):
 
     def text_search(self, text=None):
         query = f"{self.ENDPOINT_URL}?q={text}&fq={self.LATITUDE_FILTER}&rows={self.PAGE_SIZE}&wt=json&fl=*,score"
-        logger.debug("dataone query: %s", query)
+        logger.debug("dataone text search: %s", query)
+        response = requests.get(query)
+        response.raise_for_status()
+        body = response.json()['response']
+        self.max_score = body['maxScore']
+
+        if self.max_score == 0:
+            self.max_score = 0.00001
+
+        result_set = SearchResultSet(
+            total_results=body['numFound'],
+            page_start=body['start'],
+            results=self.convert_results(body['docs'])
+        )
+
+        return result_set
+
+    def temporal_search(self, start=None, end=None):
+        # some sensible defaults
+        if start is not None:
+            # convert it to a string representation of an ISO instant
+            start = start.isoformat() + "Z"
+        else:
+            start = "*"
+
+        if end is not None:
+            # convert it to a string representation of an ISO instant
+            end = end.isoformat() + "Z"
+        else:
+            end = "NOW"
+
+        TIME_FILTER = f"(beginDate:[{start} TO {end}] OR endDate:[{start} TO {end}])"
+
+        query = f"{self.ENDPOINT_URL}?fq=({self.LATITUDE_FILTER} AND {TIME_FILTER})&rows={self.PAGE_SIZE}&wt=json&fl=*,score"
+        logger.debug("dataone temporal search: %s", query)
         response = requests.get(query)
         response.raise_for_status()
         body = response.json()['response']
