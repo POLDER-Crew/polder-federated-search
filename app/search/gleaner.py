@@ -21,8 +21,8 @@ class GleanerSearch(SearcherBase):
                     ?sameAs
                     ?title
                     ?abstract
-                    (GROUP_CONCAT(?keyword ; separator=", ") as ?keywords)
-                    (GROUP_CONCAT(?temporal_cov ; separator=", ") as ?temporal_coverage)
+                    (GROUP_CONCAT(DISTINCT ?keyword ; separator=", ") as ?keywords)
+                    (GROUP_CONCAT(DISTINCT ?temporal_cov ; separator=", ") as ?temporal_coverage)
 
                 {{
                   VALUES ?type {{ schema:Dataset sschema:Dataset }}
