@@ -71,6 +71,81 @@ class GleanerSearch(SearcherBase):
         )
         return result_set
 
+    def temporal_search(self, start=None, end=None):
+        self.sparql.setQuery(
+            f"""
+                PREFIX sschema: <https://schema.org/>
+                PREFIX schema: <http://schema.org/>
+
+                SELECT
+                    ?id
+                    ?url
+                    ?sameAs
+                    ?title
+                    ?abstract
+                    (GROUP_CONCAT(DISTINCT ?keyword ; separator=", ") as ?keywords)
+                    (GROUP_CONCAT(DISTINCT ?temporal_cov ; separator=", ") as ?temporal_coverage)
+                    ?start_date
+                    ?end_date
+
+                    {{
+
+                        VALUES ?type {{ schema:Dataset sschema:Dataset }}
+                        VALUES ?ids {{ schema:identifier sschema:identifier }}
+                        VALUES ?urls {{ sschema:url schema:url }}
+                        VALUES ?titles {{ sschema:name schema:name }}
+                        VALUES ?abstracts {{ sschema:description schema:description }}
+                        VALUES ?keys {{ sschema:keywords schema:keywords }}
+                        VALUES ?sameAsVals {{ sschema:sameAs schema:sameAs }}
+                        VALUES ?temporal {{ sschema:temporalCoverage schema:temporalCoverage }}
+
+                        bind(
+                            if(
+                                contains(?temporal_cov, "/"),
+                                xsd:date(strbefore(?temporal_cov, "/")),
+                                if(
+                                    contains(?temporal_cov, " - "),
+                                    xsd:date(strbefore(?temporal_cov, " - ")),
+                                    ?temporal_cov
+                                )
+                            )
+                          as ?start_date
+                        )
+
+                        bind(
+                            if(
+                                contains(?temporal_cov, "/"),
+                                strafter(?temporal_cov, "/"),
+                                if(
+                                    contains(?temporal_cov, " - "),
+                                    strafter(?temporal_cov, " - "),
+                                    ?temporal_cov
+                                )
+                            )
+                          as ?end_date
+                        )
+
+
+                          ?s a ?type .
+
+                          ?s ?ids ?id .
+                          ?s ?urls ?url .
+                          ?s ?temporal ?temporal_cov .
+                          ?s ?titles ?title .
+                          Optional {{
+                            ?s ?abstracts ?abstract .
+                            ?s ?keys ?keyword .
+                            ?s ?sameAsVals ?sameAs .
+                          }}
+                    }}
+
+                }}
+            GROUP BY ?id ?url ?sameAs ?title ?abstract ?start_date ?end_date
+            OFFSET 0
+            LIMIT {self.PAGE_SIZE}
+        """
+    )
+
     def convert_result(self, sparql_result_dict):
         result = {}
         for k, v in sparql_result_dict.items():
