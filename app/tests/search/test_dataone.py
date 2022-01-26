@@ -1,3 +1,4 @@
+from datetime import date
 import unittest
 import json
 import requests
@@ -39,6 +40,80 @@ class TestSolrDirectSearch(unittest.TestCase):
         self.assertIn(
             f'&fq={dataone.SolrDirectSearch.LATITUDE_FILTER}',
             unquote(solr_url)
+        )
+
+    @requests_mock.Mocker()
+    def test_date_filter_none(self, m):
+        m.get(
+            dataone.SolrDirectSearch.ENDPOINT_URL,
+            json=test_response
+        )
+        expected = search.SearchResultSet(
+            total_results=1,
+            page_start=5,
+            results=[
+                search.SearchResult(score=0, id="test1", source="DataONE"),
+                search.SearchResult(score=0, id="test2", source="DataONE"),
+            ]
+
+        )
+        results = self.search.date_filter_search()
+        self.assertEqual(results, expected)
+
+        # Did we make the query we expected?
+        solr_url = unquote(m.request_history[0].url)
+        self.assertIn("beginDate:[* TO NOW] OR endDate:[* TO NOW])", solr_url)
+
+        # Did we add the latitude filter?
+        self.assertIn(
+            f'{dataone.SolrDirectSearch.LATITUDE_FILTER}',
+            solr_url
+        )
+
+    @requests_mock.Mocker()
+    def test_date_filter_start_min(self, m):
+        m.get(
+            dataone.SolrDirectSearch.ENDPOINT_URL,
+            json=test_response
+        )
+
+        results = self.search.date_filter_search(start_min=date(1999, 3, 23))
+        solr_url = unquote(m.request_history[0].url)
+        self.assertIn("beginDate:[1999-03-23Z TO NOW] OR endDate:[* TO NOW])", solr_url)
+
+    @requests_mock.Mocker()
+    def test_date_filter_start_max(self, m):
+        m.get(
+            dataone.SolrDirectSearch.ENDPOINT_URL,
+            json=test_response
+        )
+
+    @requests_mock.Mocker()
+    def test_date_filter_start_both(self, m):
+        m.get(
+            dataone.SolrDirectSearch.ENDPOINT_URL,
+            json=test_response
+        )
+
+    @requests_mock.Mocker()
+    def test_date_filter_end_min(self, m):
+        m.get(
+            dataone.SolrDirectSearch.ENDPOINT_URL,
+            json=test_response
+        )
+
+    @requests_mock.Mocker()
+    def test_date_filter_end_max(self, m):
+        m.get(
+            dataone.SolrDirectSearch.ENDPOINT_URL,
+            json=test_response
+        )
+
+    @requests_mock.Mocker()
+    def test_date_filter_all(self, m):
+        m.get(
+            dataone.SolrDirectSearch.ENDPOINT_URL,
+            json=test_response
         )
 
     @requests_mock.Mocker()

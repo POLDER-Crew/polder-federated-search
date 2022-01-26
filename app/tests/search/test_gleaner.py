@@ -51,6 +51,34 @@ class TestGleanerSearch(unittest.TestCase):
         results = self.search.text_search('test')
         self.assertEqual(results, expected)
 
+    @patch('SPARQLWrapper.SPARQLWrapper.query')
+    def test_date_filter_none(self, query):
+        pass
+
+    @patch('SPARQLWrapper.SPARQLWrapper.query')
+    def test_date_filter_start_min(self, query):
+        pass
+
+    @patch('SPARQLWrapper.SPARQLWrapper.query')
+    def test_date_filter_start_max(self, query):
+        pass
+
+    @patch('SPARQLWrapper.SPARQLWrapper.query')
+    def test_date_filter_start_both(self, query):
+        pass
+
+    @patch('SPARQLWrapper.SPARQLWrapper.query')
+    def test_date_filter_end_min(self, query):
+        pass
+
+    @patch('SPARQLWrapper.SPARQLWrapper.query')
+    def test_date_filter_end_max(self, query):
+        pass
+
+    @patch('SPARQLWrapper.SPARQLWrapper.query')
+    def test_date_filter_all(self, query):
+        pass
+
     # gross, but requests-mock does not touch the requests
     # that SPARQLWrapper makes using good old urllib
     # for some reason, even if I try to capture
