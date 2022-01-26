@@ -68,7 +68,7 @@ class TestSolrDirectSearch(unittest.TestCase):
         test_result = {
             'webUrl': ['url1', 'url2', 'url3'],
             'dataUrl': 'url4',
-            'contentUrl': { 'value': ['url5', 'url6', 'url7']},
+            'contentUrl': {'value': ['url5', 'url6', 'url7']},
             'seriesId': 'doi:test',
             'score': 5,
             'title': 'A title',
@@ -82,7 +82,8 @@ class TestSolrDirectSearch(unittest.TestCase):
         result.urls.sort()
         result.keywords.sort()
         self.assertEqual(result.score, 0.5)
-        self.assertEqual(result.urls, ['url1', 'url2', 'url3', 'url4', 'url5', 'url6', 'url7'])
+        self.assertEqual(
+            result.urls, ['url1', 'url2', 'url3', 'url4', 'url5', 'url6', 'url7'])
         self.assertEqual(result.title, 'A title'),
         self.assertEqual(result.id, 'An id')
         self.assertEqual(result.abstract, 'An abstract')

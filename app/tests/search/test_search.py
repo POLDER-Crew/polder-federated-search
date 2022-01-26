@@ -2,9 +2,6 @@ import unittest
 from app.search import search
 
 
-
-
-
 class TestSearchResult(unittest.TestCase):
     def test_init(self):
         kwargs_dict = {

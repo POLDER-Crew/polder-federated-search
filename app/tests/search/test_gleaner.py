@@ -5,6 +5,7 @@ from urllib.error import HTTPError
 from urllib.response import addinfourl
 from app.search import gleaner, search
 
+
 class TestGleanerSearch(unittest.TestCase):
     def setUp(self):
         self.search = gleaner.GleanerSearch(endpoint_url="http://test")
