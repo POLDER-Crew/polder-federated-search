@@ -71,7 +71,17 @@ class GleanerSearch(SearcherBase):
         )
         return result_set
 
-    def temporal_search(self, start=None, end=None):
+    def date_filter_search(self, start_min=None, start_max=None, end_min=None, end_max=None):
+        date_filter = ""
+        if start_min is not None:
+            date_filter += f"FILTER(?start_date >= '{start_min.isoformat()}'^^xsd:date)"
+        if start_max is not None:
+            date_filter += f"FILTER(?start_date <= '{start_max.isoformat()}''^^xsd:date)"
+        if end_min is not None:
+            date_filter += f"FILTER(?end_date >= '{end_min.isoformat()}''^^xsd:date)"
+        if end_max is not None:
+            date_filter += f"FILTER(?end_date >= '{end_min.isoformat()}''^^xsd:date)"
+
         self.sparql.setQuery(
             f"""
                 PREFIX sschema: <https://schema.org/>
@@ -83,8 +93,8 @@ class GleanerSearch(SearcherBase):
                     ?sameAs
                     ?title
                     ?abstract
-                    (GROUP_CONCAT(DISTINCT ?keyword ; separator=", ") as ?keywords)
-                    (GROUP_CONCAT(DISTINCT ?temporal_cov ; separator=", ") as ?temporal_coverage)
+                    (GROUP_CONCAT(DISTINCT ?keyword ; separator=", ") AS ?keywords)
+                    (GROUP_CONCAT(DISTINCT ?temporal_cov ; separator=", ") AS ?temporal_coverage)
                     ?start_date
                     ?end_date
 
@@ -99,40 +109,42 @@ class GleanerSearch(SearcherBase):
                         VALUES ?sameAsVals {{ sschema:sameAs schema:sameAs }}
                         VALUES ?temporal {{ sschema:temporalCoverage schema:temporalCoverage }}
 
-                        bind(
-                            if(
-                                contains(?temporal_cov, "/"),
-                                xsd:date(strbefore(?temporal_cov, "/")),
-                                if(
-                                    contains(?temporal_cov, " - "),
-                                    xsd:date(strbefore(?temporal_cov, " - ")),
+                        BIND(
+                            IF(
+                                CONTAINS(?temporal_cov, "/"),
+                                STRDT(STRBEFORE(?temporal_cov, "/"), xsd:date),
+                                IF(
+                                    CONTAINS(?temporal_cov, " - "),
+                                    STRDT(STRBEFORE(?temporal_cov, " - "), xsd:date),
                                     ?temporal_cov
                                 )
                             )
-                          as ?start_date
+                          AS ?start_date
                         )
 
-                        bind(
-                            if(
-                                contains(?temporal_cov, "/"),
-                                strafter(?temporal_cov, "/"),
-                                if(
-                                    contains(?temporal_cov, " - "),
-                                    strafter(?temporal_cov, " - "),
+                        BIND(
+                            IF(
+                                CONTAINS(?temporal_cov, "/"),
+                                STRDT(STRAFTER(?temporal_cov, "/"), xsd:date),
+                                IF(
+                                    CONTAINS(?temporal_cov, " - "),
+                                    STRDT(STRAFTER(?temporal_cov, " - "), xsd:date),
                                     ?temporal_cov
                                 )
                             )
-                          as ?end_date
+                          AS ?end_date
                         )
 
 
                           ?s a ?type .
 
+                          {date_filter}
+
                           ?s ?ids ?id .
                           ?s ?urls ?url .
                           ?s ?temporal ?temporal_cov .
                           ?s ?titles ?title .
-                          Optional {{
+                          OPTIONAL {{
                             ?s ?abstracts ?abstract .
                             ?s ?keys ?keyword .
                             ?s ?sameAsVals ?sameAs .

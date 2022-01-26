@@ -30,21 +30,22 @@ class SolrDirectSearch(SearcherBase):
 
         return result_set
 
-    def temporal_search(self, start=None, end=None):
+    def date_filter_search(self, start_min=None, start_max=None, end_min=None, end_max=None):
         # some sensible defaults
-        if start is not None:
-            # convert it to a string representation of an ISO instant
-            start = start.isoformat() + "Z"
-        else:
-            start = "*"
+        # convert it to a string representation of an ISO instant
+        start_min = (start_min.isoformat() +
+                     "Z" if start_min is not None else "*")
 
-        if end is not None:
-            # convert it to a string representation of an ISO instant
-            end = end.isoformat() + "Z"
-        else:
-            end = "NOW"
+        start_max = (start_max.isoformat() +
+                     "Z" if start_max is not None else "NOW")
 
-        TIME_FILTER = f"(beginDate:[{start} TO {end}] OR endDate:[{start} TO {end}])"
+        end_min = (end_min.isoformat() +
+                     "Z" if end_min is not None else "*")
+
+        end_max = (end_max.isoformat() +
+                     "Z" if end_max is not None else "NOW")
+
+        TIME_FILTER = f"(beginDate:[{start_min} TO {start_max}] OR endDate:[{end_min} TO {end_max}])"
 
         query = f"{self.ENDPOINT_URL}?fq=({self.LATITUDE_FILTER} AND {TIME_FILTER})&rows={self.PAGE_SIZE}&wt=json&fl=*,score"
         logger.debug("dataone temporal search: %s", query)
@@ -81,23 +82,22 @@ class SolrDirectSearch(SearcherBase):
             doi = result['seriesId']
 
         return SearchResult(
-                    # Because Blazegraph uses normalized query scores, we can approximate search
-                    # ranking by normalizing these as well. However, this does nothing for the
-                    # cases where the DataOne result set is more or less relevant, on average, than
-                    # the one from Blazegraph / Gleaner.
-                    score=(result.pop('score') / self.max_score),
-                    title=result.pop('title', None),
-                    id=result.pop('id', None),
-                    abstract=result.pop('abstract', ""),
-                    # todo: we can make a bounding box with eastBoundCoord, northBoundCoord,
-                    # westBoundCoord and southBoundCoord in this data source
-                    # But there is also a named place available, which is what is being used here
-                    spatial_coverage=result.pop('placeKey', None),
-                    doi=doi,
-                    keywords=result.pop('keywords', []),
-                    origin=result.pop('origin', []),
-                    # todo: temporal coverage
-                    urls=urls,
-                    source="DataONE"
-                )
-
+            # Because Blazegraph uses normalized query scores, we can approximate search
+            # ranking by normalizing these as well. However, this does nothing for the
+            # cases where the DataOne result set is more or less relevant, on average, than
+            # the one from Blazegraph / Gleaner.
+            score=(result.pop('score') / self.max_score),
+            title=result.pop('title', None),
+            id=result.pop('id', None),
+            abstract=result.pop('abstract', ""),
+            # todo: we can make a bounding box with eastBoundCoord, northBoundCoord,
+            # westBoundCoord and southBoundCoord in this data source
+            # But there is also a named place available, which is what is being used here
+            spatial_coverage=result.pop('placeKey', None),
+            doi=doi,
+            keywords=result.pop('keywords', []),
+            origin=result.pop('origin', []),
+            # todo: temporal coverage
+            urls=urls,
+            source="DataONE"
+        )
