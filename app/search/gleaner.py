@@ -144,13 +144,8 @@ class GleanerSearch(SearcherBase):
         self.query = GleanerSearch.build_query(user_query)
         return self.execute_query()
 
-    """
-    The search that will most commonly get used in the UI - a combination of all of the search methods.
-    """
-
     def combined_search(self, text=None, start_min=None, start_max=None, end_min=None, end_max=None):
-        user_query = GleanerSearch._build_date_filter_query(
-            start_min, start_max, end_min, end_max)
+        user_query = GleanerSearch._build_date_filter_query(start_min, start_max, end_min, end_max)
         user_query += GleanerSearch._build_text_search_query(text)
 
         # Assigning this to a class member makes it easier to test

@@ -122,6 +122,40 @@ class TestGleanerSearch(unittest.TestCase):
         self.assertIn(
             "FILTER(?end_date <= '2023-03-31'^^xsd:date)", self.search.query)
 
+    @patch('SPARQLWrapper.SPARQLWrapper.query')
+    def test_combined_search(self, query):
+        query.return_value = self.mock_query
+
+        # Do the actual test
+        expected = search.SearchResultSet(
+            total_results=2,
+            page_start=0,
+            results=[
+                self.search.convert_result(result1),
+                self.search.convert_result(result2)
+            ]
+
+        )
+        results = self.search.combined_search(
+            text="test",
+            start_min=date(1999, 1, 1),
+            start_max=date(2020, 3, 3),
+            end_min=date(2001, 9, 12),
+            end_max=date(2023, 3, 31)
+        )
+        self.assertEqual(results, expected)
+
+        self.assertIn('?lit bds:search "test"', self.search.query)
+        self.assertIn(
+            "FILTER(?start_date >= '1999-01-01'^^xsd:date)", self.search.query)
+        self.assertIn(
+            "FILTER(?start_date <= '2020-03-03'^^xsd:date)", self.search.query)
+        self.assertIn(
+            "FILTER(?end_date >= '2001-09-12'^^xsd:date)", self.search.query)
+        self.assertIn(
+            "FILTER(?end_date <= '2023-03-31'^^xsd:date)", self.search.query)
+
+
     # gross, but requests-mock does not touch the requests
     # that SPARQLWrapper makes using good old urllib
     # for some reason, even if I try to capture
