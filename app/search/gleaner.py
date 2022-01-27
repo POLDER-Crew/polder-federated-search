@@ -29,45 +29,20 @@ class GleanerSearch(SearcherBase):
                 VALUES ?sameAsVals {{ sschema:sameAs schema:sameAs }}
                 VALUES ?temporal {{ sschema:temporalCoverage schema:temporalCoverage }}
 
-                BIND(
-                    IF(
-                        CONTAINS(?temporal_cov, "/"),
-                        STRDT(STRBEFORE(?temporal_cov, "/"), xsd:date),
-                        IF(
-                            CONTAINS(?temporal_cov, " - "),
-                            STRDT(STRBEFORE(?temporal_cov, " - "), xsd:date),
-                            ?temporal_cov
-                        )
-                    )
-                  AS ?start_date
-                )
-
-                BIND(
-                    IF(
-                        CONTAINS(?temporal_cov, "/"),
-                        STRDT(STRAFTER(?temporal_cov, "/"), xsd:date),
-                        IF(
-                            CONTAINS(?temporal_cov, " - "),
-                            STRDT(STRAFTER(?temporal_cov, " - "), xsd:date),
-                            ?temporal_cov
-                        )
-                    )
-                  AS ?end_date
-                )
-
                 ?s a ?type .
-
-                {user_query}
 
                 ?s ?ids ?id .
                 ?s ?urls ?url .
                 ?s ?titles ?title .
+                ?s ?temporal ?temporal_coverage .
+
                 OPTIONAL {{
                     ?s ?abstracts ?abstract .
                     ?s ?keys ?keyword .
                     ?s ?sameAsVals ?sameAs .
-                    ?s ?temporal ?temporal_cov .
                 }}
+
+                {user_query}
 
             }}
             GROUP BY ?id ?url ?title
@@ -76,20 +51,73 @@ class GleanerSearch(SearcherBase):
             LIMIT {GleanerSearch.PAGE_SIZE}
         """
 
-    def __init__(self, **kwargs):
-        ENDPOINT_URL = kwargs.pop('endpoint_url')
-        self.sparql = SPARQLWrapper(ENDPOINT_URL)
+    @staticmethod
+    def _build_text_search_query(text=None):
+        if text is None:
+            return ""
 
-    def text_search(self, text=None):
-        user_query = f"""
+        # A blank search in this will give NO results, which seems like
+        # the opposite of what we want.
+        return f"""
             ?lit bds:search "{text}" .
             ?lit bds:matchAllTerms "false" .
             ?lit bds:relevance ?relevance .
             ?s ?p ?lit .
         """
 
-        # Assigning this to a class member makes it easier to test
-        self.query = GleanerSearch.build_query(user_query)
+    @staticmethod
+    def _build_date_filter_query(start_min=None, start_max=None, end_min=None, end_max=None):
+        # First of all, make sure we are even filtering anything. Do not bother binding variables,
+        # which may be expensive, if we do not need them.
+        if start_min is None and start_max is None and end_min is None and end_max is None:
+            return ""
+
+        # First, bind our necessary variables to filter start and end dates for temporal coverage
+        user_query = """
+            BIND(
+                IF(
+                    CONTAINS(?temporal_coverage, "/"),
+                    STRDT(STRBEFORE(?temporal_coverage, "/"), xsd:date),
+                    IF(
+                        CONTAINS(?temporal_coverage, " - "),
+                        STRDT(STRBEFORE(?temporal_coverage, " - "), xsd:date),
+                        ?temporal_coverage
+                    )
+                )
+              AS ?start_date
+            )
+
+            BIND(
+                IF(
+                    CONTAINS(?temporal_coverage, "/"),
+                    STRDT(STRAFTER(?temporal_coverage, "/"), xsd:date),
+                    IF(
+                        CONTAINS(?temporal_coverage, " - "),
+                        STRDT(STRAFTER(?temporal_coverage, " - "), xsd:date),
+                        ?temporal_coverage
+                    )
+                )
+              AS ?end_date
+            )
+        """
+
+        # Then do the actual filtering, depending on what the user asked for
+        if start_min is not None:
+            user_query += f"FILTER(?start_date >= '{start_min.isoformat()}'^^xsd:date)"
+        if start_max is not None:
+            user_query += f"FILTER(?start_date <= '{start_max.isoformat()}'^^xsd:date)"
+        if end_min is not None:
+            user_query += f"FILTER(?end_date >= '{end_min.isoformat()}'^^xsd:date)"
+        if end_max is not None:
+            user_query += f"FILTER(?end_date <= '{end_max.isoformat()}'^^xsd:date)"
+
+        return user_query
+
+    def __init__(self, **kwargs):
+        ENDPOINT_URL = kwargs.pop('endpoint_url')
+        self.sparql = SPARQLWrapper(ENDPOINT_URL)
+
+    def execute_query(self):
         self.sparql.setQuery(self.query)
 
         # a note: BlazeGraph relevance scores go from 0.0 to 1.0; all results are normalized.
@@ -102,31 +130,32 @@ class GleanerSearch(SearcherBase):
         )
         return result_set
 
-    def date_filter_search(self, start_min=None, start_max=None, end_min=None, end_max=None):
-        date_filter = ""
-        if start_min is not None:
-            date_filter += f"FILTER(?start_date >= '{start_min.isoformat()}'^^xsd:date)"
-        if start_max is not None:
-            date_filter += f"FILTER(?start_date <= '{start_max.isoformat()}'^^xsd:date)"
-        if end_min is not None:
-            date_filter += f"FILTER(?end_date >= '{end_min.isoformat()}'^^xsd:date)"
-        if end_max is not None:
-            date_filter += f"FILTER(?end_date <= '{end_max.isoformat()}'^^xsd:date)"
-
+    def text_search(self, text=None):
+        user_query = GleanerSearch._build_text_search_query(text)
 
         # Assigning this to a class member makes it easier to test
-        self.query = GleanerSearch.build_query(date_filter)
+        self.query = GleanerSearch.build_query(user_query)
+        return self.execute_query()
 
-        self.sparql.setQuery(self.query)
-        self.sparql.setReturnFormat(JSON)
-        data = self.sparql.query().convert()
-        result_set = SearchResultSet(
-            total_results=len(data['results']['bindings']),
-            page_start=0,  # for now
-            results=self.convert_results(data['results']['bindings'])
-        )
-        return result_set
+    def date_filter_search(self, start_min=None, start_max=None, end_min=None, end_max=None):
+        user_query = GleanerSearch._build_date_filter_query(
+            start_min, start_max, end_min, end_max)
+        # Assigning this to a class member makes it easier to test
+        self.query = GleanerSearch.build_query(user_query)
+        return self.execute_query()
 
+    """
+    The search that will most commonly get used in the UI - a combination of all of the search methods.
+    """
+
+    def combined_search(self, text=None, start_min=None, start_max=None, end_min=None, end_max=None):
+        user_query = GleanerSearch._build_date_filter_query(
+            start_min, start_max, end_min, end_max)
+        user_query += GleanerSearch._build_text_search_query(text)
+
+        # Assigning this to a class member makes it easier to test
+        self.query = GleanerSearch.build_query(user_query)
+        return self.execute_query()
 
     def convert_result(self, sparql_result_dict):
         result = {}
