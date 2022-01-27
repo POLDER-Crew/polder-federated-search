@@ -1,3 +1,4 @@
+from datetime import date
 import unittest
 from unittest.mock import patch, mock_open, Mock
 from SPARQLWrapper import SPARQLExceptions
@@ -5,38 +6,38 @@ from urllib.error import HTTPError
 from urllib.response import addinfourl
 from app.search import gleaner, search
 
+result1 = {
+    's': {'type': 'bnode', 'value': 'thing1'},
+    'score': {'datatype': 'http://www.w3.org/2001/XMLSchema#double', 'type': 'literal', 'value': '0.01953125'},
+    'abstract': {'type': 'literal', 'value': "Here is a thing"},
+    'title': {'type': 'literal', 'value': 'thing'},
+    'id': {'type': 'literal', 'value': 'urn:uuid:asdfasdfasdf'}
+}
+result2 = {
+    's': {'type': 'bnode', 'value': 'thing2'},
+    'score': {'datatype': 'http://www.w3.org/2001/XMLSchema#double', 'type': 'literal', 'value': '0.01953124'},
+    'abstract': {'type': 'literal', 'value': "Here is a less relevant thing"},
+    'title': {'type': 'literal', 'value': 'thing the second'},
+    'id': {'type': 'literal', 'value': 'urn:uuid:some long thing'}
+}
+
 
 class TestGleanerSearch(unittest.TestCase):
     def setUp(self):
         self.search = gleaner.GleanerSearch(endpoint_url="http://test")
 
-    @patch('SPARQLWrapper.SPARQLWrapper.query')
-    def test_text_search(self, query):
-
         # Set up our mock SPARQLWrapper results. We have mocked out the query() method from
         # SPARQLWrapper, but that method returns an object that we immediately call convert() on,
         # and the results of that are what we work with.
-        result1 = {
-            's': {'type': 'bnode', 'value': 'thing1'},
-            'score': {'datatype': 'http://www.w3.org/2001/XMLSchema#double', 'type': 'literal', 'value': '0.01953125'},
-            'abstract': {'type': 'literal', 'value': "Here is a thing"},
-            'title': {'type': 'literal', 'value': 'thing'},
-            'id': {'type': 'literal', 'value': 'urn:uuid:asdfasdfasdf'}
-        }
-        result2 = {
-            's': {'type': 'bnode', 'value': 'thing2'},
-            'score': {'datatype': 'http://www.w3.org/2001/XMLSchema#double', 'type': 'literal', 'value': '0.01953124'},
-            'abstract': {'type': 'literal', 'value': "Here is a less relevant thing"},
-            'title': {'type': 'literal', 'value': 'thing the second'},
-            'id': {'type': 'literal', 'value': 'urn:uuid:some long thing'}
-
-        }
         mock_convert = Mock(return_value={"results": {
             "bindings": [result1, result2]
         }})
-        mock_query = Mock()
-        mock_query.convert = mock_convert
-        query.return_value = mock_query
+        self.mock_query = Mock()
+        self.mock_query.convert = mock_convert
+
+    @patch('SPARQLWrapper.SPARQLWrapper.query')
+    def test_text_search(self, query):
+        query.return_value = self.mock_query
 
         # Do the actual test
         expected = search.SearchResultSet(
@@ -50,34 +51,68 @@ class TestGleanerSearch(unittest.TestCase):
         )
         results = self.search.text_search('test')
         self.assertEqual(results, expected)
+        self.assertIn('?lit bds:search "test"', self.search.query)
 
     @patch('SPARQLWrapper.SPARQLWrapper.query')
     def test_date_filter_none(self, query):
-        pass
+        query.return_value = self.mock_query
+        results = self.search.date_filter_search()
+        self.assertNotIn('FILTER', self.search.query)
 
     @patch('SPARQLWrapper.SPARQLWrapper.query')
     def test_date_filter_start_min(self, query):
-        pass
+        query.return_value = self.mock_query
+        results = self.search.date_filter_search(start_min=date(1999, 1, 1))
+        self.assertIn(
+            "FILTER(?start_date >= '1999-01-01'^^xsd:date)", self.search.query)
 
     @patch('SPARQLWrapper.SPARQLWrapper.query')
     def test_date_filter_start_max(self, query):
-        pass
+        query.return_value = self.mock_query
+        results = self.search.date_filter_search(start_max=date(1999, 1, 1))
+        self.assertIn(
+            "FILTER(?start_date <= '1999-01-01'^^xsd:date)", self.search.query)
 
     @patch('SPARQLWrapper.SPARQLWrapper.query')
     def test_date_filter_start_both(self, query):
-        pass
+        query.return_value = self.mock_query
+        results = self.search.date_filter_search(start_min=date(1999, 1, 1), start_max=date(2020, 3, 3))
+        self.assertIn(
+            "FILTER(?start_date >= '1999-01-01'^^xsd:date)", self.search.query)
+        self.assertIn(
+            "FILTER(?start_date <= '2020-03-03'^^xsd:date)", self.search.query)
 
     @patch('SPARQLWrapper.SPARQLWrapper.query')
     def test_date_filter_end_min(self, query):
-        pass
+        query.return_value = self.mock_query
+        results = self.search.date_filter_search(end_min=date(1999, 1, 1))
+        self.assertIn(
+            "FILTER(?end_date >= '1999-01-01'^^xsd:date)", self.search.query)
 
     @patch('SPARQLWrapper.SPARQLWrapper.query')
     def test_date_filter_end_max(self, query):
-        pass
+        query.return_value = self.mock_query
+        results = self.search.date_filter_search(end_max=date(1999, 1, 1))
+        self.assertIn(
+            "FILTER(?end_date <= '1999-01-01'^^xsd:date)", self.search.query)
 
     @patch('SPARQLWrapper.SPARQLWrapper.query')
     def test_date_filter_all(self, query):
-        pass
+        query.return_value = self.mock_query
+        results = self.search.date_filter_search(
+            start_min=date(1999, 1, 1),
+            start_max=date(2020, 3, 3),
+            end_min=date(2001, 9, 12),
+            end_max=date(2023, 3, 31)
+        )
+        self.assertIn(
+            "FILTER(?start_date >= '1999-01-01'^^xsd:date)", self.search.query)
+        self.assertIn(
+            "FILTER(?start_date <= '2020-03-03'^^xsd:date)", self.search.query)
+        self.assertIn(
+            "FILTER(?end_date >= '2001-09-12'^^xsd:date)", self.search.query)
+        self.assertIn(
+            "FILTER(?end_date <= '2023-03-31'^^xsd:date)", self.search.query)
 
     # gross, but requests-mock does not touch the requests
     # that SPARQLWrapper makes using good old urllib

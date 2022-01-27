@@ -9,8 +9,8 @@ class GleanerSearch(SearcherBase):
         self.sparql = SPARQLWrapper(ENDPOINT_URL)
 
     def text_search(self, text=None):
-        self.sparql.setQuery(
-            f"""
+        # Assigning this to a class member makes it easier to test
+        self.query = f"""
                 PREFIX sschema: <https://schema.org/>
                 PREFIX schema: <http://schema.org/>
 
@@ -59,7 +59,7 @@ class GleanerSearch(SearcherBase):
                 OFFSET 0
             LIMIT {self.PAGE_SIZE}
         """
-        )
+        self.sparql.setQuery(self.query)
         # a note: BlazeGraph relevance scores go from 0.0 to 1.0; all results are normalized.
 
         self.sparql.setReturnFormat(JSON)
@@ -76,14 +76,14 @@ class GleanerSearch(SearcherBase):
         if start_min is not None:
             date_filter += f"FILTER(?start_date >= '{start_min.isoformat()}'^^xsd:date)"
         if start_max is not None:
-            date_filter += f"FILTER(?start_date <= '{start_max.isoformat()}''^^xsd:date)"
+            date_filter += f"FILTER(?start_date <= '{start_max.isoformat()}'^^xsd:date)"
         if end_min is not None:
-            date_filter += f"FILTER(?end_date >= '{end_min.isoformat()}''^^xsd:date)"
+            date_filter += f"FILTER(?end_date >= '{end_min.isoformat()}'^^xsd:date)"
         if end_max is not None:
-            date_filter += f"FILTER(?end_date >= '{end_min.isoformat()}''^^xsd:date)"
+            date_filter += f"FILTER(?end_date <= '{end_max.isoformat()}'^^xsd:date)"
 
-        self.sparql.setQuery(
-            f"""
+
+        self.query = f"""
                 PREFIX sschema: <https://schema.org/>
                 PREFIX schema: <http://schema.org/>
 
@@ -156,7 +156,16 @@ class GleanerSearch(SearcherBase):
             OFFSET 0
             LIMIT {self.PAGE_SIZE}
         """
-    )
+        self.sparql.setQuery(self.query)
+        self.sparql.setReturnFormat(JSON)
+        data = self.sparql.query().convert()
+        result_set = SearchResultSet(
+            total_results=len(data['results']['bindings']),
+            page_start=0,  # for now
+            results=self.convert_results(data['results']['bindings'])
+        )
+        return result_set
+
 
     def convert_result(self, sparql_result_dict):
         result = {}
