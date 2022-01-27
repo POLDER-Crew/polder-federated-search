@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import datetime, time
 import json
 import logging
 import requests
@@ -32,17 +32,17 @@ class SolrDirectSearch(SearcherBase):
 
     def date_filter_search(self, start_min=None, start_max=None, end_min=None, end_max=None):
         # some sensible defaults
-        # convert it to a string representation of an ISO instant
-        start_min = (start_min.isoformat() +
+        # convert our dates to the string representation of an ISO instant that Solr wants
+        start_min = (datetime.combine(start_min, time.min).isoformat() +
                      "Z" if start_min is not None else "*")
 
-        start_max = (start_max.isoformat() +
+        start_max = (datetime.combine(start_max, time.max).isoformat() +
                      "Z" if start_max is not None else "NOW")
 
-        end_min = (end_min.isoformat() +
+        end_min = (datetime.combine(end_min, time.min).isoformat() +
                      "Z" if end_min is not None else "*")
 
-        end_max = (end_max.isoformat() +
+        end_max = (datetime.combine(end_max, time.max).isoformat() +
                      "Z" if end_max is not None else "NOW")
 
         TIME_FILTER = f"(beginDate:[{start_min} TO {start_max}] OR endDate:[{end_min} TO {end_max}])"
