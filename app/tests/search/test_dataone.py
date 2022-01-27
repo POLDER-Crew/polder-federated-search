@@ -79,7 +79,8 @@ class TestSolrDirectSearch(unittest.TestCase):
 
         results = self.search.date_filter_search(start_min=date(1999, 3, 23))
         solr_url = unquote(m.request_history[0].url)
-        self.assertIn("beginDate:[1999-03-23Z TO NOW] OR endDate:[* TO NOW])", solr_url)
+        self.assertIn(
+            "beginDate:[1999-03-23Z TO NOW] OR endDate:[* TO NOW])", solr_url)
 
     @requests_mock.Mocker()
     def test_date_filter_start_max(self, m):
@@ -88,6 +89,11 @@ class TestSolrDirectSearch(unittest.TestCase):
             json=test_response
         )
 
+        results = self.search.date_filter_search(start_max=date(1999, 3, 23))
+        solr_url = unquote(m.request_history[0].url)
+        self.assertIn(
+            "beginDate:[* TO 1999-03-23Z] OR endDate:[* TO NOW])", solr_url)
+
     @requests_mock.Mocker()
     def test_date_filter_start_both(self, m):
         m.get(
@@ -95,12 +101,23 @@ class TestSolrDirectSearch(unittest.TestCase):
             json=test_response
         )
 
+        results = self.search.date_filter_search(
+            start_min=date(1980, 1, 1), start_max=date(1999, 3, 23))
+        solr_url = unquote(m.request_history[0].url)
+        self.assertIn(
+            "beginDate:[1980-01-01Z TO 1999-03-23Z] OR endDate:[* TO NOW])", solr_url)
+
     @requests_mock.Mocker()
     def test_date_filter_end_min(self, m):
         m.get(
             dataone.SolrDirectSearch.ENDPOINT_URL,
             json=test_response
         )
+        results = self.search.date_filter_search(
+            end_min=date(2002, 1, 12))
+        solr_url = unquote(m.request_history[0].url)
+        self.assertIn(
+            "beginDate:[* TO NOW] OR endDate:[2002-01-12Z TO NOW])", solr_url)
 
     @requests_mock.Mocker()
     def test_date_filter_end_max(self, m):
@@ -108,6 +125,11 @@ class TestSolrDirectSearch(unittest.TestCase):
             dataone.SolrDirectSearch.ENDPOINT_URL,
             json=test_response
         )
+        results = self.search.date_filter_search(
+            end_max=date(2002, 1, 12))
+        solr_url = unquote(m.request_history[0].url)
+        self.assertIn(
+            "beginDate:[* TO NOW] OR endDate:[* TO 2002-01-12Z])", solr_url)
 
     @requests_mock.Mocker()
     def test_date_filter_all(self, m):
@@ -115,6 +137,16 @@ class TestSolrDirectSearch(unittest.TestCase):
             dataone.SolrDirectSearch.ENDPOINT_URL,
             json=test_response
         )
+
+        results = self.search.date_filter_search(
+            start_min=date(1980, 8, 4),
+            start_max=date(1999, 3, 23),
+            end_min=date(2001, 1, 1),
+            end_max=date(2020, 12, 31)
+        )
+        solr_url = unquote(m.request_history[0].url)
+        self.assertIn(
+            "beginDate:[1980-08-04Z TO 1999-03-23Z] OR endDate:[2001-01-01Z TO 2020-12-31Z])", solr_url)
 
     @requests_mock.Mocker()
     def test_search_error(self, m):
