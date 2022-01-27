@@ -11,27 +11,20 @@ class SolrDirectSearch(SearcherBase):
     ENDPOINT_URL = "https://search.dataone.org/cn/v2/query/solr/"
     LATITUDE_FILTER = "(northBoundCoord:[50 TO *] OR southBoundCoord:[* TO -50])"
 
-    def text_search(self, text=None):
-        query = f"{self.ENDPOINT_URL}?q={text}&fq={self.LATITUDE_FILTER}&rows={self.PAGE_SIZE}&wt=json&fl=*,score"
-        logger.debug("dataone text search: %s", query)
-        response = requests.get(query)
-        response.raise_for_status()
-        body = response.json()['response']
-        self.max_score = body['maxScore']
+    @staticmethod
+    def build_query(user_query=""):
+        return f"{SolrDirectSearch.ENDPOINT_URL}?fq={SolrDirectSearch.LATITUDE_FILTER}{user_query}&rows={SolrDirectSearch.PAGE_SIZE}&wt=json&fl=*,score"
 
-        if self.max_score == 0:
-            self.max_score = 0.00001
+    @staticmethod
+    def _build_text_search_query(text=None):
+        if text is None:
+            return ""
 
-        result_set = SearchResultSet(
-            total_results=body['numFound'],
-            page_start=body['start'],
-            results=self.convert_results(body['docs'])
-        )
+        else:
+            return f"&q={text}"
 
-        return result_set
-
-    def date_filter_search(self, start_min=None, start_max=None, end_min=None, end_max=None):
-        # some sensible defaults
+    @staticmethod
+    def _build_date_filter_query(start_min=None, start_max=None, end_min=None, end_max=None):
         # convert our dates to the string representation of an ISO instant that Solr wants
         start_min = (datetime.combine(start_min, time.min).isoformat() +
                      "Z" if start_min is not None else "*")
@@ -40,15 +33,14 @@ class SolrDirectSearch(SearcherBase):
                      "Z" if start_max is not None else "NOW")
 
         end_min = (datetime.combine(end_min, time.min).isoformat() +
-                     "Z" if end_min is not None else "*")
+                   "Z" if end_min is not None else "*")
 
         end_max = (datetime.combine(end_max, time.max).isoformat() +
-                     "Z" if end_max is not None else "NOW")
+                   "Z" if end_max is not None else "NOW")
 
-        TIME_FILTER = f"(beginDate:[{start_min} TO {start_max}] OR endDate:[{end_min} TO {end_max}])"
+        return f"&fq=(beginDate:[{start_min} TO {start_max}] OR endDate:[{end_min} TO {end_max}])"
 
-        query = f"{self.ENDPOINT_URL}?fq=({self.LATITUDE_FILTER} AND {TIME_FILTER})&rows={self.PAGE_SIZE}&wt=json&fl=*,score"
-        logger.debug("dataone temporal search: %s", query)
+    def execute_query(self, query):
         response = requests.get(query)
         response.raise_for_status()
         body = response.json()['response']
@@ -64,6 +56,25 @@ class SolrDirectSearch(SearcherBase):
         )
 
         return result_set
+
+    def text_search(self, text=None):
+        query = SolrDirectSearch.build_query(
+            self._build_text_search_query(text))
+        logger.debug("dataone text search: %s", query)
+        return self.execute_query(query)
+
+    def date_filter_search(self, start_min=None, start_max=None, end_min=None, end_max=None):
+        query = SolrDirectSearch.build_query(
+            self._build_date_filter_query(start_min, start_max, end_min, end_max))
+        logger.debug("dataone temporal search: %s", query)
+        return self.execute_query(query)
+
+    def combined_search(self, text=None, start_min=None, start_max=None, end_min=None, end_max=None):
+        query = self._build_text_search_query(text)
+        query += self._build_date_filter_query(
+            start_min, start_max, end_min, end_max)
+        logger.debug("dataone combined search: %s", query)
+        return self.execute_query(SolrDirectSearch.build_query(query))
 
     def convert_result(self, result):
         urls = []
@@ -97,7 +108,7 @@ class SolrDirectSearch(SearcherBase):
             doi=doi,
             keywords=result.pop('keywords', []),
             origin=result.pop('origin', []),
-            # todo: temporal coverage
+            # todo: temporal coverage from beginDate and endDate
             urls=urls,
             source="DataONE"
         )

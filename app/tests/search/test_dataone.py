@@ -34,11 +34,11 @@ class TestSolrDirectSearch(unittest.TestCase):
 
         # Did we make the query we expected?
         solr_url = m.request_history[0].url
-        self.assertIn('?q=test', solr_url)
+        self.assertIn('&q=test', solr_url)
 
         # Did we add the latitude filter?
         self.assertIn(
-            f'&fq={dataone.SolrDirectSearch.LATITUDE_FILTER}',
+            f'?fq={dataone.SolrDirectSearch.LATITUDE_FILTER}',
             unquote(solr_url)
         )
 
@@ -149,6 +149,42 @@ class TestSolrDirectSearch(unittest.TestCase):
             "beginDate:[1980-08-04T00:00:00Z TO 1999-03-23T23:59:59.999999Z] OR endDate:[2001-01-01T00:00:00Z TO 2020-12-31T23:59:59.999999Z])", solr_url)
 
     @requests_mock.Mocker()
+    def test_combined_search(self, m):
+        m.get(
+            dataone.SolrDirectSearch.ENDPOINT_URL,
+            json=test_response
+        )
+
+        expected = search.SearchResultSet(
+            total_results=1,
+            page_start=5,
+            results=[
+                search.SearchResult(score=0, id="test1", source="DataONE"),
+                search.SearchResult(score=0, id="test2", source="DataONE"),
+            ]
+
+        )
+
+        results = self.search.combined_search(
+            text="test",
+            start_min=date(1980, 8, 4),
+            start_max=date(1999, 3, 23),
+            end_min=date(2001, 1, 1),
+            end_max=date(2020, 12, 31)
+        )
+        self.assertEqual(results, expected)
+
+        # Did we make the query we expected?
+        solr_url = unquote(m.request_history[0].url)
+        self.assertIn('&q=test', solr_url)
+        self.assertIn(
+            "beginDate:[1980-08-04T00:00:00Z TO 1999-03-23T23:59:59.999999Z] OR endDate:[2001-01-01T00:00:00Z TO 2020-12-31T23:59:59.999999Z])", solr_url)
+
+        # Did we add the latitude filter?
+        self.assertIn(
+            f'&fq={dataone.SolrDirectSearch.LATITUDE_FILTER}', solr_url)
+
+    @requests_mock.Mocker()
     def test_search_error(self, m):
         m.get(
             dataone.SolrDirectSearch.ENDPOINT_URL,
@@ -165,7 +201,7 @@ class TestSolrDirectSearch(unittest.TestCase):
         )
         results = self.search.text_search()
         self.assertIn(
-            f'&fq={dataone.SolrDirectSearch.LATITUDE_FILTER}',
+            f'?fq={dataone.SolrDirectSearch.LATITUDE_FILTER}',
             unquote(m.request_history[0].url)
         )
 
