@@ -36,6 +36,12 @@ class TestGleanerSearch(unittest.TestCase):
         self.mock_query.convert = mock_convert
 
     @patch('SPARQLWrapper.SPARQLWrapper.query')
+    def test_text_search_none(self, query):
+        query.return_value = self.mock_query
+        results = self.search.text_search()
+        self.assertNotIn('?lit bds:search', self.search.query)
+
+    @patch('SPARQLWrapper.SPARQLWrapper.query')
     def test_text_search(self, query):
         query.return_value = self.mock_query
 
@@ -58,6 +64,7 @@ class TestGleanerSearch(unittest.TestCase):
         query.return_value = self.mock_query
         results = self.search.date_filter_search()
         self.assertNotIn('FILTER', self.search.query)
+        self.assertNotIn('BIND', self.search.query)
 
     @patch('SPARQLWrapper.SPARQLWrapper.query')
     def test_date_filter_start_min(self, query):
@@ -76,7 +83,8 @@ class TestGleanerSearch(unittest.TestCase):
     @patch('SPARQLWrapper.SPARQLWrapper.query')
     def test_date_filter_start_both(self, query):
         query.return_value = self.mock_query
-        results = self.search.date_filter_search(start_min=date(1999, 1, 1), start_max=date(2020, 3, 3))
+        results = self.search.date_filter_search(
+            start_min=date(1999, 1, 1), start_max=date(2020, 3, 3))
         self.assertIn(
             "FILTER(?start_date >= '1999-01-01'^^xsd:date)", self.search.query)
         self.assertIn(
@@ -156,60 +164,3 @@ class TestGleanerSearch(unittest.TestCase):
         self.assertEqual(result.urls, ['url1', 'url2'])
         self.assertEqual(result.keywords, ['keyword1', 'keyword2', 'keyword3'])
         self.assertEqual(result.source, "Gleaner")
-
-
-class TestSearchResultSet(unittest.TestCase):
-    def test_equal(self):
-        result1 = search.SearchResult(id='a', score=3)
-        result2 = search.SearchResult(id='b', score=1)
-        result3 = search.SearchResult(id='c', score=2)
-        result4 = search.SearchResult(id='d', score=0)
-
-        results = [result1, result2, result3]
-
-        a = search.SearchResultSet(
-            total_results=42, page_start=9, results=results)
-        b = search.SearchResultSet(
-            total_results=42, page_start=9, results=results)
-        c = search.SearchResultSet(
-            total_results=3, page_start=9, results=results)
-        d = search.SearchResultSet(
-            total_results=42, page_start=0, results=results)
-        e = search.SearchResultSet(
-            total_results=42, page_start=9, results=[result2, result3, result4])
-
-        self.assertEqual(a, b)
-        self.assertEqual(a, a)
-        self.assertNotEqual(a, c)
-        self.assertNotEqual(a, d)
-        self.assertNotEqual(a, e)
-        self.assertNotEqual(c, b)
-
-    def test_collate(self):
-        result1 = search.SearchResult(id='a', score=3)
-        result2 = search.SearchResult(id='b', score=1)
-        result3 = search.SearchResult(id='c', score=2)
-        result4 = search.SearchResult(id='d', score=0)
-
-        results_a = [result1, result2]
-
-        results_b = [result3, result4]
-
-        a = search.SearchResultSet(
-            total_results=2, page_start=3, results=results_a)
-        b = search.SearchResultSet(
-            total_results=2, page_start=0, results=results_b)
-
-        c = search.SearchResultSet.collate(a, b)
-
-        expected = search.SearchResultSet(
-            total_results=4,
-            page_start=0,
-            results=[
-                result1,
-                result3,
-                result2,
-                result4
-            ])
-
-        self.assertEqual(c, expected)
