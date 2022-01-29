@@ -37,7 +37,6 @@ class SearchResult:
             elif any((match := url).startswith('http://dx.doi.org/') for url in self.urls):
                 self.doi = 'doi:' + match.lstrip('http://dx.doi.org/')
 
-
     """ Methods to make these sortable """
 
     def __lt__(self, other):
@@ -128,6 +127,16 @@ class SearcherBase:
 
     def text_search(self, text=None):
         """ Makes a call to some search endpoint with the relevant text query"""
+        raise NotImplementedError
+
+    def date_filter_search(self, start_min=None, start_max=None, end_min=None, end_max=None):
+        """ Makes a call to some search endpoint with the relevant date filter query"""
+        raise NotImplementedError
+
+    def combined_search(self, text=None, start_min=None, start_max=None, end_min=None, end_max=None):
+        """  The search that will most commonly get used in the UI - a combination of
+             all of the search methods.
+        """
         raise NotImplementedError
 
     def convert_result(self, result):
