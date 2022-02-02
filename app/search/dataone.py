@@ -1,4 +1,4 @@
-from datetime import date, datetime, time
+from datetime import datetime, time
 import json
 import logging
 import requests
