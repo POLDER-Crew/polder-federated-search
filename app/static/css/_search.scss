@@ -24,7 +24,7 @@
     margin: 1rem 0;
 }
 
-.doi {
+.result__doi {
     padding: 0.25rem;
     text-align: right;
 }
@@ -53,4 +53,9 @@
 
 .result__keywords {
     font-weight: constants.$font-weight-light;
+}
+
+.result__temporal-coverage {
+    list-style: none;
+    padding: 0;
 }

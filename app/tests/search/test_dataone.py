@@ -236,7 +236,7 @@ class TestSolrDirectSearch(unittest.TestCase):
         self.assertEqual(result.keywords, ['keyword1', 'keyword2', 'keyword3'])
         self.assertEqual(result.doi, 'doi:test')
         self.assertEqual(result.origin, 'an origin')
-        self.assertEqual(result.temporal_coverage, '2016-01-01/2016-12-31')
+        self.assertEqual(result.temporal_coverage, ['2016-01-01 to 2016-12-31'])
 
     def test_convert_sparse_result(self):
         self.search.max_score = 10

@@ -5,7 +5,7 @@
  {% for result in result_set.results %}
   <li class="result" data-score={{ result.score }} data-source="{{ result.source }} data-id= {{ result.id }}">
     {% if result.doi %}
-      <div class="doi">
+      <div class="result__doi">
         <a href="http://doi.org/{{ result.doi }}" class="doi__link" target="_blank" rel="noopener">
           {{ result.doi }}
         </a>
@@ -17,13 +17,19 @@
       </h3>
     </a>
     {% if result.temporal_coverage %}
+      <h5>Timespans covered:</h5>
+      <ul class="result__temporal-coverage">
+        {% for time in result.temporal_coverage %}
+          <li>{{ time }}</li>
+        {% endfor %}
+      </ul>
     {% endif %}
     {% if result.keywords %}
-      <h4 class="result__keywords">
+      <p class="result__keywords">
         {% for keyword in result.keywords %}
         {{ keyword }}&nbsp;
         {% endfor %}
-      </h4>
+      </p>
     {% endif %}
     <p class="abstract abstract--truncated" aria-expanded="false">
       {{ result.abstract | truncate(500) }}

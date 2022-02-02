@@ -99,7 +99,7 @@ class SolrDirectSearch(SearcherBase):
 
             begin = datetime.fromisoformat(result.pop('beginDate').rstrip('Z'))
             end = datetime.fromisoformat(result.pop('endDate').rstrip('Z'))
-            result['temporal_coverage'] = datetime.date(begin).isoformat() + " / " + datetime.date(end).isoformat()
+            result['temporal_coverage'] = datetime.date(begin).isoformat() + "/" + datetime.date(end).isoformat()
 
         return SearchResult(
             # Because Blazegraph uses normalized query scores, we can approximate search
@@ -117,7 +117,7 @@ class SolrDirectSearch(SearcherBase):
             doi=doi,
             keywords=result.pop('keywords', []),
             origin=result.pop('origin', []),
-            temporal_coverage=result.pop('temporal_coverage', None),
+            temporal_coverage=result.pop('temporal_coverage', ""),
             urls=urls,
             source="DataONE"
         )

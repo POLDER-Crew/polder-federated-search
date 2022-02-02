@@ -28,7 +28,8 @@ class SearchResult:
         # Good for debugging
         self.source = kwargs.pop('source', 'Anonymous')
 
-        # Remove blank terms and duplicates
+        # Format and remove blank terms and duplicates
+        self.temporal_coverage = [t.replace('/', ' to ') for t in self.temporal_coverage if t]
         self.keywords = [k for k in self.keywords if k]
         self.urls = list(set(x for x in self.urls if x))
 
