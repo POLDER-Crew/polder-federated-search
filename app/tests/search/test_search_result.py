@@ -24,7 +24,7 @@ class TestSearchResult(unittest.TestCase):
                         """,
             'id': 'an identifier',
             'spatial_coverage': 'some spatial coverage object',
-            'temporal_coverage': 'some temporal coverage object',
+            'temporal_coverage': '2001-01-01/2002-03-03, 2003-04-04/2005-05-05, Holocene',
             'score': 42
         }
         test_obj = search.SearchResult(**kwargs_dict)

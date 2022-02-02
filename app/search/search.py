@@ -23,12 +23,14 @@ class SearchResult:
         # May or may not be the same as the ID
         self.doi = kwargs.pop('doi', None)
         self.spatial_coverage = kwargs.pop('spatial_coverage', None)
-        self.temporal_coverage = kwargs.pop('temporal_coverage', None)
+        self.temporal_coverage = kwargs.pop('temporal_coverage', "").split(', ')
         self.score = float(kwargs.pop('score'))
         # Good for debugging
         self.source = kwargs.pop('source', 'Anonymous')
 
-        self.urls = list(set(self.urls))
+        # Remove blank terms and duplicates
+        self.keywords = [k for k in self.keywords if k]
+        self.urls = list(set(x for x in self.urls if x))
 
         # If we have a DOI somewhere, use it as much as possible
         if not self.doi:
