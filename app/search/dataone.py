@@ -26,6 +26,7 @@ class SolrDirectSearch(SearcherBase):
     @staticmethod
     def _build_date_filter_query(start_min=None, start_max=None, end_min=None, end_max=None):
         # convert our dates to the string representation of an ISO instant that Solr wants
+        # See https://solr.apache.org/guide/6_6/working-with-dates.html
         start_min = (datetime.combine(start_min, time.min).isoformat() +
                      "Z" if start_min is not None else "*")
 
@@ -92,6 +93,14 @@ class SolrDirectSearch(SearcherBase):
         if 'seriesId' in result and result['seriesId'].startswith('doi:'):
             doi = result['seriesId']
 
+        if 'beginDate' in result and 'endDate' in result:
+            # convert from dates as represented by Solr
+            # See https://solr.apache.org/guide/6_6/working-with-dates.html
+
+            begin = datetime.fromisoformat(result.pop('beginDate').rstrip('Z'))
+            end = datetime.fromisoformat(result.pop('endDate').rstrip('Z'))
+            result['temporal_coverage'] = datetime.date(begin).isoformat() + "/" + datetime.date(end).isoformat()
+
         return SearchResult(
             # Because Blazegraph uses normalized query scores, we can approximate search
             # ranking by normalizing these as well. However, this does nothing for the
@@ -108,7 +117,7 @@ class SolrDirectSearch(SearcherBase):
             doi=doi,
             keywords=result.pop('keywords', []),
             origin=result.pop('origin', []),
-            # todo: temporal coverage from beginDate and endDate
+            temporal_coverage=result.pop('temporal_coverage', ""),
             urls=urls,
             source="DataONE"
         )

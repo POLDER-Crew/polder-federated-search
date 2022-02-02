@@ -24,7 +24,7 @@ class TestSearchResult(unittest.TestCase):
                         """,
             'id': 'an identifier',
             'spatial_coverage': 'some spatial coverage object',
-            'temporal_coverage': 'some temporal coverage object',
+            'temporal_coverage': '2001-01-01/2002-03-03, 2003-04-04/2005-05-05, Holocene',
             'score': 42
         }
         test_obj = search.SearchResult(**kwargs_dict)
@@ -36,7 +36,7 @@ class TestSearchResult(unittest.TestCase):
         self.assertEqual(test_obj.spatial_coverage,
                          kwargs_dict['spatial_coverage'])
         self.assertEqual(test_obj.temporal_coverage,
-                         kwargs_dict['temporal_coverage'])
+                         ['2001-01-01 to 2002-03-03', '2003-04-04 to 2005-05-05', 'Holocene'])
         self.assertEqual(test_obj.score, kwargs_dict['score'])
 
     def test_init_missing_id(self):
@@ -91,7 +91,7 @@ class TestSearchResult(unittest.TestCase):
         self.assertEqual(test_obj.abstract, "")
         self.assertEqual(test_obj.id, 'test test test')
         self.assertEqual(test_obj.spatial_coverage, None)
-        self.assertEqual(test_obj.temporal_coverage, None)
+        self.assertEqual(test_obj.temporal_coverage, [])
         self.assertEqual(test_obj.score, 10.5)
 
     def test_operators(self):

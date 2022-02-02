@@ -182,7 +182,7 @@ class TestSolrDirectSearch(unittest.TestCase):
 
         # Did we add the latitude filter?
         self.assertIn(
-            f'&fq={dataone.SolrDirectSearch.LATITUDE_FILTER}', solr_url)
+            f'?fq={dataone.SolrDirectSearch.LATITUDE_FILTER}', solr_url)
 
     @requests_mock.Mocker()
     def test_search_error(self, m):
@@ -220,6 +220,8 @@ class TestSolrDirectSearch(unittest.TestCase):
             'placeKey': 'a location',
             'keywords': ['keyword1', 'keyword2', 'keyword3'],
             'origin': 'an origin',
+            'beginDate': '2016-01-01T00:00:00Z',
+            'endDate': '2016-12-31T00:00:00Z'
         }
         result = self.search.convert_result(test_result)
         result.urls.sort()
@@ -234,6 +236,7 @@ class TestSolrDirectSearch(unittest.TestCase):
         self.assertEqual(result.keywords, ['keyword1', 'keyword2', 'keyword3'])
         self.assertEqual(result.doi, 'doi:test')
         self.assertEqual(result.origin, 'an origin')
+        self.assertEqual(result.temporal_coverage, ['2016-01-01 to 2016-12-31'])
 
     def test_convert_sparse_result(self):
         self.search.max_score = 10
