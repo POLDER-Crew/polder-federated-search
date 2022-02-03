@@ -2,26 +2,33 @@
 
 {% block content %}
 
-<!-- in the absence of JS, the form displays results at /search -->
-<h2>Use any or all of the fields below to search for datasets.</h2>
-<form class="search" method="get" action="{{ url_for('nojs_combined_search') }}" data-api-url="{{ url_for('combined_search') }}">
-    <label for="text">Contains text:</label>
-    <input name="text" id="text">
-    <span class="validity"></span>
+<div class="container">
+    <h2 class="search__header">Use any or all of the fields below to search for datasets about Earth's polar regions.</h2>
+    <!-- in the absence of JS, the form displays results at /search -->
+    <form class="search" method="get" action="{{ url_for('nojs_combined_search') }}" data-api-url="{{ url_for('combined_search') }}">
+        <label for="text">Search for text in titles, keywords, or other metadata: </label>
+        <input name="text" id="text">
+        <span class="validity"></span>
 
-    {% with id="start_min", label_text="Data collection started on or after:" %}
-        {% include 'partials/date-picker.html' %}
-    {% endwith %}
-    {% with id="start_max", label_text="Data collection started on or before:" %}
-        {% include 'partials/date-picker.html' %}
-    {% endwith %}
-    {% with id="end_min", label_text="Data collection ended on or after:" %}
-        {% include 'partials/date-picker.html' %}
-    {% endwith %}
-    {% with id="end_max", label_text="Data collection ended on or before:" %}
-        {% include 'partials/date-picker.html' %}
-    {% endwith %}
-    <button type="submit">Search</button>
-</form>
+        <fieldset>
+            <legend>
+                Choose ranges for dates covered by your data sets.
+            </legend>
+            {% with id="start_min", label_text="Data collection started on or after:" %}
+                {% include 'partials/date-picker.html' %}
+            {% endwith %}
+            {% with id="start_max", label_text="Data collection started on or before:" %}
+                {% include 'partials/date-picker.html' %}
+            {% endwith %}
+            {% with id="end_min", label_text="Data collection ended on or after:" %}
+                {% include 'partials/date-picker.html' %}
+            {% endwith %}
+            {% with id="end_max", label_text="Data collection ended on or before:" %}
+                {% include 'partials/date-picker.html' %}
+            {% endwith %}
+        </fieldset>
+        <button type="submit">Search</button>
+    </form>
+</div>
 <div class="results__container"></div>
 {% endblock %}

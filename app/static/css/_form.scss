@@ -1,3 +1,8 @@
+@use 'constants';
+
+.search__header {
+    color: constants.$dark-blue
+}
 .date-picker__fallback {
 }
 
