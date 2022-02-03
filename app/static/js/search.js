@@ -8,7 +8,6 @@ function searchFormSubmit(event) {
     $resultsContainer.empty();
 
     const $form = $(event.delegateTarget);
-
     $.ajax({
       type: "GET",
       url: $form.data('api-url'),

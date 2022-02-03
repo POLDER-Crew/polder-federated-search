@@ -6,7 +6,7 @@
 <h2>Use any or all of the fields below to search for datasets.</h2>
 <form class="search" method="get" action="{{ url_for('nojs_combined_search') }}" data-api-url="{{ url_for('combined_search') }}">
     <label for="text">Contains text:</label>
-    <input name="text" id="text" required>
+    <input name="text" id="text">
     <span class="validity"></span>
 
     {% with id="start_min", label_text="Data collection started on or after:" %}

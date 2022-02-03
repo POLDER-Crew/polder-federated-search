@@ -12,26 +12,24 @@ def home():
     return render_template('index.html')
 
 
+def _get_date_from_args(arg_name, kwargs):
+    arg_date = kwargs.pop(arg_name, None)
+    if arg_date:
+        return date.fromisoformat(arg_date)
+    else:  # empty strings are also falsy and cause trouble
+        return None
+
+
 def _do_combined_search(template, **kwargs):
     text = kwargs.pop('text', None)
 
     # These all need to be date objects
     try:
-        start_min = kwargs.pop('start_min', None)
-        if start_min:
-            start_min = date.fromisoformat(start_min)
+        start_min = _get_date_from_args('start_min', kwargs)
+        start_max = _get_date_from_args('start_max', kwargs)
+        end_min = _get_date_from_args('end_min', kwargs)
+        end_max = _get_date_from_args('end_max', kwargs)
 
-        start_max = kwargs.pop('start_max', None)
-        if start_max:
-            start_max = date.fromisoformat(start_max)
-
-        end_min = kwargs.pop('end_min', None)
-        if end_min:
-            end_min = date.fromisoformat(end_min)
-
-        end_max = kwargs.pop('end_max', None)
-        if end_max:
-            end_max = date.fromisoformat(end_max)
     except ValueError as ve:  # we got some invalid dates
         return str(ve), 400
 

@@ -133,3 +133,18 @@ class TestRoutes(unittest.TestCase):
         with app.test_client() as client:
             response = client.get('/api/search?start_min=2008-13-13')
             self.assertEqual(response.status, '400 BAD REQUEST')
+
+    @patch('app.search.dataone.SolrDirectSearch.combined_search')
+    @patch('app.search.gleaner.GleanerSearch.combined_search')
+    def test_empty_dates(self, gleaner, dataone):
+        gleaner.return_value = self.mock_result_set
+        dataone.return_value = self.mock_result_set
+
+        start_min = date(2008, 1, 1)
+
+        with app.test_client() as client:
+            response = client.get('/api/search?start_min=2008-01-01&start_max=')
+            self.assertEqual(response.status, '200 OK')
+
+            gleaner.assert_called_with(None, start_min, None, None, None)
+            dataone.assert_called_with(None, start_min, None, None, None)
