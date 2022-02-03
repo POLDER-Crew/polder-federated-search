@@ -1,11 +1,13 @@
 import unittest
 from unittest.mock import patch
+from datetime import date
 from app import app
 from app.search.search import SearchResultSet
 
 from app.routes import home, combined_search, nojs_combined_search
 
 app.testing = True
+
 
 class TestRoutes(unittest.TestCase):
     def setUp(self):
@@ -26,12 +28,44 @@ class TestRoutes(unittest.TestCase):
     @patch('app.search.dataone.SolrDirectSearch.combined_search')
     @patch('app.search.gleaner.GleanerSearch.combined_search')
     def test_nojs_combined_search(self, gleaner, dataone):
-        pass
+        gleaner.return_value = self.mock_result_set
+        dataone.return_value = self.mock_result_set
+
+        start_min = date(2008, 1, 1)
+        start_max = date(2010, 5, 12)
+        end_min = date(2010, 5, 13)
+        end_max = date(2099, 5, 5)
+
+        with app.test_client() as client:
+            response = client.get(
+                '/search?start_max=2010-05-12&text=Greenland&end_min=2010-05-13&start_min=2008-01-01&end_max=2099-05-05')
+            self.assertEqual(response.status, '200 OK')
+
+            gleaner.assert_called_with(
+                'Greenland', start_min, start_max, end_min, end_max)
+            dataone.assert_called_with(
+                'Greenland', start_min, start_max, end_min, end_max)
 
     @patch('app.search.dataone.SolrDirectSearch.combined_search')
     @patch('app.search.gleaner.GleanerSearch.combined_search')
     def test_combined_search(self, gleaner, dataone):
-        pass
+        gleaner.return_value = self.mock_result_set
+        dataone.return_value = self.mock_result_set
+
+        start_min = date(2008, 1, 1)
+        start_max = date(2010, 5, 12)
+        end_min = date(2010, 5, 13)
+        end_max = date(2099, 5, 5)
+
+        with app.test_client() as client:
+            response = client.get(
+                '/api/search?end_min=2010-05-13&start_max=2010-05-12&start_min=2008-01-01&end_max=2099-05-05&text=walrus')
+            self.assertEqual(response.status, '200 OK')
+
+            gleaner.assert_called_with(
+                'walrus', start_min, start_max, end_min, end_max)
+            dataone.assert_called_with(
+                'walrus', start_min, start_max, end_min, end_max)
 
     @patch('app.search.dataone.SolrDirectSearch.combined_search')
     @patch('app.search.gleaner.GleanerSearch.combined_search')
@@ -50,4 +84,52 @@ class TestRoutes(unittest.TestCase):
     @patch('app.search.dataone.SolrDirectSearch.combined_search')
     @patch('app.search.gleaner.GleanerSearch.combined_search')
     def test_dates_only(self, gleaner, dataone):
-        pass
+        gleaner.return_value = self.mock_result_set
+        dataone.return_value = self.mock_result_set
+
+        start_min = date(2008, 1, 1)
+        start_max = date(2010, 5, 12)
+        end_min = date(2010, 5, 13)
+        end_max = date(2099, 5, 5)
+
+        with app.test_client() as client:
+            response = client.get('/api/search?start_min=2008-01-01')
+            self.assertEqual(response.status, '200 OK')
+
+            gleaner.assert_called_with(None, start_min, None, None, None)
+            dataone.assert_called_with(None, start_min, None, None, None)
+
+            response = client.get('/api/search?start_max=2010-05-12')
+            self.assertEqual(response.status, '200 OK')
+
+            gleaner.assert_called_with(None, None, start_max, None, None)
+            dataone.assert_called_with(None, None, start_max, None, None)
+
+            response = client.get('/api/search?end_min=2010-05-13')
+            self.assertEqual(response.status, '200 OK')
+
+            gleaner.assert_called_with(None, None, None, end_min, None)
+            dataone.assert_called_with(None, None, None, end_min, None)
+
+            response = client.get('/api/search?end_max=2099-05-05')
+            self.assertEqual(response.status, '200 OK')
+
+            gleaner.assert_called_with(None, None, None, None, end_max)
+            dataone.assert_called_with(None, None, None, None, end_max)
+
+            response = client.get(
+                '/api/search?start_min=2008-01-01&end_max=2099-05-05')
+            self.assertEqual(response.status, '200 OK')
+
+            gleaner.assert_called_with(None, start_min, None, None, end_max)
+            dataone.assert_called_with(None, start_min, None, None, end_max)
+
+    @patch('app.search.dataone.SolrDirectSearch.combined_search')
+    @patch('app.search.gleaner.GleanerSearch.combined_search')
+    def test_invalid_date(self, gleaner, dataone):
+        gleaner.return_value = self.mock_result_set
+        dataone.return_value = self.mock_result_set
+
+        with app.test_client() as client:
+            response = client.get('/api/search?start_min=2008-13-13')
+            self.assertEqual(response.status, '400 BAD REQUEST')

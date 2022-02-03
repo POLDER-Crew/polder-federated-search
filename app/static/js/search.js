@@ -20,6 +20,8 @@ function searchFormSubmit(event) {
       // Need to add event handlers for these after inserting them on the page
       $('.abstract--truncated').click(showFullAbstract);
       $('.abstract--full').click(hideFullAbstract);
+    }).fail(function(error) {
+      console.error(error);
     });
 };
 

@@ -1,4 +1,5 @@
 from flask import render_template, request
+from datetime import date
 
 from app import app
 from app.search.dataone import SolrDirectSearch
@@ -15,10 +16,24 @@ def _do_combined_search(template, **kwargs):
     text = kwargs.pop('text', None)
 
     # These all need to be date objects
-    start_min = kwargs.pop('start_min', None)
-    start_max = kwargs.pop('start_max', None)
-    end_min = kwargs.pop('end_min', None)
-    end_max = kwargs.pop('end_max', None)
+    try:
+        start_min = kwargs.pop('start_min', None)
+        if start_min:
+            start_min = date.fromisoformat(start_min)
+
+        start_max = kwargs.pop('start_max', None)
+        if start_max:
+            start_max = date.fromisoformat(start_max)
+
+        end_min = kwargs.pop('end_min', None)
+        if end_min:
+            end_min = date.fromisoformat(end_min)
+
+        end_max = kwargs.pop('end_max', None)
+        if end_max:
+            end_max = date.fromisoformat(end_max)
+    except ValueError as ve:  # we got some invalid dates
+        return str(ve), 400
 
     dataone = SolrDirectSearch().combined_search(
         text, start_min, start_max, end_min, end_max)
