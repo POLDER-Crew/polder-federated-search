@@ -29,6 +29,7 @@ class GleanerSearch(SearcherBase):
                 FILTER(ISLITERAL(?id)) .
 
                 ?s sschema:url | schema:url | sschema:distribution/sschema:url ?url .
+                FILTER(!STRENDS(?url, ".xml")) .
 
                 ?s schema:description | schema:description/schema:value | sschema:description | sschema:description/sschema:value  ?abstract .
 
