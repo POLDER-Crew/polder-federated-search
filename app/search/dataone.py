@@ -41,7 +41,7 @@ class SolrDirectSearch(SearcherBase):
         end_max = (datetime.combine(end_max, time.max).isoformat() +
                    "Z" if end_max is not None else "NOW")
 
-        return f"&fq=(beginDate:[{start_min} TO {start_max}] OR endDate:[{end_min} TO {end_max}])"
+        return f"&fq=(beginDate:[{start_min} TO {start_max}] AND endDate:[{end_min} TO {end_max}])"
 
     def execute_query(self, query):
         response = requests.get(query)
@@ -76,8 +76,9 @@ class SolrDirectSearch(SearcherBase):
         query = self._build_text_search_query(text)
         query += self._build_date_filter_query(
             start_min, start_max, end_min, end_max)
+        query = SolrDirectSearch.build_query(query)
         logger.debug("dataone combined search: %s", query)
-        return self.execute_query(SolrDirectSearch.build_query(query))
+        return self.execute_query(query)
 
     def convert_result(self, result):
         urls = []

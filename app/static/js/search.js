@@ -11,7 +11,7 @@ function searchFormSubmit(event) {
     $.ajax({
       type: "GET",
       url: $form.data('api-url'),
-      data: $form.serialize(),
+      data: $form.find("input[value!='']").serialize(),
       processData: false
     }).done(function (data) {
       $resultsContainer.append(data);
