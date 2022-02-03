@@ -21,25 +21,20 @@ class GleanerSearch(SearcherBase):
 
             {{
                 VALUES ?type {{ schema:Dataset sschema:Dataset }}
-                VALUES ?ids {{ schema:identifier sschema:identifier }}
-                VALUES ?urls {{ sschema:url schema:url }}
-                VALUES ?titles {{ sschema:name schema:name }}
-                VALUES ?abstracts {{ sschema:description schema:description }}
-                VALUES ?keys {{ sschema:keywords schema:keywords }}
-                VALUES ?sameAsVals {{ sschema:sameAs schema:sameAs }}
-                VALUES ?temporal {{ sschema:temporalCoverage schema:temporalCoverage }}
-
                 ?s a ?type .
+                ?s sschema:name | schema:name ?title .
+                ?s sschema:keywords | schema:keywords ?keywords .
 
-                ?s ?ids ?id .
-                ?s ?urls ?url .
-                ?s ?titles ?title .
-                ?s ?temporal ?temporal_coverage .
+                ?s schema:identifier | schema:identifier/schema:value | sschema:identifier | sschema:identifier/sschema:value ?id .
+                FILTER(ISLITERAL(?id)) .
+
+                ?s sschema:url | schema:url | sschema:distribution/sschema:url ?url .
+
+                ?s schema:description | schema:description/schema:value | sschema:description | sschema:description/sschema:value  ?abstract .
 
                 OPTIONAL {{
-                    ?s ?abstracts ?abstract .
-                    ?s ?keys ?keyword .
-                    ?s ?sameAsVals ?sameAs .
+                    ?s sschema:sameAs | schema:sameAs ?sameAs .
+                    ?s sschema:temporalCoverage | schema:temporalCoverage ?temporal_coverage .
                 }}
 
                 {user_query}
