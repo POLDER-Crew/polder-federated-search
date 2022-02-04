@@ -53,17 +53,17 @@ class GleanerSearch(SearcherBase):
 
     @staticmethod
     def _build_text_search_query(text=None):
-        if text is None:
+        if text:
+            return f"""
+                ?lit bds:search "{text}" .
+                ?lit bds:matchAllTerms "false" .
+                ?lit bds:relevance ?relevance .
+                ?s ?p ?lit .
+            """
+        else:
+            # A blank search in this will give NO results, which seems like
+            # the opposite of what we want.
             return ""
-
-        # A blank search in this will give NO results, which seems like
-        # the opposite of what we want.
-        return f"""
-            ?lit bds:search "{text}" .
-            ?lit bds:matchAllTerms "false" .
-            ?lit bds:relevance ?relevance .
-            ?s ?p ?lit .
-        """
 
     @staticmethod
     def _build_date_filter_query(start_min=None, start_max=None, end_min=None, end_max=None):
@@ -156,6 +156,9 @@ class GleanerSearch(SearcherBase):
         result = {}
         for k, v in sparql_result_dict.items():
             result[k] = v['value']
+        # if we didn't do a text search, we didn't get a score.
+        # This is a workaround for now.
+        result['score'] = result.pop('score', 1)
         result['urls'] = []
         url = result.pop('url', None)
         sameAs = result.pop('sameAs', None)

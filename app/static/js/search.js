@@ -7,12 +7,14 @@ function searchFormSubmit(event) {
     const $resultsContainer = $('.results__container');
     $resultsContainer.empty();
 
-    const $form = $(event.delegateTarget);
+    const $searchButton = $('.search__button');
+    $searchButton.prop('disabled', true);
 
+    const $form = $(event.delegateTarget);
     $.ajax({
       type: "GET",
       url: $form.data('api-url'),
-      data: $form.serialize(),
+      data: $form.find("input[value!='']").serialize(),
       processData: false
     }).done(function (data) {
       $resultsContainer.append(data);
@@ -20,6 +22,10 @@ function searchFormSubmit(event) {
       // Need to add event handlers for these after inserting them on the page
       $('.abstract--truncated').click(showFullAbstract);
       $('.abstract--full').click(hideFullAbstract);
+    }).fail(function(error) {
+      console.error(error.responseText);
+    }).always(function() {
+      $searchButton.prop('disabled', false);
     });
 };
 
