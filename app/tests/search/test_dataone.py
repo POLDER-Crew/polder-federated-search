@@ -210,7 +210,6 @@ class TestSolrDirectSearch(unittest.TestCase):
 
         test_result = {
             'webUrl': ['url1', 'url2', 'url3'],
-            'dataUrl': 'url4',
             'contentUrl': {'value': ['url5', 'url6', 'url7']},
             'seriesId': 'doi:test',
             'score': 5,
@@ -228,7 +227,7 @@ class TestSolrDirectSearch(unittest.TestCase):
         result.keywords.sort()
         self.assertEqual(result.score, 0.5)
         self.assertEqual(
-            result.urls, ['url1', 'url2', 'url3', 'url4', 'url5', 'url6', 'url7'])
+            result.urls, ['https://search.dataone.org/view/An%20id', 'url1', 'url2', 'url3', 'url5', 'url6', 'url7'])
         self.assertEqual(result.title, 'A title'),
         self.assertEqual(result.id, 'An id')
         self.assertEqual(result.abstract, 'An abstract')
@@ -236,17 +235,21 @@ class TestSolrDirectSearch(unittest.TestCase):
         self.assertEqual(result.keywords, ['keyword1', 'keyword2', 'keyword3'])
         self.assertEqual(result.doi, 'doi:test')
         self.assertEqual(result.origin, 'an origin')
-        self.assertEqual(result.temporal_coverage, ['2016-01-01 to 2016-12-31'])
+        self.assertEqual(result.temporal_coverage, [
+                         '2016-01-01 to 2016-12-31'])
 
     def test_convert_sparse_result(self):
         self.search.max_score = 10
 
         test_result = {
             'score': 4,
-            'seriesId': 'test'
+            'seriesId': 'test',
+            'id': 'test1'
         }
         result = self.search.convert_result(test_result)
         self.assertEqual(result.score, 0.4)
         self.assertEqual(result.doi, None)
         self.assertEqual(result.source, 'DataONE')
-        self.assertEqual(result.id, None)
+        self.assertEqual(result.id, 'test1')
+        self.assertEqual(
+            result.urls, ['https://search.dataone.org/view/test1'])
