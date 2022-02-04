@@ -103,7 +103,7 @@ function datePickerSetup() {
     console.log(e.description);
   }
 
-  if (test.type === "date") {
+  if (test.type === "text") {
     $nativeDatePicker.addClass("hidden");
     $fallbackPicker.removeClass("hidden");
     $fallbackLabel.removeClass("hidden");
