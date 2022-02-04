@@ -19,11 +19,10 @@ class SolrDirectSearch(SearcherBase):
 
     @staticmethod
     def _build_text_search_query(text=None):
-        if text is None:
-            return ""
-
-        else:
+        if text:
             return f"&q={text}"
+        else:
+            return ""
 
     @staticmethod
     def _build_date_filter_query(start_min=None, start_max=None, end_min=None, end_max=None):
