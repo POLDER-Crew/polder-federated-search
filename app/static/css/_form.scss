@@ -1,8 +1,61 @@
 @use 'constants';
 
 .search__header {
-    color: constants.$dark-blue
+    color: constants.$dark-blue;
+    padding: 0 1rem;
 }
+
+.search__field {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    margin: 1rem;
+}
+
+.search__label {
+    font-weight: constants.$font-weight-bold;
+    padding: 0.6rem 0;
+}
+
+.search {
+    background-color: constants.$soft-white;
+    padding: 0.5rem 1rem;
+
+    input {
+        border: 2px solid constants.$light-blue;
+        flex: 1;
+        line-height: 1.2rem;
+        margin: 0.25rem 0.5rem;
+        padding: 0.25rem;
+    }
+}
+
+.search__button {
+    background-color: constants.$white;
+    border: 2px solid constants.$accent-warm;
+    border-radius: 0;
+    cursor: pointer;
+    font-size: 1.5rem;
+    text-decoration: none;
+    margin: 0 1rem;
+    padding: 0.5rem;
+    transition-duration: 0.5s;
+
+    &:hover {
+        background-color: constants.$accent-warm;
+        color: constants.$white;
+    }
+}
+
+.date-picker__group {
+    flex: 1 1 50%;
+    text-align: right;
+}
+
+.date-picker {
+    flex: 1 0 40%;
+}
+
 .date-picker__fallback {
 }
 
