@@ -23,7 +23,7 @@ function searchFormSubmit(event) {
       $('.abstract--truncated').click(showFullAbstract);
       $('.abstract--full').click(hideFullAbstract);
     }).fail(function(error) {
-      console.error(error);
+      console.error(error.responseText);
     }).always(function() {
       $searchButton.prop('disabled', false);
     });
