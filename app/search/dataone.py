@@ -1,4 +1,5 @@
 from datetime import datetime, time
+from urllib.parse import quote
 import json
 import logging
 import requests
@@ -10,6 +11,7 @@ logger = logging.getLogger('app')
 class SolrDirectSearch(SearcherBase):
     ENDPOINT_URL = "https://search.dataone.org/cn/v2/query/solr/"
     LATITUDE_FILTER = "(northBoundCoord:[50 TO *] OR southBoundCoord:[* TO -50])"
+    LANDING_URL_PREFIX = "https://search.dataone.org/view/"
 
     @staticmethod
     def build_query(user_query=""):
@@ -79,9 +81,11 @@ class SolrDirectSearch(SearcherBase):
 
     def convert_result(self, result):
         urls = []
-        dataUrl = result.pop('dataUrl', None)
-        if dataUrl:
-            urls.append(dataUrl)
+        identifier = result.pop('id', None)
+        # The landing page for DataONE datasets is always here
+        landingUrl = self.LANDING_URL_PREFIX + quote(identifier)
+        urls.append(landingUrl)
+
         webUrl = result.pop('webUrl', [])
         if webUrl:
             urls.extend(webUrl)
@@ -108,7 +112,7 @@ class SolrDirectSearch(SearcherBase):
             # the one from Blazegraph / Gleaner.
             score=(result.pop('score') / self.max_score),
             title=result.pop('title', None),
-            id=result.pop('id', None),
+            id=identifier,
             abstract=result.pop('abstract', ""),
             # todo: we can make a bounding box with eastBoundCoord, northBoundCoord,
             # westBoundCoord and southBoundCoord in this data source
