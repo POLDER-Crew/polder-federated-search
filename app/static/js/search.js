@@ -7,6 +7,9 @@ function searchFormSubmit(event) {
     const $resultsContainer = $('.results__container');
     $resultsContainer.empty();
 
+    const $searchButton = $('.search__button');
+    $searchButton.prop('disabled', true);
+
     const $form = $(event.delegateTarget);
     $.ajax({
       type: "GET",
@@ -21,6 +24,8 @@ function searchFormSubmit(event) {
       $('.abstract--full').click(hideFullAbstract);
     }).fail(function(error) {
       console.error(error);
+    }).always(function() {
+      $searchButton.prop('disabled', false);
     });
 };
 

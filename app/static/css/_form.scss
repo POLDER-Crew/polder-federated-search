@@ -19,7 +19,7 @@
 
 .search {
     background-color: constants.$soft-white;
-    padding: 0.5rem 1rem;
+    padding: 1rem;
 
     input {
         border: 2px solid constants.$light-blue;
@@ -31,9 +31,10 @@
 }
 
 .search__button {
-    background-color: constants.$white;
+    background-color: constants.$accent-warm;
     border: 2px solid constants.$accent-warm;
     border-radius: 0;
+    color: constants.$white;
     cursor: pointer;
     font-size: 1.5rem;
     text-decoration: none;
@@ -42,8 +43,15 @@
     transition-duration: 0.5s;
 
     &:hover {
-        background-color: constants.$accent-warm;
-        color: constants.$white;
+        background-color: constants.$white;
+        color: constants.$accent-warm;
+    }
+
+    &:disabled {
+        cursor: default;
+        background-color: constants.$soft-white;
+        border-color: constants.$grey;
+        color: constants.$grey
     }
 }
 

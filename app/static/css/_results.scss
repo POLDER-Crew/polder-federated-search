@@ -3,10 +3,10 @@
 /* Search results */
 .results__container {
     background-color: constants.$soft-white;
-    margin: 2rem -1rem;
 }
 
 .results__number {
+    color: constants.$dark-blue;
     font-weight: constants.$font-weight-bold;
     padding: 2rem 0 0 1rem;
 }
