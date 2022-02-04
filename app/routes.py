@@ -6,6 +6,7 @@ from app.search.dataone import SolrDirectSearch
 from app.search.gleaner import GleanerSearch
 from app.search.search import SearchResultSet
 
+BAD_REQUEST_STATUS = 400
 
 @app.route('/')
 def home():
@@ -31,7 +32,7 @@ def _do_combined_search(template, **kwargs):
         end_max = _get_date_from_args('end_max', kwargs)
 
     except ValueError as ve:  # we got some invalid dates
-        return str(ve), 400
+        return str(ve), BAD_REQUEST_STATUS
 
     dataone = SolrDirectSearch().combined_search(
         text, start_min, start_max, end_min, end_max)
