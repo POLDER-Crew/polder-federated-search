@@ -2,6 +2,8 @@
 
 ## A federated search app for and by the polar data community
 
+For more comprehensive documentation, [see this book](https://github.com/POLDER-Crew/Federated-Search-Documentation).
+
 ### Covered data repositories
 
 There are two ways a repository is included in searches that are made from this application- if the repository is indexed DataONE (and has data within the search parameters), and if the repository is indexed by the app itself.
@@ -22,6 +24,7 @@ There are many DataONE repositories, but of particular interest to the polar res
 - CCADI
 - CRITTERBASE
 - BAS (most likely via DataCite)
+- [Canadian Watershed Information Network](https://dev.uni-manitoba.links.com.au/data/dataset/)
 
 ### Architecture
 This tool uses Docker images to manage the different services that it depends on. One of those is [Gleaner](https://gleaner.io).
