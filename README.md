@@ -2,7 +2,7 @@
 
 ## A federated search app for and by the polar data community
 
-For more comprehensive documentation, [see this book](https://github.com/POLDER-Crew/Federated-Search-Documentation).
+For more comprehensive documentation, [see this book](https://polder-crew.github.io/Federated-Search-Documentation).
 
 ### Covered data repositories
 
