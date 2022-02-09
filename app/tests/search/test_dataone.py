@@ -42,6 +42,9 @@ class TestSolrDirectSearch(unittest.TestCase):
             unquote(solr_url)
         )
 
+        # Did we include the filter for duplicates?
+        self.assertIn(dataone.SolrDirectSearch.DUPLICATE_FILTER, unquote(solr_url))
+
     @requests_mock.Mocker()
     def test_date_filter_none(self, m):
         m.get(
@@ -69,6 +72,9 @@ class TestSolrDirectSearch(unittest.TestCase):
             f'{dataone.SolrDirectSearch.LATITUDE_FILTER}',
             solr_url
         )
+
+        # Did we include the filter for duplicates?
+        self.assertIn(dataone.SolrDirectSearch.DUPLICATE_FILTER, solr_url)
 
     @requests_mock.Mocker()
     def test_date_filter_start_min(self, m):
@@ -183,6 +189,9 @@ class TestSolrDirectSearch(unittest.TestCase):
         # Did we add the latitude filter?
         self.assertIn(
             f'?fq={dataone.SolrDirectSearch.LATITUDE_FILTER}', solr_url)
+
+        # Did we include the filter for duplicates?
+        self.assertIn(dataone.SolrDirectSearch.DUPLICATE_FILTER, solr_url)
 
     @requests_mock.Mocker()
     def test_search_error(self, m):

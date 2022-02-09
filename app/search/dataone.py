@@ -11,11 +11,12 @@ logger = logging.getLogger('app')
 class SolrDirectSearch(SearcherBase):
     ENDPOINT_URL = "https://search.dataone.org/cn/v2/query/solr/"
     LATITUDE_FILTER = "(northBoundCoord:[50 TO *] OR southBoundCoord:[* TO -50])"
+    DUPLICATE_FILTER = " AND -obsoletedBy:*"
     LANDING_URL_PREFIX = "https://search.dataone.org/view/"
 
     @staticmethod
     def build_query(user_query=""):
-        return f"{SolrDirectSearch.ENDPOINT_URL}?fq={SolrDirectSearch.LATITUDE_FILTER}{user_query}&rows={SolrDirectSearch.PAGE_SIZE}&wt=json&fl=*,score"
+        return f"{SolrDirectSearch.ENDPOINT_URL}?fq={SolrDirectSearch.LATITUDE_FILTER}{SolrDirectSearch.DUPLICATE_FILTER}{user_query}&rows={SolrDirectSearch.PAGE_SIZE}&wt=json&fl=*,score"
 
     @staticmethod
     def _build_text_search_query(text=None):
