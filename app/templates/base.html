@@ -1,32 +1,31 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-
-<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-    <head>
-        <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/style.css') }}" />
-        <title>
-            {% block title %}Home{% endblock %} - POLDER Federated Search
-        </title>
-    </head>
-    <body>
-        {% block nav %}
-        <nav>
-          <a href="{{ url_for('home') }}" class="nav__link">
-            <h1>POLDER Federated Search</h1>
-          </a>
-        </nav>
-        {% endblock %}
-        <section class="content">
-          <header>
-            {% block header %}{% endblock %}
-          </header>
-          {% for message in get_flashed_messages() %}
-            <div class="flash">{{ message }}</div>
-          {% endfor %}
-          {% block content %}{% endblock %}
-        </section>
-        <script type="module" src="{{ url_for('static', filename='dist/js/index.js') }}"></script>
-    </body>
+  <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/style.css') }}" />
+      <title>
+          {% block title %}Home{% endblock %} - POLDER Federated Search
+      </title>
+  </head>
+  <body>
+      {% block nav %}
+      <nav>
+          <h1>
+            <a href="{{ url_for('home') }}" class="nav__link">POLDER Federated Search</a>
+          </h1>
+      </nav>
+      {% endblock %}
+      <section class="content">
+        <header>
+          {% block header %}{% endblock %}
+        </header>
+        {% for message in get_flashed_messages() %}
+          <div class="flash">{{ message }}</div>
+        {% endfor %}
+        {% block content %}{% endblock %}
+      </section>
+      <script type="module" src="{{ url_for('static', filename='dist/js/index.js') }}"></script>
+  </body>
 </html>
