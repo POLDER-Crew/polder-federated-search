@@ -76,7 +76,7 @@ ingress:
           pathType: ImplementationSpecific
   tls:
   - hosts:
-    - api.test.dataone.org
+    - search-dev.polder.info
     secretName: ingress-nginx-tls-cert
 
 resources: {}
