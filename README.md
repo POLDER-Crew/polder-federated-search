@@ -51,6 +51,8 @@ Assuming that you're starting from **this directory**:
 
 If you're using Docker Desktop, you can use the UI to open the docker-webapp image in a browser.
 
+If you ever need to remove everything from the triplestore and start over, you can run `./clear-triplestore.sh`.
+
 
 #### Helm/Kubernetes
 
