@@ -92,6 +92,8 @@ The Helm chart also includes a Kubernetes `CronJob` that tells Gleaner to index 
 
 In addition, there's a `CronJob` that is set to run on the 30th of February. This is a terrible hack to get around the fact that you cannot include a job in a Helm chart without it being automatically run when you deploy the chart. I wanted a way to remove all of the indexed files and recreate the triplestore without having to do a bunch of manual steps. In order to run this job, you can do `kubectl create job --from=cronjob/recreate-index reindex` - but do note that it will delete and recreate the entire index.
 
+Note that the 30th of February has happened at least [twice](https://www.timeanddate.com/date/february-30.html), but given the other circumstances under which it occurred, I'm guessing that a federated search reindex will be the least of your worries.
+
 Take a look at `helm/values.yaml` to customize this setup. Pay particular attention to `persistence` at the bottom; if you're running locally, you probably want `existing: false` in there.
 
 ### Development
