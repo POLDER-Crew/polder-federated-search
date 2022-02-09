@@ -39,7 +39,7 @@ data:
       properName: National Snow and Ice Data Center
       domain: https://nsidc.org
       type: sitemap
-      active: false
+      active: true
     - name: usap-dc
       type: sitemap
       headless: true
