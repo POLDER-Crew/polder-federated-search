@@ -1,35 +1,35 @@
 <div class="date-picker">
-    <label class="search__label" for="{{ id}}">{{ label_text }}</label>
-    <input type="date" id="{{ id }}" name="{{ id }}">
-    <span class="validity"></span>
-  </div>
-  <p class="date-picker__fallback-label hidden">{{ label_text }}</p>
-  <div class="date-picker__fallback hidden" data-id-prefix={{ id }}>
-    <span>
-      <label class="search__label" for="day">Day:</label>
-      <select id="{{ id }}--day" name="{{ id }}--day">
-      </select>
-    </span>
-    <span>
-      <label for="month">Month:</label>
-      <select id="{{ id }}--month" name="{{ id }}--month">
-        <option value='01'>January</option>
-        <option value='02'>February</option>
-        <option value='03'>March</option>
-        <option value='04'>April</option>
-        <option value='05'>May</option>
-        <option value='06'>June</option>
-        <option value='07'>July</option>
-        <option value='08'>August</option>
-        <option value='09'>September</option>
-        <option value='10'>October</option>
-        <option value='11'>November</option>
-        <option value='12'>December</option>
-      </select>
-    </span>
-    <span>
-      <label class="search__label" for="year">Year:</label>
-      <select id="{{ id }}--year" name="{{ id }}--year">
-      </select>
-    </span>
+  <label class="search__label" for="{{ id}}">{{ label_text }}</label>
+  <input type="date" id="{{ id }}" name="{{ id }}">
+  <span class="validity"></span>
+</div>
+<p class="date-picker__fallback-label hidden">{{ label_text }}</p>
+<div class="date-picker__fallback hidden" data-id-prefix={{ id }}>
+  <span>
+    <label class="search__label" for="{{ id }}--day">Day:</label>
+    <select id="{{ id }}--day" name="{{ id }}--day">
+    </select>
+  </span>
+  <span>
+    <label for="{{ id }}--month">Month:</label>
+    <select id="{{ id }}--month" name="{{ id }}--month">
+      <option value='01'>January</option>
+      <option value='02'>February</option>
+      <option value='03'>March</option>
+      <option value='04'>April</option>
+      <option value='05'>May</option>
+      <option value='06'>June</option>
+      <option value='07'>July</option>
+      <option value='08'>August</option>
+      <option value='09'>September</option>
+      <option value='10'>October</option>
+      <option value='11'>November</option>
+      <option value='12'>December</option>
+    </select>
+  </span>
+  <span>
+    <label class="search__label" for="{{ id }}--year">Year:</label>
+    <select id="{{ id }}--year" name="{{ id }}--year">
+    </select>
+  </span>
 </div>
