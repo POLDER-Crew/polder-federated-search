@@ -2,7 +2,11 @@
 
 .search__header {
     color: constants.$dark-blue;
-    padding: 0 1rem;
+    padding: 0 0.25rem;
+
+    @include constants.breakpoint(medium-and-up) {
+        padding: 0 1rem;
+    }
 }
 
 .search__field {
@@ -19,7 +23,11 @@
 
 .search {
     background-color: constants.$soft-white;
-    padding: 1rem;
+    padding: 0 0 0.5rem 0;
+
+    @include constants.breakpoint(medium-and-up) {
+        padding: 1rem;
+    }
 
     input {
         border: 2px solid constants.$light-blue;
@@ -56,16 +64,17 @@
 }
 
 .date-picker__group {
-    flex: 1 1 50%;
+    display: flex;
+    flex: 1 1 60%;
+    flex-wrap: wrap;
     text-align: right;
 }
 
 .date-picker {
-    flex: 1 0 40%;
-}
+    flex: 1 0 60%;
+    padding: 0.5rem 0;
 
-.date-picker__fallback {
-}
-
-.date-picker__fallback-label {
+    @include constants.breakpoint(large-and-up) {
+        flex: 1 0 50%;
+    }
 }

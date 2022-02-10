@@ -5,12 +5,11 @@ nav {
     background-color: constants.$soft-white;
     border-bottom: 2px solid constants.$light-blue;
     margin: 0;
-    padding: 1rem;
-}
+    padding: 0.5rem;
 
-h1 {
-    color: constants.$dark-blue;
-    font-size: 2rem;
+    @include constants.breakpoint(medium-and-up) {
+        padding: 1rem;
+    }
 }
 
 .nav__link {
