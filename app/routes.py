@@ -1,4 +1,4 @@
-from flask import render_template, request
+from flask import redirect, render_template, request, url_for
 from datetime import date
 
 from app import app
@@ -12,6 +12,11 @@ BAD_REQUEST_STATUS = 400
 def home():
     return render_template('index.html')
 
+# This is for backward compatibility, because /polder has been sent out to
+# a bunch of mailing lists.
+@app.route('/polder')
+def polder():
+    return redirect(url_for('home'))
 
 def _get_date_from_args(arg_name, kwargs):
     arg_date = kwargs.pop(arg_name, None)
