@@ -5,7 +5,6 @@
 For more comprehensive documentation, [see this book](https://polder-crew.github.io/Federated-Search-Documentation).
 
 ### Covered data repositories
-
 There are two ways a repository is included in searches that are made from this application- if the repository is indexed DataONE (and has data within the search parameters), and if the repository is indexed by the app itself.
 
 #### DataONE Repositories
@@ -29,7 +28,7 @@ There are many DataONE repositories, but of particular interest to the polar res
 ### Architecture
 This tool uses Docker images to manage the different services that it depends on. One of those is [Gleaner](https://gleaner.io).
 
-The web app itself that hosts the UI and does the searches is built using [Flask](https://flask.palletsprojects.com), which is a Python web framework. I chose Python because Python has good support for RDF and SPARQL operations with [RDFLib](https://rdflib.dev/). The frontend dependencies are built using [Parcel](https://parceljs.org/).
+The web app itself that hosts the UI and does the searches is built using [Flask](https://flask.palletsprojects.com), which is a Python web framework. I chose Python because Python has good support for RDF and SPARQL operations with [RDFLib](https://rdflib.dev/). The frontend dependencies are HTML, JavaScript and SCSS, built using [Parcel](https://parceljs.org/).
 
 ### Deployment
 A pre-built image for the web app is on Docker Hub as [nein09/polder-federated-search](https://hub.docker.com/repository/docker/nein09/polder-federated-search), and that is what all of the Helm/Kubernetes and Docker files in this repository are referencing. If you want to modify this project and build your own ones, you're welcome to.
@@ -55,7 +54,6 @@ If you ever need to remove everything from the triplestore and start over, you c
 
 
 #### Helm/Kubernetes
-
 1. Install helm (on OS X, something like `brew install helm`), or visit the [Helm website](http://helm.sh) for instructions.
 1. This Helm chart uses an ingress controller. If you are running it in your own environment (like on your own dev machine), you need to install it like this
     ```
@@ -115,3 +113,12 @@ The easiest setup for development on the web app itself is to use docker-compose
 
 You should see Flask's startup message, and get an address for your locally running web app.
 
+#### Standards and practices
+
+##### Styling
+The SCSS styles are built assuming a mobile-first philosophy. Here are the breakpoints, for your convenience; they are also in `_constants.scss`.
+
+- Small (default): up to 479px wide
+- Medium: 480 - 767px wide
+- Large: 768 - 1199px wide
+- XLarge: 1200px and wider

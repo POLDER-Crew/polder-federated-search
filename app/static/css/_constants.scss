@@ -15,6 +15,7 @@ $font-weight-bold: 800;
 $font-weight-light: 200;
 
 /* Breakpoints */
+/* This operates as "mobile-first", meaning that 'small' is the default size */
 @mixin breakpoint($point) {
     @if $point == medium {
         @media only screen and (min-width: 480px) and (max-width: 767px) { @content ; }
