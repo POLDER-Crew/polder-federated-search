@@ -31,10 +31,10 @@
 
     input {
         border: 2px solid constants.$light-blue;
-        flex: 1;
+        flex: 1 1 auto;
         line-height: 1.2rem;
-        margin: 0.25rem 0.5rem;
         padding: 0.25rem;
+        margin: 0.25rem 0.5rem;
     }
 }
 
@@ -63,18 +63,8 @@
     }
 }
 
-.date-picker__group {
-    display: flex;
-    flex: 1 1 60%;
-    flex-wrap: wrap;
-    text-align: right;
-}
-
 .date-picker {
-    flex: 1 0 60%;
-    padding: 0.5rem 0;
-
-    @include constants.breakpoint(large-and-up) {
-        flex: 1 0 50%;
-    }
+    justify-content: flex-start;
+    margin: 0;
+    padding: 0.5rem;
 }

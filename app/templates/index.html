@@ -12,22 +12,20 @@
             <span class="validity"></span>
         </div>
         <fieldset class="search__field">
-            <legend>
-                Choose ranges for dates covered by the data sets you want to find.
-            </legend>
+            <legend class="search__label">Search by dates when data was collected:</legend>
             <div class="date-picker__group">
-                {% with id="start_min", label_text="Data collection started on or after:" %}
+                {% with id="start_min", label_text="Starting on or after:" %}
                     {% include 'partials/date-picker.html' %}
                 {% endwith %}
-                {% with id="start_max", label_text="Data collection started on or before:" %}
+                {% with id="start_max", label_text="Starting on or before:" %}
                     {% include 'partials/date-picker.html' %}
                 {% endwith %}
             </div>
             <div class="date-picker__group">
-                {% with id="end_min", label_text="Data collection ended on or after:" %}
+                {% with id="end_min", label_text="Ending on or after:" %}
                     {% include 'partials/date-picker.html' %}
                 {% endwith %}
-                {% with id="end_max", label_text="Data collection ended on or before:" %}
+                {% with id="end_max", label_text="Ending on or before:" %}
                     {% include 'partials/date-picker.html' %}
                 {% endwith %}
             </div>
