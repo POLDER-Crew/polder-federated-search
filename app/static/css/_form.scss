@@ -31,7 +31,7 @@
 
     input {
         border: 2px solid constants.$light-blue;
-        flex: 1 1 auto;
+        flex: 1;
         line-height: 1.2rem;
         padding: 0.25rem;
         margin: 0.25rem 0.5rem;
@@ -66,5 +66,9 @@
 .date-picker {
     justify-content: flex-start;
     margin: 0;
-    padding: 0.5rem;
+    padding: 0.5rem 0;
+}
+
+.date-picker__group {
+    flex: 0 1 auto;
 }
