@@ -14,7 +14,15 @@
 .results {
     background-color: constants.$soft-white;
     list-style:  none;
-    padding: 0 2rem;
+    padding: 0 0.25rem;
+
+    @include constants.breakpoint(medium) {
+        padding: 0 1rem;
+    }
+
+    @include constants.breakpoint(large-and-up) {
+        padding: 0 2rem;
+    }
 }
 
 .result {

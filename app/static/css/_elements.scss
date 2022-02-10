@@ -19,6 +19,26 @@ a {
     text-decoration: none;
 }
 
+h1 {
+    color: constants.$dark-blue;
+    font-size: 1.5rem;
+    text-align: center;
+
+    @include constants.breakpoint(medium-and-up) {
+        font-size: 2rem;
+        text-align: left;
+    }
+}
+
+h2 {
+    font-size: 1.3rem;
+    text-align: center;
+
+    @include constants.breakpoint(medium-and-up) {
+        font-size: 1.5rem;
+        text-align: left;
+    }
+}
 
 h4 {
     margin-bottom: 0.25rem;

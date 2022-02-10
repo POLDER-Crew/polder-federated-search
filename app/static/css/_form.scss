@@ -2,7 +2,11 @@
 
 .search__header {
     color: constants.$dark-blue;
-    padding: 0 1rem;
+    padding: 0 0.25rem;
+
+    @include constants.breakpoint(medium-and-up) {
+        padding: 0 1rem;
+    }
 }
 
 .search__field {
@@ -19,14 +23,18 @@
 
 .search {
     background-color: constants.$soft-white;
-    padding: 1rem;
+    padding: 0 0 0.5rem 0;
+
+    @include constants.breakpoint(medium-and-up) {
+        padding: 1rem;
+    }
 
     input {
         border: 2px solid constants.$light-blue;
         flex: 1;
         line-height: 1.2rem;
-        margin: 0.25rem 0.5rem;
         padding: 0.25rem;
+        margin: 0.25rem 0.5rem;
     }
 }
 
@@ -55,17 +63,12 @@
     }
 }
 
-.date-picker__group {
-    flex: 1 1 50%;
-    text-align: right;
-}
-
 .date-picker {
-    flex: 1 0 40%;
+    justify-content: flex-start;
+    margin: 0;
+    padding: 0.5rem 0;
 }
 
-.date-picker__fallback {
-}
-
-.date-picker__fallback-label {
+.date-picker__group {
+    flex: 0 1 auto;
 }
