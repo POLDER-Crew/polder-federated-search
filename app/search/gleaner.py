@@ -21,27 +21,35 @@ class GleanerSearch(SearcherBase):
 
             {{
                 VALUES ?type {{ schema:Dataset sschema:Dataset }}
-                VALUES ?ids {{ schema:identifier sschema:identifier }}
-                VALUES ?urls {{ sschema:url schema:url }}
-                VALUES ?titles {{ sschema:name schema:name }}
-                VALUES ?abstracts {{ sschema:description schema:description }}
-                VALUES ?keys {{ sschema:keywords schema:keywords }}
-                VALUES ?sameAsVals {{ sschema:sameAs schema:sameAs }}
-                VALUES ?temporal {{ sschema:temporalCoverage schema:temporalCoverage }}
-
                 ?s a ?type .
+                {{
+                  ?s sschema:name ?title .
+                  ?s sschema:keywords ?keywords .
+                  ?s sschema:url ?url .
+                  ?s sschema:description | sschema:description/sschema:value  ?abstract .
+                  ?s sschema:temporalCoverage ?temporal_coverage .
+                  ?s sschema:identifier | sschema:identifier/sschema:value ?id .
 
-                ?s ?ids ?id .
-                ?s ?urls ?url .
-                ?s ?titles ?title .
-                ?s ?temporal ?temporal_coverage .
 
-                OPTIONAL {{
-                    ?s ?abstracts ?abstract .
-                    ?s ?keys ?keyword .
-                    ?s ?sameAsVals ?sameAs .
+                  OPTIONAL {{
+                      ?s sschema:sameAs ?sameAs .
+                  }}
                 }}
+                UNION {{
+                      ?s schema:name ?title .
+                      ?s schema:keywords ?keywords .
+                      ?s schema:url ?url .
+                      ?s schema:description | schema:description/schema:value ?abstract .
+                      ?s schema:temporalCoverage ?temporal_coverage .
+                      ?s schema:identifier | schema:identifier/schema:value ?id .
 
+
+                      OPTIONAL {{
+                          ?s schema:sameAs ?sameAs .
+                      }}
+                  }}
+
+                FILTER(ISLITERAL(?id)) .
                 {user_query}
 
             }}
