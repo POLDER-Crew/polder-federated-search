@@ -51,6 +51,8 @@ Assuming that you're starting from **this directory**:
 
 If you're using Docker Desktop, you can use the UI to open the docker-webapp image in a browser.
 
+If you ever need to remove everything from the triplestore and start over, you can run `./clear-triplestore.sh`.
+
 
 #### Helm/Kubernetes
 
@@ -86,7 +88,11 @@ You can see that the values of the secrets are base64 encoded - in order to do t
     1. Writes the resulting indexed metadata to Blazegraph so we can search it
 1. If you're using Docker desktop for all this, you can visit [http://localhost](http://localhost) and see it running!
 
-The Helm chart also includes a Kubernetes `CronJob` that tells Gleaner to index [once a week](https://cron.help/#0_0_*_*_3).
+The Helm chart also includes a Kubernetes `CronJob` that tells Gleaner to index [once a week](https://cron.help/#0_0_*_*_3). You can see it at `helm/templates/crawl.yaml`.
+
+In addition, there's a `CronJob` that is set to run on the 30th of February, at `helm/templates/recreate-index.yaml`. This is a terrible hack to get around the fact that you cannot include a job in a Helm chart without it being automatically run when you deploy the chart. I wanted a way to remove all of the indexed files and recreate the triplestore without having to do a bunch of manual steps. In order to run this job, you can do `kubectl create job --from=cronjob/recreate-index reindex` - but do note that it will delete and recreate the entire index.
+
+Note that the 30th of February has happened at least [twice](https://www.timeanddate.com/date/february-30.html), but given the other circumstances under which it occurred, I'm guessing that a federated search reindex will be the least of your worries.
 
 Take a look at `helm/values.yaml` to customize this setup. Pay particular attention to `persistence` at the bottom; if you're running locally, you probably want `existing: false` in there.
 

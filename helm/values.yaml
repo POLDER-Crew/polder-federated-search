@@ -70,13 +70,13 @@ ingress:
     nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
   hosts:
-    - host: api.test.dataone.org
+    - host: search-dev.polder.info
       paths:
         - path: /polder
           pathType: ImplementationSpecific
   tls:
   - hosts:
-    - api.test.dataone.org
+    - search-dev.polder.info
     secretName: ingress-nginx-tls-cert
 
 resources: {}

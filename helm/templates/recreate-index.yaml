@@ -1,0 +1,121 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: recreate-index
+spec:
+  # 30th of February run, will never be run automatically, only when we trigger it
+  # Yes, this is cursed, but this is the only way you can put a manual-only job in a Helm chart
+  schedule: "0 0 30 2 0"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          name: crawl
+        spec:
+          restartPolicy: Never
+          volumes:
+          # todo: this is a shared config file with the initial index,
+          # and it does a full index. Maybe just do a partial one?
+          - name: gleaner-config
+            configMap:
+              name: gleaner-config
+          - name: gleaner-context
+            emptyDir: {}
+          initContainers:
+          - name: remove-minio-files
+            image: bitnami/minio-client:2021.11.16
+            env:
+            - name: MINIO_CLIENT_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  key:  minioAccessKey
+                  name: {{ .Release.Name }}-secrets
+            - name: MINIO_CLIENT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  key:  minioSecretKey
+                  name: {{ .Release.Name }}-secrets
+            - name: MINIO_SERVER_HOST
+              value: {{ include "gleaner.s3system.endpoint" . }}
+            - name: MINIO_SERVER_PORT_NUMBER
+              value: "{{ .Values.s3system_service.api_port }}"
+            command:
+            # the first line of the following bash command is supposed to happen automatically, according to
+            # the documentation on docker hub, but it does not.
+            - /bin/bash
+            - -c
+            - >
+              mc config host add minio "http://${MINIO_SERVER_HOST}:${MINIO_SERVER_PORT_NUMBER}" "${MINIO_CLIENT_ACCESS_KEY}" "${MINIO_CLIENT_SECRET_KEY}" &&
+              mc rm -r --force minio/{{ .Values.storageNamespace }}
+          - name: get-contextfiles
+            image: curlimages/curl:7.80.0
+            command:
+            - curl
+            - -O
+            - https://schema.org/version/latest/schemaorg-current-https.jsonld
+            volumeMounts:
+            - name: gleaner-context
+              mountPath: /context
+            workingDir: /context
+          - name: gleaner-index
+            image: fils/gleaner:v3.0.3-developement
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
+            args:
+            - -cfg
+            - gleaner
+            env:
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  key:  minioAccessKey
+                  name: {{ .Release.Name }}-secrets
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  key:  minioSecretKey
+                  name: {{ .Release.Name }}-secrets
+            workingDir: /config
+            volumeMounts:
+            - name: gleaner-config
+              mountPath: /config/gleaner.yaml
+              subPath: gleaner.yaml
+            - name: gleaner-context
+              mountPath: /config
+          - name: clear-triplestore
+            image: curlimages/curl:7.80.0
+            command:
+            - curl
+            - --get
+            - -X
+            - DELETE
+            - -H
+            - 'Accept: application/xml'
+            - {{ include "gleaner.triplestore.endpoint" . }}namespace/{{ .Values.storageNamespace }}/sparql
+          containers:
+          - name: write-to-triplestore
+            image: bitnami/minio-client:2021.11.16
+            env:
+            - name: MINIO_CLIENT_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  key:  minioAccessKey
+                  name: {{ .Release.Name }}-secrets
+            - name: MINIO_CLIENT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  key:  minioSecretKey
+                  name: {{ .Release.Name }}-secrets
+            - name: MINIO_SERVER_HOST
+              value: {{ include "gleaner.s3system.endpoint" . }}
+            - name: MINIO_SERVER_PORT_NUMBER
+              value: "{{ .Values.s3system_service.api_port }}"
+            command:
+            # the first line of the following bash command is supposed to happen automatically, according to
+            # the documentation on docker hub, but it does not.
+            - /bin/bash
+            - -c
+            - >
+              mc config host add minio "http://${MINIO_SERVER_HOST}:${MINIO_SERVER_PORT_NUMBER}" "${MINIO_CLIENT_ACCESS_KEY}" "${MINIO_CLIENT_SECRET_KEY}" &&
+              for i in $(mc find minio/{{ .Values.storageNamespace }}/milled); do
+                mc cat $i | curl -X POST -H 'Content-Type:text/x-nquads' --data-binary  @- {{ include "gleaner.triplestore.endpoint" . }}namespace/{{ .Values.storageNamespace }}/sparql
+              done
