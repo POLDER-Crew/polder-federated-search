@@ -22,22 +22,34 @@ class GleanerSearch(SearcherBase):
             {{
                 VALUES ?type {{ schema:Dataset sschema:Dataset }}
                 ?s a ?type .
-                ?s sschema:name | schema:name ?title .
-                ?s sschema:keywords | schema:keywords ?keywords .
+                {{
+                  ?s sschema:name ?title .
+                  ?s sschema:keywords ?keywords .
+                  ?s sschema:url ?url .
+                  ?s sschema:description | sschema:description/sschema:value  ?abstract .
+                  ?s sschema:temporalCoverage ?temporal_coverage .
+                  ?s sschema:identifier | sschema:identifier/sschema:value ?id .
 
-                ?s schema:identifier | schema:identifier/schema:value | sschema:identifier | sschema:identifier/sschema:value ?id .
-                FILTER(ISLITERAL(?id)) .
 
-                ?s sschema:url | schema:url | sschema:distribution/sschema:url ?url .
-                FILTER(!STRENDS(?url, ".xml")) .
-
-                ?s schema:description | schema:description/schema:value | sschema:description | sschema:description/sschema:value  ?abstract .
-
-                OPTIONAL {{
-                    ?s sschema:sameAs | schema:sameAs ?sameAs .
-                    ?s sschema:temporalCoverage | schema:temporalCoverage ?temporal_coverage .
+                  OPTIONAL {{
+                      ?s sschema:sameAs ?sameAs .
+                  }}
                 }}
+                UNION {{
+                      ?s schema:name ?title .
+                      ?s schema:keywords ?keywords .
+                      ?s schema:url ?url .
+                      ?s schema:description | schema:description/schema:value ?abstract .
+                      ?s schema:temporalCoverage ?temporal_coverage .
+                      ?s schema:identifier | schema:identifier/schema:value ?id .
 
+
+                      OPTIONAL {{
+                          ?s schema:sameAs ?sameAs .
+                      }}
+                  }}
+
+                FILTER(ISLITERAL(?id)) .
                 {user_query}
 
             }}
