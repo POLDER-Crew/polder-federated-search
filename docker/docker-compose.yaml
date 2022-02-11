@@ -99,7 +99,7 @@ services:
      - SERVICE_PORTS=9222
 
   webapp:
-    image: nein09/polder-federated-search:1.33.2
+    image: nein09/polder-federated-search:1.34.0
     depends_on:
       - triplestore
       - s3system
@@ -117,5 +117,5 @@ services:
       - FLASK_ENV
       # These are both for running in a subdirectory. IF you don't want to do that,
       # you can delete the next two lines.
-      - SERVER_NAME=None
-      - SCRIPT_NAME=/polder
+      # - SERVER_NAME=None
+      # - SCRIPT_NAME=/polder
