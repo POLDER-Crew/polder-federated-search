@@ -14,7 +14,7 @@ def home():
 
 # This is for backward compatibility, because /polder has been sent out to
 # a bunch of mailing lists.
-@app.route('/polder')
+@app.route('/polder/')
 def polder():
     return redirect(url_for('home'))
 
