@@ -25,6 +25,12 @@ class TestRoutes(unittest.TestCase):
 
         self.assertEqual(response.status, '200 OK')
 
+    def test_home(self):
+        client = app.test_client()
+        response = client.get('/polder')
+
+        self.assertEqual(response.status, '302 FOUND')
+
     @patch('app.search.dataone.SolrDirectSearch.combined_search')
     @patch('app.search.gleaner.GleanerSearch.combined_search')
     def test_nojs_combined_search(self, gleaner, dataone):

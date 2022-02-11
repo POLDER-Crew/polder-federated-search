@@ -63,7 +63,8 @@ class TestGleanerSearch(unittest.TestCase):
     def test_date_filter_none(self, query):
         query.return_value = self.mock_query
         results = self.search.date_filter_search()
-        self.assertNotIn('FILTER', self.search.query)
+        self.assertNotIn('FILTER(?start_date', self.search.query)
+        self.assertNotIn('FILTER(?end_date', self.search.query)
         self.assertNotIn('BIND', self.search.query)
 
     @patch('SPARQLWrapper.SPARQLWrapper.query')
