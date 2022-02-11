@@ -72,7 +72,7 @@ ingress:
   hosts:
     - host: search-dev.polder.info
       paths:
-        - path: /polder
+        - path: /
           pathType: ImplementationSpecific
   tls:
   - hosts:
