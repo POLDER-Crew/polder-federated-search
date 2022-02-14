@@ -4,7 +4,9 @@ from .search import SearcherBase, SearchResultSet, SearchResult
 
 class GleanerSearch(SearcherBase):
     @staticmethod
-    def build_query(user_query=""):
+    def build_query(user_query="", page_number=0):
+        page_start = page_number * GleanerSearch.PAGE_SIZE
+
         return f"""
             PREFIX sschema: <https://schema.org/>
             PREFIX schema: <http://schema.org/>
@@ -55,7 +57,7 @@ class GleanerSearch(SearcherBase):
             }}
             GROUP BY ?id ?url ?title
             ORDER BY DESC(?score)
-            OFFSET 0
+            OFFSET {page_start}
             LIMIT {GleanerSearch.PAGE_SIZE}
         """
 
@@ -153,7 +155,8 @@ class GleanerSearch(SearcherBase):
         return self.execute_query()
 
     def combined_search(self, text=None, start_min=None, start_max=None, end_min=None, end_max=None):
-        user_query = GleanerSearch._build_date_filter_query(start_min, start_max, end_min, end_max)
+        user_query = GleanerSearch._build_date_filter_query(
+            start_min, start_max, end_min, end_max)
         user_query += GleanerSearch._build_text_search_query(text)
 
         # Assigning this to a class member makes it easier to test

@@ -128,6 +128,13 @@ class SearcherBase:
     ENDPOINT_URL = ""
     PAGE_SIZE = 50
 
+    @staticmethod
+    def build_query(user_query="", page_number=0):
+        """ Builds a query string for the search endpoint using the given parameters. A helper function for
+            the search methods.
+        """
+        raise NotImplementedError
+
     def text_search(self, text=None):
         """ Makes a call to some search endpoint with the relevant text query"""
         raise NotImplementedError

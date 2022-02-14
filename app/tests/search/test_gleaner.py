@@ -181,6 +181,16 @@ class TestGleanerSearch(unittest.TestCase):
         with self.assertRaises(SPARQLExceptions.EndPointInternalError):
             results = self.search.text_search('test')
 
+    def test_page_size(self):
+        result = gleaner.GleanerSearch.build_query("", 0)
+        self.assertIn("OFFSET 0", result)
+        result = gleaner.GleanerSearch.build_query("", 25)
+        self.assertIn(f"OFFSET {gleaner.GleanerSearch.PAGE_SIZE * 25}", result)
+
+        gleaner.GleanerSearch.PAGE_SIZE = 32
+        result = gleaner.GleanerSearch.build_query("", 3)
+        self.assertIn(f"OFFSET {gleaner.GleanerSearch.PAGE_SIZE * 3}", result)
+
     def test_convert_result(self):
         test_result = {
             'score': {'datatype': 'http://www.w3.org/2001/XMLSchema#double', 'type': 'literal', 'value': '0.375'},

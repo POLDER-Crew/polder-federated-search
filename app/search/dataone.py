@@ -15,8 +15,9 @@ class SolrDirectSearch(SearcherBase):
     LANDING_URL_PREFIX = "https://search.dataone.org/view/"
 
     @staticmethod
-    def build_query(user_query=""):
-        return f"{SolrDirectSearch.ENDPOINT_URL}?fq={SolrDirectSearch.LATITUDE_FILTER}{SolrDirectSearch.DUPLICATE_FILTER}{user_query}&rows={SolrDirectSearch.PAGE_SIZE}&wt=json&fl=*,score"
+    def build_query(user_query="", page_number=0):
+        page_start = page_number * SolrDirectSearch.PAGE_SIZE
+        return f"{SolrDirectSearch.ENDPOINT_URL}?start={page_start}&fq={SolrDirectSearch.LATITUDE_FILTER}{SolrDirectSearch.DUPLICATE_FILTER}{user_query}&rows={SolrDirectSearch.PAGE_SIZE}&wt=json&fl=*,score"
 
     @staticmethod
     def _build_text_search_query(text=None):

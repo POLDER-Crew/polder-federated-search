@@ -38,7 +38,7 @@ class TestSolrDirectSearch(unittest.TestCase):
 
         # Did we add the latitude filter?
         self.assertIn(
-            f'?fq={dataone.SolrDirectSearch.LATITUDE_FILTER}',
+            f'&fq={dataone.SolrDirectSearch.LATITUDE_FILTER}',
             unquote(solr_url)
         )
 
@@ -188,7 +188,7 @@ class TestSolrDirectSearch(unittest.TestCase):
 
         # Did we add the latitude filter?
         self.assertIn(
-            f'?fq={dataone.SolrDirectSearch.LATITUDE_FILTER}', solr_url)
+            f'&fq={dataone.SolrDirectSearch.LATITUDE_FILTER}', solr_url)
 
         # Did we include the filter for duplicates?
         self.assertIn(dataone.SolrDirectSearch.DUPLICATE_FILTER, solr_url)
@@ -210,9 +210,19 @@ class TestSolrDirectSearch(unittest.TestCase):
         )
         results = self.search.text_search()
         self.assertIn(
-            f'?fq={dataone.SolrDirectSearch.LATITUDE_FILTER}',
+            f'&fq={dataone.SolrDirectSearch.LATITUDE_FILTER}',
             unquote(m.request_history[0].url)
         )
+
+    def test_page_size(self):
+        result = dataone.SolrDirectSearch.build_query("", 0)
+        self.assertIn("?start=0", result)
+        result = dataone.SolrDirectSearch.build_query("", 25)
+        self.assertIn(f"?start={dataone.SolrDirectSearch.PAGE_SIZE * 25}", result)
+
+        dataone.PAGE_SIZE = 32
+        result = dataone.SolrDirectSearch.build_query("", 3)
+        self.assertIn(f"?start={dataone.SolrDirectSearch.PAGE_SIZE * 3}", result)
 
     def test_convert_full_result(self):
         self.search.max_score = 10
