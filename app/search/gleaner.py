@@ -140,27 +140,43 @@ class GleanerSearch(SearcherBase):
         )
         return result_set
 
-    def text_search(self, text=None):
+    def text_search(self, **kwargs):
+        text = kwargs.pop('text', None)
+        page_number = kwargs.pop('page_number', 0)
+
         user_query = GleanerSearch._build_text_search_query(text)
 
         # Assigning this to a class member makes it easier to test
-        self.query = GleanerSearch.build_query(user_query)
+        self.query = GleanerSearch.build_query(user_query, page_number)
         return self.execute_query()
 
-    def date_filter_search(self, start_min=None, start_max=None, end_min=None, end_max=None):
+    def date_filter_search(self, **kwargs):
+        start_min = kwargs.pop('start_min', None)
+        start_max = kwargs.pop('start_max', None)
+        end_min = kwargs.pop('end_min', None)
+        end_max = kwargs.pop('end_max', None)
+        page_number = kwargs.pop('page_number', 0)
+
         user_query = GleanerSearch._build_date_filter_query(
             start_min, start_max, end_min, end_max)
         # Assigning this to a class member makes it easier to test
-        self.query = GleanerSearch.build_query(user_query)
+        self.query = GleanerSearch.build_query(user_query, page_number)
         return self.execute_query()
 
-    def combined_search(self, text=None, start_min=None, start_max=None, end_min=None, end_max=None):
+    def combined_search(self, **kwargs):
+        text = kwargs.pop('text', None)
+        start_min = kwargs.pop('start_min', None)
+        start_max = kwargs.pop('start_max', None)
+        end_min = kwargs.pop('end_min', None)
+        end_max = kwargs.pop('end_max', None)
+        page_number = kwargs.pop('page_number', 0)
+
         user_query = GleanerSearch._build_date_filter_query(
             start_min, start_max, end_min, end_max)
         user_query += GleanerSearch._build_text_search_query(text)
 
         # Assigning this to a class member makes it easier to test
-        self.query = GleanerSearch.build_query(user_query)
+        self.query = GleanerSearch.build_query(user_query, page_number)
         return self.execute_query()
 
     def convert_result(self, sparql_result_dict):

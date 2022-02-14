@@ -61,23 +61,42 @@ class SolrDirectSearch(SearcherBase):
 
         return result_set
 
-    def text_search(self, text=None):
+    def text_search(self, **kwargs):
+        text = kwargs.pop('text', None)
+        page_number = kwargs.pop('page_number', 0)
+
         query = SolrDirectSearch.build_query(
-            self._build_text_search_query(text))
+            self._build_text_search_query(text), page_number)
         logger.debug("dataone text search: %s", query)
         return self.execute_query(query)
 
-    def date_filter_search(self, start_min=None, start_max=None, end_min=None, end_max=None):
+    def date_filter_search(self, **kwargs):
+        start_min = kwargs.pop('start_min', None)
+        start_max = kwargs.pop('start_max', None)
+        end_min = kwargs.pop('end_min', None)
+        end_max = kwargs.pop('end_max', None)
+        page_number = kwargs.pop('page_number', 0)
+
         query = SolrDirectSearch.build_query(
-            self._build_date_filter_query(start_min, start_max, end_min, end_max))
+            self._build_date_filter_query(
+                start_min, start_max, end_min, end_max),
+            page_number
+        )
         logger.debug("dataone temporal search: %s", query)
         return self.execute_query(query)
 
-    def combined_search(self, text=None, start_min=None, start_max=None, end_min=None, end_max=None):
+    def combined_search(self, **kwargs):
+        text = kwargs.pop('text', None)
+        start_min = kwargs.pop('start_min', None)
+        start_max = kwargs.pop('start_max', None)
+        end_min = kwargs.pop('end_min', None)
+        end_max = kwargs.pop('end_max', None)
+        page_number = kwargs.pop('page_number', 0)
+
         query = self._build_text_search_query(text)
         query += self._build_date_filter_query(
             start_min, start_max, end_min, end_max)
-        query = SolrDirectSearch.build_query(query)
+        query = SolrDirectSearch.build_query(query, page_number)
         logger.debug("dataone combined search: %s", query)
         return self.execute_query(query)
 
@@ -105,7 +124,8 @@ class SolrDirectSearch(SearcherBase):
 
             begin = datetime.fromisoformat(result.pop('beginDate').rstrip('Z'))
             end = datetime.fromisoformat(result.pop('endDate').rstrip('Z'))
-            result['temporal_coverage'] = datetime.date(begin).isoformat() + "/" + datetime.date(end).isoformat()
+            result['temporal_coverage'] = datetime.date(
+                begin).isoformat() + "/" + datetime.date(end).isoformat()
 
         return SearchResult(
             # Because Blazegraph uses normalized query scores, we can approximate search

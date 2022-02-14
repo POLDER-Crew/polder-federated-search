@@ -55,7 +55,7 @@ class TestGleanerSearch(unittest.TestCase):
             ]
 
         )
-        results = self.search.text_search('test')
+        results = self.search.text_search(text='test', page_number=5)
         self.assertEqual(results, expected)
         self.assertIn('?lit bds:search "test"', self.search.query)
 
@@ -112,7 +112,8 @@ class TestGleanerSearch(unittest.TestCase):
             start_min=date(1999, 1, 1),
             start_max=date(2020, 3, 3),
             end_min=date(2001, 9, 12),
-            end_max=date(2023, 3, 31)
+            end_max=date(2023, 3, 31),
+            page_number=2
         )
         self.assertIn(
             "FILTER(?start_date >= '1999-01-01'^^xsd:date)", self.search.query)
@@ -122,6 +123,7 @@ class TestGleanerSearch(unittest.TestCase):
             "FILTER(?end_date >= '2001-09-12'^^xsd:date)", self.search.query)
         self.assertIn(
             "FILTER(?end_date <= '2023-03-31'^^xsd:date)", self.search.query)
+        self.assertIn("OFFSET 100", self.search.query)
 
     @patch('SPARQLWrapper.SPARQLWrapper.query')
     def test_combined_search(self, query):
@@ -142,7 +144,8 @@ class TestGleanerSearch(unittest.TestCase):
             start_min=date(1999, 1, 1),
             start_max=date(2020, 3, 3),
             end_min=date(2001, 9, 12),
-            end_max=date(2023, 3, 31)
+            end_max=date(2023, 3, 31),
+            page_number=3
         )
         self.assertEqual(results, expected)
 
@@ -155,6 +158,7 @@ class TestGleanerSearch(unittest.TestCase):
             "FILTER(?end_date >= '2001-09-12'^^xsd:date)", self.search.query)
         self.assertIn(
             "FILTER(?end_date <= '2023-03-31'^^xsd:date)", self.search.query)
+        self.assertIn("OFFSET 150", self.search.query)
 
 
     # gross, but requests-mock does not touch the requests
@@ -179,7 +183,7 @@ class TestGleanerSearch(unittest.TestCase):
             "oh no", 500, {}, {}, test_response_fp
         )
         with self.assertRaises(SPARQLExceptions.EndPointInternalError):
-            results = self.search.text_search('test')
+            results = self.search.text_search(text='test')
 
     def test_page_size(self):
         result = gleaner.GleanerSearch.build_query("", 0)

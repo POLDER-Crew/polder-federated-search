@@ -130,22 +130,30 @@ class SearcherBase:
 
     @staticmethod
     def build_query(user_query="", page_number=0):
-        """ Builds a query string for the search endpoint using the given parameters. A helper function for
-            the search methods.
+        """ Builds a query string for the search endpoint using the given parameters. user_query is a string that can
+            be inserted in the query string in the appropriate place for this particular search endpoint.
+            This is a helper function for the search methods.
         """
         raise NotImplementedError
 
-    def text_search(self, text=None):
-        """ Makes a call to some search endpoint with the relevant text query"""
+    def text_search(self, **kwargs):
+        """ Makes a call to some search endpoint with the relevant text query
+            Actual supported arguments should look something like text=None, page_number=0
+        """
         raise NotImplementedError
 
-    def date_filter_search(self, start_min=None, start_max=None, end_min=None, end_max=None):
-        """ Makes a call to some search endpoint with the relevant date filter query"""
+    def date_filter_search(self, **kwargs):
+        """ Makes a call to some search endpoint with the relevant date filter query
+            Actual supported arguments should look something like this, if we were to write them out:
+            start_min=None, start_max=None, end_min=None, end_max=None, page_number=0
+        """
         raise NotImplementedError
 
-    def combined_search(self, text=None, start_min=None, start_max=None, end_min=None, end_max=None):
+    def combined_search(self, **kwargs):
         """  The search that will most commonly get used in the UI - a combination of
              all of the search methods.
+            Actual supported arguments should look something like this, if we were to write them out:
+            text=None, start_min=None, start_max=None, end_min=None, end_max=None, page_number=0
         """
         raise NotImplementedError
 

@@ -7,7 +7,7 @@ from urllib.parse import unquote
 from app.search import dataone, search
 
 test_response = json.loads(
-    '{"response": {"numFound": 1, "start": 5, "maxScore": 0.0, "docs": [{"some": "result", "score": 0, "id": "test1"}, {"another": "result", "score": 0, "id": "test2"}]}}')
+    '{"response": {"numFound": 1, "start": 100, "maxScore": 0.0, "docs": [{"some": "result", "score": 0, "id": "test1"}, {"another": "result", "score": 0, "id": "test2"}]}}')
 
 
 class TestSolrDirectSearch(unittest.TestCase):
@@ -22,14 +22,14 @@ class TestSolrDirectSearch(unittest.TestCase):
         )
         expected = search.SearchResultSet(
             total_results=1,
-            page_start=5,
+            page_start=100,
             results=[
                 search.SearchResult(score=0, id="test1", source="DataONE"),
                 search.SearchResult(score=0, id="test2", source="DataONE"),
             ]
 
         )
-        results = self.search.text_search('test')
+        results = self.search.text_search(text='test', page_number=2)
         self.assertEqual(results, expected)
 
         # Did we make the query we expected?
@@ -45,6 +45,9 @@ class TestSolrDirectSearch(unittest.TestCase):
         # Did we include the filter for duplicates?
         self.assertIn(dataone.SolrDirectSearch.DUPLICATE_FILTER, unquote(solr_url))
 
+        # Did we get the paging right?
+        self.assertIn('?start=100', unquote(solr_url))
+
     @requests_mock.Mocker()
     def test_date_filter_none(self, m):
         m.get(
@@ -53,7 +56,7 @@ class TestSolrDirectSearch(unittest.TestCase):
         )
         expected = search.SearchResultSet(
             total_results=1,
-            page_start=5,
+            page_start=100,
             results=[
                 search.SearchResult(score=0, id="test1", source="DataONE"),
                 search.SearchResult(score=0, id="test2", source="DataONE"),
@@ -163,7 +166,7 @@ class TestSolrDirectSearch(unittest.TestCase):
 
         expected = search.SearchResultSet(
             total_results=1,
-            page_start=5,
+            page_start=100,
             results=[
                 search.SearchResult(score=0, id="test1", source="DataONE"),
                 search.SearchResult(score=0, id="test2", source="DataONE"),
@@ -200,7 +203,7 @@ class TestSolrDirectSearch(unittest.TestCase):
             status_code=500
         )
         with self.assertRaises(requests.exceptions.HTTPError):
-            results = self.search.text_search('test')
+            results = self.search.text_search(text='test')
 
     @requests_mock.Mocker()
     def test_missing_kwargs(self, m):
