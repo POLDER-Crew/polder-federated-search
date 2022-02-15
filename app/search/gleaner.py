@@ -127,15 +127,15 @@ class GleanerSearch(SearcherBase):
         ENDPOINT_URL = kwargs.pop('endpoint_url')
         self.sparql = SPARQLWrapper(ENDPOINT_URL)
 
-    def execute_query(self):
+    def execute_query(self, page_number):
         self.sparql.setQuery(self.query)
 
         # a note: BlazeGraph relevance scores go from 0.0 to 1.0; all results are normalized.
         self.sparql.setReturnFormat(JSON)
         data = self.sparql.query().convert()
         result_set = SearchResultSet(
-            total_results=len(data['results']['bindings']),
-            page_start=0,  # for now
+            total_results=len(data['results']['bindings']), # todo: include a COUNT in the query so we get the total available over all pages
+            page_start=page_number * GleanerSearch.PAGE_SIZE,
             results=self.convert_results(data['results']['bindings'])
         )
         return result_set
@@ -148,7 +148,7 @@ class GleanerSearch(SearcherBase):
 
         # Assigning this to a class member makes it easier to test
         self.query = GleanerSearch.build_query(user_query, page_number)
-        return self.execute_query()
+        return self.execute_query(page_number)
 
     def date_filter_search(self, **kwargs):
         start_min = kwargs.pop('start_min', None)
@@ -161,7 +161,7 @@ class GleanerSearch(SearcherBase):
             start_min, start_max, end_min, end_max)
         # Assigning this to a class member makes it easier to test
         self.query = GleanerSearch.build_query(user_query, page_number)
-        return self.execute_query()
+        return self.execute_query(page_number)
 
     def combined_search(self, **kwargs):
         text = kwargs.pop('text', None)
@@ -177,7 +177,7 @@ class GleanerSearch(SearcherBase):
 
         # Assigning this to a class member makes it easier to test
         self.query = GleanerSearch.build_query(user_query, page_number)
-        return self.execute_query()
+        return self.execute_query(page_number)
 
     def convert_result(self, sparql_result_dict):
         result = {}

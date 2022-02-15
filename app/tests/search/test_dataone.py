@@ -227,6 +227,9 @@ class TestSolrDirectSearch(unittest.TestCase):
         result = dataone.SolrDirectSearch.build_query("", 3)
         self.assertIn(f"?start={dataone.SolrDirectSearch.PAGE_SIZE * 3}", result)
 
+        # Set it back to the default so we do not get random test failures
+        dataone.PAGE_SIZE = search.SearcherBase.PAGE_SIZE
+
     def test_convert_full_result(self):
         self.search.max_score = 10
 

@@ -48,7 +48,7 @@ class TestGleanerSearch(unittest.TestCase):
         # Do the actual test
         expected = search.SearchResultSet(
             total_results=2,
-            page_start=0,
+            page_start=250,
             results=[
                 self.search.convert_result(result1),
                 self.search.convert_result(result2)
@@ -132,7 +132,7 @@ class TestGleanerSearch(unittest.TestCase):
         # Do the actual test
         expected = search.SearchResultSet(
             total_results=2,
-            page_start=0,
+            page_start=150,
             results=[
                 self.search.convert_result(result1),
                 self.search.convert_result(result2)
@@ -194,6 +194,9 @@ class TestGleanerSearch(unittest.TestCase):
         gleaner.GleanerSearch.PAGE_SIZE = 32
         result = gleaner.GleanerSearch.build_query("", 3)
         self.assertIn(f"OFFSET {gleaner.GleanerSearch.PAGE_SIZE * 3}", result)
+
+        # Set it back to the default so we do not get random test failures
+        gleaner.GleanerSearch.PAGE_SIZE = search.SearcherBase.PAGE_SIZE
 
     def test_convert_result(self):
         test_result = {
