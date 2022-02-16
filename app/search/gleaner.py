@@ -25,28 +25,35 @@ class GleanerSearch(SearcherBase):
                 (GROUP_CONCAT(DISTINCT ?temporal_coverage ; separator=", ") as ?temporal_coverage)
 
             {{
-                VALUES ?type {{ schema:Dataset sschema:Dataset }}
-                ?s a ?type .
-                {{
-                  ?s sschema:name ?title .
-                  ?s sschema:keywords ?keywords .
-                  ?s sschema:url ?url .
-                  ?s sschema:description | sschema:description/sschema:value  ?abstract .
-                  ?s sschema:temporalCoverage ?temporal_coverage .
-                  ?s sschema:identifier | sschema:identifier/sschema:value ?id .
+              VALUES ?type {{ schema:Dataset sschema:Dataset }}
+              ?s a ?type .
+              {{
+                ?s sschema:name ?title .
+                ?s sschema:keywords ?keywords .
+                ?s sschema:url ?url .
+                ?s sschema:description | sschema:description/sschema:value  ?abstract .
+                ?s sschema:identifier | sschema:identifier/sschema:value ?id .
+                ?s sschema:temporalCoverage ?temporal_coverage .
 
-
-                  OPTIONAL {{
-                      ?s sschema:sameAs ?sameAs .
-                  }}
+                OPTIONAL {{
+                    ?s sschema:sameAs ?sameAs .
                 }}
-                UNION {{
-                      ?s schema:name ?title .
-                      ?s schema:keywords ?keywords .
-                      ?s schema:url ?url .
-                      ?s schema:description | schema:description/schema:value ?abstract .
-                      ?s schema:temporalCoverage ?temporal_coverage .
-                      ?s schema:identifier | schema:identifier/schema:value ?id .
+              }}
+              UNION {{
+                    ?s schema:name ?title .
+                    ?s schema:keywords ?keywords .
+                    ?s schema:url ?url .
+                    ?s schema:description | schema:description/schema:value ?abstract .
+                    ?s schema:identifier | schema:identifier/schema:value ?id .
+              ?s schema:temporalCoverage ?temporal_coverage .
+
+                    OPTIONAL {{
+                        ?s schema:sameAs ?sameAs .
+                    }}
+
+                    }}
+                }}
+                FILTER(ISLITERAL(?id)) .
 
 
                       OPTIONAL {{
@@ -62,7 +69,7 @@ class GleanerSearch(SearcherBase):
         }} AS %search
         {{
             {{
-                SELECT (COUNT(?id) as ?total_results)
+                SELECT (COUNT(*) as ?total_results)
                 {{ INCLUDE %search_query . }}
             }}
             UNION
@@ -71,7 +78,7 @@ class GleanerSearch(SearcherBase):
                 {{ INCLUDE %search_query . }}
             }}
         }}
-            ORDER BY DESC(?score)
+            ORDER BY DESC(?total_results) DESC(?score)
             OFFSET {page_start}
             LIMIT {GleanerSearch.PAGE_SIZE}
         """
