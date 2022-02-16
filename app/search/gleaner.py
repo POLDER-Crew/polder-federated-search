@@ -11,7 +11,7 @@ class GleanerSearch(SearcherBase):
             PREFIX sschema: <https://schema.org/>
             PREFIX schema: <http://schema.org/>
 
-            SELECT ?count ?score ?id ?abstract ?url ?title ?sameAs ?keywords ?temporal_coverage
+            SELECT ?total_results ?score ?id ?abstract ?url ?title ?sameAs ?keywords ?temporal_coverage
 
             WITH {{
             SELECT
@@ -62,12 +62,12 @@ class GleanerSearch(SearcherBase):
         }} AS %search
         {{
             {{
-                SELECT ?score ?id ?abstract ?url ?title ?sameAs ?keywords ?temporal_coverage
+                SELECT (COUNT(?id) as ?total_results)
                 {{ INCLUDE %search_query . }}
             }}
             UNION
             {{
-                SELECT (COUNT(?id) as ?count)
+                SELECT ?score ?id ?abstract ?url ?title ?sameAs ?keywords ?temporal_coverage
                 {{ INCLUDE %search_query . }}
             }}
         }}
@@ -148,9 +148,14 @@ class GleanerSearch(SearcherBase):
         # a note: BlazeGraph relevance scores go from 0.0 to 1.0; all results are normalized.
         self.sparql.setReturnFormat(JSON)
         data = self.sparql.query().convert()
+
+        # We've set up a SPARQL query that returns the total number of results across all pages as the
+        # first result / row.
+        total_results = data['results']['bindings'].pop(0)['total_results']
         result_set = SearchResultSet(
-            total_results=len(data['results']['bindings']), # todo: include a COUNT in the query so we get the total available over all pages
+            total_results=total_results,
             page_start=page_number * GleanerSearch.PAGE_SIZE,
+            # The remaining results are normal results.
             results=self.convert_results(data['results']['bindings'])
         )
         return result_set

@@ -6,6 +6,9 @@ from urllib.error import HTTPError
 from urllib.response import addinfourl
 from app.search import gleaner, search
 
+count_result = {
+    'total_results': 2
+}
 result1 = {
     's': {'type': 'bnode', 'value': 'thing1'},
     'score': {'datatype': 'http://www.w3.org/2001/XMLSchema#double', 'type': 'literal', 'value': '0.01953125'},
@@ -30,7 +33,7 @@ class TestGleanerSearch(unittest.TestCase):
         # SPARQLWrapper, but that method returns an object that we immediately call convert() on,
         # and the results of that are what we work with.
         mock_convert = Mock(return_value={"results": {
-            "bindings": [result1, result2]
+            "bindings": [count_result, result1, result2]
         }})
         self.mock_query = Mock()
         self.mock_query.convert = mock_convert
