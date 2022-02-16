@@ -11,6 +11,9 @@ class GleanerSearch(SearcherBase):
             PREFIX sschema: <https://schema.org/>
             PREFIX schema: <http://schema.org/>
 
+            SELECT ?count ?score ?id ?abstract ?url ?title ?sameAs ?keywords ?temporal_coverage
+
+            WITH {{
             SELECT
                 (MAX(?relevance) AS ?score)
                 ?id
@@ -56,6 +59,18 @@ class GleanerSearch(SearcherBase):
 
             }}
             GROUP BY ?id ?url ?title
+        }} AS %search
+        {{
+            {{
+                SELECT ?score ?id ?abstract ?url ?title ?sameAs ?keywords ?temporal_coverage
+                {{ INCLUDE %search_query . }}
+            }}
+            UNION
+            {{
+                SELECT (COUNT(?id) as ?count)
+                {{ INCLUDE %search_query . }}
+            }}
+        }}
             ORDER BY DESC(?score)
             OFFSET {page_start}
             LIMIT {GleanerSearch.PAGE_SIZE}
