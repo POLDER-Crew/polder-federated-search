@@ -7,7 +7,7 @@ from urllib.response import addinfourl
 from app.search import gleaner, search
 
 count_result = {
-    'total_results': 2
+    'total_results': {'datatype': 'http://www.w3.org/2001/XMLSchema#double', 'type': 'literal', 'value': '2'}
 }
 result1 = {
     's': {'type': 'bnode', 'value': 'thing1'},

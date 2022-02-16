@@ -39,43 +39,35 @@ class GleanerSearch(SearcherBase):
                     ?s sschema:sameAs ?sameAs .
                 }}
               }}
-              UNION {{
-                    ?s schema:name ?title .
-                    ?s schema:keywords ?keywords .
-                    ?s schema:url ?url .
-                    ?s schema:description | schema:description/schema:value ?abstract .
-                    ?s schema:identifier | schema:identifier/schema:value ?id .
-              ?s schema:temporalCoverage ?temporal_coverage .
+              UNION
+              {{
+                ?s schema:name ?title .
+                ?s schema:keywords ?keywords .
+                ?s schema:url ?url .
+                ?s schema:description | schema:description/schema:value ?abstract .
+                ?s schema:identifier | schema:identifier/schema:value ?id .
+                ?s schema:temporalCoverage ?temporal_coverage .
 
-                    OPTIONAL {{
-                        ?s schema:sameAs ?sameAs .
-                    }}
-
-                    }}
+                OPTIONAL {{
+                    ?s schema:sameAs ?sameAs .
                 }}
-                FILTER(ISLITERAL(?id)) .
 
+              }}
+              FILTER(ISLITERAL(?id)) .
 
-                      OPTIONAL {{
-                          ?s schema:sameAs ?sameAs .
-                      }}
-                  }}
-
-                FILTER(ISLITERAL(?id)) .
-                {user_query}
-
+              {user_query}
             }}
             GROUP BY ?id ?url ?title
         }} AS %search
         {{
             {{
                 SELECT (COUNT(*) as ?total_results)
-                {{ INCLUDE %search_query . }}
+                {{ INCLUDE %search . }}
             }}
             UNION
             {{
                 SELECT ?score ?id ?abstract ?url ?title ?sameAs ?keywords ?temporal_coverage
-                {{ INCLUDE %search_query . }}
+                {{ INCLUDE %search . }}
             }}
         }}
             ORDER BY DESC(?total_results) DESC(?score)
@@ -158,9 +150,9 @@ class GleanerSearch(SearcherBase):
 
         # We've set up a SPARQL query that returns the total number of results across all pages as the
         # first result / row.
-        total_results = data['results']['bindings'].pop(0)['total_results']
+        total_results = data['results']['bindings'].pop(0)['total_results']['value']
         result_set = SearchResultSet(
-            total_results=total_results,
+            total_results=int(total_results),
             page_start=page_number * GleanerSearch.PAGE_SIZE,
             # The remaining results are normal results.
             results=self.convert_results(data['results']['bindings'])
