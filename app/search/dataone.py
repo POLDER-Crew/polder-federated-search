@@ -2,6 +2,7 @@ from datetime import datetime, time
 from urllib.parse import quote
 import json
 import logging
+import math
 import requests
 from .search import SearcherBase, SearchResultSet, SearchResult
 
@@ -56,7 +57,8 @@ class SolrDirectSearch(SearcherBase):
         result_set = SearchResultSet(
             total_results=body['numFound'],
             page_start=body['start'],
-            available_pages=body['numFound'] / SolrDirectSearch.PAGE_SIZE,
+            available_pages=math.ceil(
+                body['numFound'] / SolrDirectSearch.PAGE_SIZE),
             results=self.convert_results(body['docs'])
         )
 

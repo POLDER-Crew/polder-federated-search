@@ -1,3 +1,4 @@
+import math
 from SPARQLWrapper import SPARQLWrapper, JSON
 from .search import SearcherBase, SearchResultSet, SearchResult
 
@@ -150,10 +151,10 @@ class GleanerSearch(SearcherBase):
 
         # We've set up a SPARQL query that returns the total number of results across all pages as the
         # first result / row.
-        total_results = data['results']['bindings'].pop(0)['total_results']['value']
+        total_results = int(data['results']['bindings'].pop(0)['total_results']['value'])
         result_set = SearchResultSet(
-            total_results=int(total_results),
-            available_pages=int(total_results) / GleanerSearch.PAGE_SIZE,
+            total_results=total_results,
+            available_pages=math.ceil(total_results / GleanerSearch.PAGE_SIZE),
             page_start=page_number * GleanerSearch.PAGE_SIZE,
             # The remaining results are normal results.
             results=self.convert_results(data['results']['bindings'])

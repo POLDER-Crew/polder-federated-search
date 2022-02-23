@@ -2,7 +2,7 @@
     <ul>
         <li><a class="pagination pagination--prev" aria-label="Go to the prevous page of search results">Previous</a>
         {# Search result sets count from 0, but people count from 1 #}
-        {% for page in range(pages + 1) %}
+        {% for page in range(1, pages + 1) %}
             <li>
                 {# Search result sets count from 0 #}
                 {% if page == current_page + 1%}
