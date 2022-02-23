@@ -26,6 +26,8 @@
         {% endfor %}
         {% block content %}{% endblock %}
       </section>
-      <script type="module" src="{{ url_for('static', filename='dist/js/index.js') }}"></script>
+      {% block js %}
+        <script type="module" src="{{ url_for('static', filename='dist/js/index.js') }}"></script>
+      {% endblock %}
   </body>
 </html>

@@ -5,8 +5,8 @@
                 <a href="{{ modify_query(page=current_page - 1) }}" class="pagination pagination--prev" aria-label="Go to the prevous page of search results">Previous</a>
             </li>
         {% endif %}
-        {# we want 10 buttons at a time with the current page in the middle #}
-        {% with start=[1, current_page - 5]|max %}
+        {# we want 9 buttons at a time with the current page in the middle #}
+        {% with start=[1, current_page - 4]|max %}
             {% if start > 1 %}
                 <li><span class="pagination">&hellip;</span></li>
             {% endif %}
