@@ -72,11 +72,11 @@ class GleanerSearch(SearcherBase):
             {{
                 SELECT ?score ?id ?abstract ?url ?title ?sameAs ?keywords ?temporal_coverage
                 {{ INCLUDE %search . }}
+                OFFSET {page_start}
+                LIMIT {GleanerSearch.PAGE_SIZE}
             }}
         }}
             ORDER BY DESC(?total_results) DESC(?score)
-            OFFSET {page_start}
-            LIMIT {GleanerSearch.PAGE_SIZE}
         """
 
     @staticmethod
@@ -152,13 +152,8 @@ class GleanerSearch(SearcherBase):
         self.sparql.setReturnFormat(JSON)
         data = self.sparql.query().convert()
 
-        # We've set up a SPARQL query that returns the total number of results across all pages as the
-        # first result / row - but if we tried to page past the end of our result set, it returns an
-        # empty array.
-        total_results = 0
-        if(data['results']['bindings']):
-            total_results = int(data['results']['bindings'].pop(0)[
-                                'total_results']['value'])
+        total_results = int(data['results']['bindings'].pop(0)[
+            'total_results']['value'])
 
         result_set = SearchResultSet(
             total_results=total_results,

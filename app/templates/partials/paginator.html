@@ -1,8 +1,8 @@
 <nav role="navigation" class="paginator" aria-label="Search Results Pagination Navigation">
     <ul>
-        {% if current_page > 0 %}
+        {% if current_page > 1 %}
             <li>
-                <a href="{{ modify_query(page=current_page) }}" class="pagination pagination--prev" aria-label="Go to the prevous page of search results">Previous</a>
+                <a href="{{ modify_query(page=current_page - 1) }}" class="pagination pagination--prev" aria-label="Go to the prevous page of search results">Previous</a>
             </li>
         {% endif %}
         {# we want 10 buttons at a time with the current page in the middle #}
@@ -26,7 +26,7 @@
                 {% endif %}
             {% endwith %}
         {% endwith %}
-        {% if current_page >= pages %}
+        {% if current_page < pages %}
             <li>
                 <a href="{{ modify_query(page=current_page + 1) }}" class="pagination pagination--next" aria-label="Go to the next page of search results">Next</a>
             </li>
