@@ -1,6 +1,6 @@
 <nav role="navigation" class="paginator" aria-label="Search Results Pagination Navigation">
     <ul>
-        <li><a class="pagination pagination--prev" aria-label="Go to the prevous page of search results">Previous</a>
+        <li><a href="#" class="pagination pagination--prev" aria-label="Go to the prevous page of search results">Previous</a>
         {# we want 10 buttons at a time with the current page in the middle #}
         {% with start=[1, current_page - 5]|max %}
             {% if start > 1 %}
@@ -12,9 +12,9 @@
                     <li>
                         {# Search result sets count from 0 #}
                         {% if page == current_page + 1%}
-                            <a class="pagination pagination--num pagination--current" aria-current="true" aria-label="Current page, Page {{ page }} of search results">{{ page }}</a>
+                            <a href="#" class="pagination pagination--num pagination--current" aria-current="true" aria-label="Current page, Page {{ page }} of search results">{{ page }}</a>
                         {% else %}
-                            <a class="pagination pagination--num" aria-label="Go to page {{ page }} of search results">{{ page }}</a>
+                            <a href="#" class="pagination pagination--num" aria-label="Go to page {{ page }} of search results">{{ page }}</a>
                         {% endif %}
                     </li>
                 {% endfor %}
@@ -23,6 +23,6 @@
                 {% endif %}
             {% endwith %}
         {% endwith %}
-        <li><a class="pagination pagination--next" aria-label="Go to the next page of search results">Next</a>
+        <li><a href="#" class="pagination pagination--next" aria-label="Go to the next page of search results">Next</a>
     </ul>
 </nav>
