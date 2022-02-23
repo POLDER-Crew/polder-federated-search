@@ -1,17 +1,28 @@
 <nav role="navigation" class="paginator" aria-label="Search Results Pagination Navigation">
     <ul>
         <li><a class="pagination pagination--prev" aria-label="Go to the prevous page of search results">Previous</a>
-        {# Search result sets count from 0, but people count from 1 #}
-        {% for page in range(1, pages + 1) %}
-            <li>
-                {# Search result sets count from 0 #}
-                {% if page == current_page + 1%}
-                    <a class="pagination pagination--num pagination--current" aria-current="true" aria-label="Current page, Page {{ page }} of search results">{{ page }}</a>
-                {% else %}
-                    <a class="pagination pagination--num" aria-label="Go to page {{ page }} of search results">{{ page }}</a>
+        {# we want 10 buttons at a time with the current page in the middle #}
+        {% with start=[1, current_page - 5]|max %}
+            {% if start > 1 %}
+                <li><span class="pagination">&hellip;</span>
+            {% endif %}
+            {# Search result sets count from 0, but people count from 1 #}
+            {% with end=[start + 9, pages + 1]|min %}
+                {% for page in range(start, end) %}
+                    <li>
+                        {# Search result sets count from 0 #}
+                        {% if page == current_page + 1%}
+                            <a class="pagination pagination--num pagination--current" aria-current="true" aria-label="Current page, Page {{ page }} of search results">{{ page }}</a>
+                        {% else %}
+                            <a class="pagination pagination--num" aria-label="Go to page {{ page }} of search results">{{ page }}</a>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+                {% if end <= pages %}
+                    <li><span class="pagination">&hellip;</span>
                 {% endif %}
-            </li>
-        {% endfor %}
+            {% endwith %}
+        {% endwith %}
         <li><a class="pagination pagination--next" aria-label="Go to the next page of search results">Next</a>
     </ul>
 </nav>
