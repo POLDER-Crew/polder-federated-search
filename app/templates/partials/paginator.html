@@ -1,0 +1,17 @@
+<nav role="navigation" class="paginator" aria-label="Search Results Pagination Navigation">
+    <ul>
+        <li><a class="pagination pagination--prev" aria-label="Go to the prevous page of search results">Previous</a>
+        {# Search result sets count from 0, but people count from 1 #}
+        {% for page in range(pages + 1) %}
+            <li>
+                {# Search result sets count from 0 #}
+                {% if page == current_page + 1%}
+                    <a class="pagination pagination--num pagination--current" aria-current="true" aria-label="Current page, Page {{ page }} of search results">{{ page }}</a>
+                {% else %}
+                    <a class="pagination pagination--num" aria-label="Go to page {{ page }} of search results">{{ page }}</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+        <li><a class="pagination pagination--next" aria-label="Go to the next page of search results">Next</a>
+    </ul>
+</nav>
