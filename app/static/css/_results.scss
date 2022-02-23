@@ -50,6 +50,20 @@
     display: none;
 }
 
+.results__container--no-js {
+    .abstract {
+        cursor: default;
+    }
+
+    .abstract--full {
+        display: block;
+    }
+
+    .abstract--truncated {
+        display: none;
+    }
+}
+
 .result__title {
     color: constants.$light-blue;
 }
