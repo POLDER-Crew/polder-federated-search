@@ -95,7 +95,7 @@ class TestRoutes(unittest.TestCase):
 
         expected = {
             'text': None,
-            'page_number': 0,
+            'page_number': 1,
             'start_min': None,
             'start_max': None,
             'end_min': None,
@@ -140,7 +140,7 @@ class TestRoutes(unittest.TestCase):
 
         expected = {
             'text': 'walrus',
-            'page_number': 0,
+            'page_number': 1,
             'start_min': None,
             'start_max': None,
             'end_min': None,
@@ -168,7 +168,7 @@ class TestRoutes(unittest.TestCase):
 
         expected = {
             'text': None,
-            'page_number': 0,
+            'page_number': 1,
             'start_min': start_min,
             'start_max': None,
             'end_min': None,
@@ -237,7 +237,7 @@ class TestRoutes(unittest.TestCase):
 
         expected = {
             'text': None,
-            'page_number': 0,
+            'page_number': 1,
             'start_min': start_min,
             'start_max': None,
             'end_min': None,
