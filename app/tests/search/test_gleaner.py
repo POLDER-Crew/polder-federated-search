@@ -7,7 +7,7 @@ from urllib.response import addinfourl
 from app.search import gleaner, search
 
 count_result = {
-    'total_results': {'datatype': 'http://www.w3.org/2001/XMLSchema#double', 'type': 'literal', 'value': '2'}
+    'total_results': {'datatype': 'http://www.w3.org/2001/XMLSchema#double', 'type': 'literal', 'value': '200'}
 }
 result1 = {
     's': {'type': 'bnode', 'value': 'thing1'},
@@ -50,7 +50,8 @@ class TestGleanerSearch(unittest.TestCase):
 
         # Do the actual test
         expected = search.SearchResultSet(
-            total_results=2,
+            total_results=200,
+            available_pages=4,
             page_start=250,
             results=[
                 self.search.convert_result(result1),
@@ -134,7 +135,8 @@ class TestGleanerSearch(unittest.TestCase):
 
         # Do the actual test
         expected = search.SearchResultSet(
-            total_results=2,
+            total_results=200,
+            available_pages=4,
             page_start=150,
             results=[
                 self.search.convert_result(result1),

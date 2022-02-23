@@ -153,6 +153,7 @@ class GleanerSearch(SearcherBase):
         total_results = data['results']['bindings'].pop(0)['total_results']['value']
         result_set = SearchResultSet(
             total_results=int(total_results),
+            available_pages=int(total_results) / GleanerSearch.PAGE_SIZE,
             page_start=page_number * GleanerSearch.PAGE_SIZE,
             # The remaining results are normal results.
             results=self.convert_results(data['results']['bindings'])

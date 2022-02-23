@@ -56,6 +56,7 @@ class SolrDirectSearch(SearcherBase):
         result_set = SearchResultSet(
             total_results=body['numFound'],
             page_start=body['start'],
+            available_pages=body['numFound'] / SolrDirectSearch.PAGE_SIZE,
             results=self.convert_results(body['docs'])
         )
 

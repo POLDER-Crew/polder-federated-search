@@ -7,7 +7,7 @@ from urllib.parse import unquote
 from app.search import dataone, search
 
 test_response = json.loads(
-    '{"response": {"numFound": 1, "start": 100, "maxScore": 0.0, "docs": [{"some": "result", "score": 0, "id": "test1"}, {"another": "result", "score": 0, "id": "test2"}]}}')
+    '{"response": {"numFound": 100, "start": 1, "maxScore": 0.0, "docs": [{"some": "result", "score": 0, "id": "test1"}, {"another": "result", "score": 0, "id": "test2"}]}}')
 
 
 class TestSolrDirectSearch(unittest.TestCase):
@@ -21,8 +21,9 @@ class TestSolrDirectSearch(unittest.TestCase):
             json=test_response
         )
         expected = search.SearchResultSet(
-            total_results=1,
-            page_start=100,
+            total_results=100,
+            available_pages=2,
+            page_start=1,
             results=[
                 search.SearchResult(score=0, id="test1", source="DataONE"),
                 search.SearchResult(score=0, id="test2", source="DataONE"),
@@ -55,8 +56,9 @@ class TestSolrDirectSearch(unittest.TestCase):
             json=test_response
         )
         expected = search.SearchResultSet(
-            total_results=1,
-            page_start=100,
+            total_results=100,
+            available_pages=2,
+            page_start=1,
             results=[
                 search.SearchResult(score=0, id="test1", source="DataONE"),
                 search.SearchResult(score=0, id="test2", source="DataONE"),
@@ -165,8 +167,9 @@ class TestSolrDirectSearch(unittest.TestCase):
         )
 
         expected = search.SearchResultSet(
-            total_results=1,
-            page_start=100,
+            total_results=100,
+            available_pages=2,
+            page_start=1,
             results=[
                 search.SearchResult(score=0, id="test1", source="DataONE"),
                 search.SearchResult(score=0, id="test2", source="DataONE"),
