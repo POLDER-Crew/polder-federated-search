@@ -150,12 +150,16 @@ class GleanerSearch(SearcherBase):
         data = self.sparql.query().convert()
 
         # We've set up a SPARQL query that returns the total number of results across all pages as the
-        # first result / row.
-        total_results = int(data['results']['bindings'].pop(0)['total_results']['value'])
+        # first result / row - but if we tried to page past the end of our result set, it returns an
+        # empty array.
+        total_results = 0
+        if(data['results']['bindings']):
+            total_results = int(data['results']['bindings'].pop(0)['total_results']['value'])
+
         result_set = SearchResultSet(
             total_results=total_results,
             available_pages=math.ceil(total_results / GleanerSearch.PAGE_SIZE),
-            page_start=page_number * GleanerSearch.PAGE_SIZE,
+            page_number=page_number,
             # The remaining results are normal results.
             results=self.convert_results(data['results']['bindings'])
         )

@@ -23,7 +23,7 @@ class TestSolrDirectSearch(unittest.TestCase):
         expected = search.SearchResultSet(
             total_results=100,
             available_pages=2,
-            page_start=1,
+            page_number=2,
             results=[
                 search.SearchResult(score=0, id="test1", source="DataONE"),
                 search.SearchResult(score=0, id="test2", source="DataONE"),
@@ -58,7 +58,7 @@ class TestSolrDirectSearch(unittest.TestCase):
         expected = search.SearchResultSet(
             total_results=100,
             available_pages=2,
-            page_start=1,
+            page_number=0,
             results=[
                 search.SearchResult(score=0, id="test1", source="DataONE"),
                 search.SearchResult(score=0, id="test2", source="DataONE"),
@@ -169,7 +169,7 @@ class TestSolrDirectSearch(unittest.TestCase):
         expected = search.SearchResultSet(
             total_results=100,
             available_pages=2,
-            page_start=1,
+            page_number=0,
             results=[
                 search.SearchResult(score=0, id="test1", source="DataONE"),
                 search.SearchResult(score=0, id="test2", source="DataONE"),

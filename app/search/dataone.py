@@ -45,7 +45,7 @@ class SolrDirectSearch(SearcherBase):
 
         return f"&fq=(beginDate:[{start_min} TO {start_max}] AND endDate:[{end_min} TO {end_max}])"
 
-    def execute_query(self, query):
+    def execute_query(self, query, page_number):
         response = requests.get(query)
         response.raise_for_status()
         body = response.json()['response']
@@ -56,7 +56,7 @@ class SolrDirectSearch(SearcherBase):
 
         result_set = SearchResultSet(
             total_results=body['numFound'],
-            page_start=body['start'],
+            page_number=page_number,
             available_pages=math.ceil(
                 body['numFound'] / SolrDirectSearch.PAGE_SIZE),
             results=self.convert_results(body['docs'])
@@ -71,7 +71,7 @@ class SolrDirectSearch(SearcherBase):
         query = SolrDirectSearch.build_query(
             self._build_text_search_query(text), page_number)
         logger.debug("dataone text search: %s", query)
-        return self.execute_query(query)
+        return self.execute_query(query, page_number)
 
     def date_filter_search(self, **kwargs):
         start_min = kwargs.pop('start_min', None)
@@ -86,7 +86,7 @@ class SolrDirectSearch(SearcherBase):
             page_number
         )
         logger.debug("dataone temporal search: %s", query)
-        return self.execute_query(query)
+        return self.execute_query(query, page_number)
 
     def combined_search(self, **kwargs):
         text = kwargs.pop('text', None)
@@ -101,7 +101,7 @@ class SolrDirectSearch(SearcherBase):
             start_min, start_max, end_min, end_max)
         query = SolrDirectSearch.build_query(query, page_number)
         logger.debug("dataone combined search: %s", query)
-        return self.execute_query(query)
+        return self.execute_query(query, page_number)
 
     def convert_result(self, result):
         urls = []

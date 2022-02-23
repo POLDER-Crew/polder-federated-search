@@ -11,15 +11,15 @@ class TestSearchResultSet(unittest.TestCase):
         results = [result1, result2, result3]
 
         a = search.SearchResultSet(
-            total_results=42, available_pages=4, page_start=9, results=results)
+            total_results=42, available_pages=4, page_number=9, results=results)
         b = search.SearchResultSet(
-            total_results=42, available_pages=4, page_start=9, results=results)
+            total_results=42, available_pages=4, page_number=9, results=results)
         c = search.SearchResultSet(
-            total_results=3, available_pages=4, page_start=9, results=results)
+            total_results=3, available_pages=4, page_number=9, results=results)
         d = search.SearchResultSet(
-            total_results=42, available_pages=4, page_start=0, results=results)
+            total_results=42, available_pages=4, page_number=0, results=results)
         e = search.SearchResultSet(
-            total_results=42, available_pages=4, page_start=9, results=[result2, result3, result4])
+            total_results=42, available_pages=4, page_number=9, results=[result2, result3, result4])
 
         self.assertEqual(a, b)
         self.assertEqual(a, a)
@@ -39,16 +39,16 @@ class TestSearchResultSet(unittest.TestCase):
         results_b = [result3, result4]
 
         a = search.SearchResultSet(
-            total_results=2, available_pages=2, page_start=3, results=results_a)
+            total_results=2, available_pages=2, page_number=3, results=results_a)
         b = search.SearchResultSet(
-            total_results=2, available_pages=1, page_start=0, results=results_b)
+            total_results=2, available_pages=1, page_number=0, results=results_b)
 
         c = search.SearchResultSet.collate(a, b)
 
         expected = search.SearchResultSet(
             total_results=4,
             available_pages=2,
-            page_start=0,
+            page_number=0,
             results=[
                 result1,
                 result3,

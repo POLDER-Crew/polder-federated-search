@@ -52,7 +52,7 @@ class TestGleanerSearch(unittest.TestCase):
         expected = search.SearchResultSet(
             total_results=200,
             available_pages=4,
-            page_start=250,
+            page_number=5,
             results=[
                 self.search.convert_result(result1),
                 self.search.convert_result(result2)
@@ -137,7 +137,7 @@ class TestGleanerSearch(unittest.TestCase):
         expected = search.SearchResultSet(
             total_results=200,
             available_pages=4,
-            page_start=150,
+            page_number=3,
             results=[
                 self.search.convert_result(result1),
                 self.search.convert_result(result2)

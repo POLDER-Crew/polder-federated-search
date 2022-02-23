@@ -76,7 +76,7 @@ class SearchResultSet:
     def __init__(self, **kwargs):
         self.total_results = kwargs.pop('total_results', 0)
         self.available_pages= kwargs.pop('available_pages', 0)
-        self.page_start = kwargs.pop('page_start', 0)
+        self.page_number = kwargs.pop('page_number', 0)
         self.results = kwargs.pop('results', [])
         # todo: do we want a shape for each result too? Probably eventually.
 
@@ -87,7 +87,7 @@ class SearchResultSet:
         if isinstance(other, self.__class__):
             return (
                 self.total_results == other.total_results and
-                self.page_start == other.page_start and
+                self.page_number == other.page_number and
                 self.available_pages == other.available_pages and
                 len(self.results) == len(other.results) and
                 all(
@@ -121,7 +121,7 @@ class SearchResultSet:
         return SearchResultSet(
             total_results=a.total_results + b.total_results,
             available_pages=max(a.available_pages, b.available_pages),
-            page_start=min(a.page_start, b.page_start),
+            page_number=min(a.page_number, b.page_number),
             results=results
         )
 

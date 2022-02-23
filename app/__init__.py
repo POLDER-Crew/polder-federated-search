@@ -18,7 +18,7 @@ try:
 except OSError:
     pass
 
-from app import routes
+from app import routes, template_helpers
 
 if __name__ == "__main__":
     # Only for debugging while developing
