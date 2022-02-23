@@ -16,8 +16,11 @@ class SolrDirectSearch(SearcherBase):
     LANDING_URL_PREFIX = "https://search.dataone.org/view/"
 
     @staticmethod
-    def build_query(user_query="", page_number=0):
-        page_start = page_number * SolrDirectSearch.PAGE_SIZE
+    def build_query(user_query="", page_number=1):
+        # NOTE: Page numbers start counting from 1, because this number gets exposed
+        # to the user, and people who are not programmers are weirded out by 0-indexed things.
+        # The max is there in case a negative url parameter gets in here and causes havoc.
+        page_start = max(0, page_number - 1) * SolrDirectSearch.PAGE_SIZE
         return f"{SolrDirectSearch.ENDPOINT_URL}?start={page_start}&fq={SolrDirectSearch.LATITUDE_FILTER}{SolrDirectSearch.DUPLICATE_FILTER}{user_query}&rows={SolrDirectSearch.PAGE_SIZE}&wt=json&fl=*,score"
 
     @staticmethod

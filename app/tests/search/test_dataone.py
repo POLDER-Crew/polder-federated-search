@@ -47,7 +47,7 @@ class TestSolrDirectSearch(unittest.TestCase):
         self.assertIn(dataone.SolrDirectSearch.DUPLICATE_FILTER, unquote(solr_url))
 
         # Did we get the paging right?
-        self.assertIn('?start=100', unquote(solr_url))
+        self.assertIn('?start=50', unquote(solr_url))
 
     @requests_mock.Mocker()
     def test_date_filter_none(self, m):
@@ -223,12 +223,14 @@ class TestSolrDirectSearch(unittest.TestCase):
     def test_page_size(self):
         result = dataone.SolrDirectSearch.build_query("", 0)
         self.assertIn("?start=0", result)
+        result = dataone.SolrDirectSearch.build_query("", -42)
+        self.assertIn("?start=0", result)
         result = dataone.SolrDirectSearch.build_query("", 25)
-        self.assertIn(f"?start={dataone.SolrDirectSearch.PAGE_SIZE * 25}", result)
+        self.assertIn(f"?start={dataone.SolrDirectSearch.PAGE_SIZE * 24}", result)
 
         dataone.PAGE_SIZE = 32
         result = dataone.SolrDirectSearch.build_query("", 3)
-        self.assertIn(f"?start={dataone.SolrDirectSearch.PAGE_SIZE * 3}", result)
+        self.assertIn(f"?start={dataone.SolrDirectSearch.PAGE_SIZE * 2}", result)
 
         # Set it back to the default so we do not get random test failures
         dataone.PAGE_SIZE = search.SearcherBase.PAGE_SIZE

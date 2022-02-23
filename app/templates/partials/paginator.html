@@ -1,6 +1,5 @@
 <nav role="navigation" class="paginator" aria-label="Search Results Pagination Navigation">
     <ul>
-        {# Search result sets count from 0, but people count from 1 #}
         {% if current_page > 0 %}
             <li>
                 <a href="{{ modify_query(page=current_page) }}" class="pagination pagination--prev" aria-label="Go to the prevous page of search results">Previous</a>
@@ -15,11 +14,10 @@
             {% with end=[start + 9, pages + 1]|min %}
                 {% for page in range(start, end) %}
                     <li>
-                        {# Search result sets count from 0 #}
-                        {% if page == current_page + 1 %}
-                            <a href="{{ modify_query(page=page - 1) }}" class="pagination pagination--num pagination--current" aria-current="true" aria-label="Current page, Page {{ page }} of search results">{{ page }}</a>
+                        {% if page == current_page %}
+                            <a href="{{ modify_query(page=page) }}" class="pagination pagination--num pagination--current" aria-current="true" aria-label="Current page, Page {{ page }} of search results">{{ page }}</a>
                         {% else %}
-                            <a href="{{ modify_query(page=page - 1) }}" class="pagination pagination--num" aria-label="Go to page {{ page }} of search results">{{ page }}</a>
+                            <a href="{{ modify_query(page=page) }}" class="pagination pagination--num" aria-label="Go to page {{ page }} of search results">{{ page }}</a>
                         {% endif %}
                     </li>
                 {% endfor %}
@@ -28,7 +26,7 @@
                 {% endif %}
             {% endwith %}
         {% endwith %}
-        {% if current_page > pages %}
+        {% if current_page >= pages %}
             <li>
                 <a href="{{ modify_query(page=current_page + 1) }}" class="pagination pagination--next" aria-label="Go to the next page of search results">Next</a>
             </li>

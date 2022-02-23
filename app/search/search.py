@@ -76,7 +76,10 @@ class SearchResultSet:
     def __init__(self, **kwargs):
         self.total_results = kwargs.pop('total_results', 0)
         self.available_pages= kwargs.pop('available_pages', 0)
-        self.page_number = kwargs.pop('page_number', 0)
+
+        # NOTE: Page numbers start counting from 1, because this number gets exposed
+        # to the user, and people who are not programmers are weirded out by 0-indexed things
+        self.page_number = kwargs.pop('page_number', 1)
         self.results = kwargs.pop('results', [])
         # todo: do we want a shape for each result too? Probably eventually.
 

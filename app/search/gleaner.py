@@ -5,8 +5,11 @@ from .search import SearcherBase, SearchResultSet, SearchResult
 
 class GleanerSearch(SearcherBase):
     @staticmethod
-    def build_query(user_query="", page_number=0):
-        page_start = page_number * GleanerSearch.PAGE_SIZE
+    def build_query(user_query="", page_number=1):
+        # NOTE: Page numbers start counting from 1, because this number gets exposed
+        # to the user, and people who are not programmers are weirded out by 0-indexed things.
+        # The max is there in case a negative url parameter gets in here and causes havoc.
+        page_start = max(0, page_number - 1) * GleanerSearch.PAGE_SIZE
 
         return f"""
             PREFIX sschema: <https://schema.org/>
@@ -154,7 +157,8 @@ class GleanerSearch(SearcherBase):
         # empty array.
         total_results = 0
         if(data['results']['bindings']):
-            total_results = int(data['results']['bindings'].pop(0)['total_results']['value'])
+            total_results = int(data['results']['bindings'].pop(0)[
+                                'total_results']['value'])
 
         result_set = SearchResultSet(
             total_results=total_results,

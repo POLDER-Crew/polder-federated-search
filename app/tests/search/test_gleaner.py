@@ -127,7 +127,7 @@ class TestGleanerSearch(unittest.TestCase):
             "FILTER(?end_date >= '2001-09-12'^^xsd:date)", self.search.query)
         self.assertIn(
             "FILTER(?end_date <= '2023-03-31'^^xsd:date)", self.search.query)
-        self.assertIn("OFFSET 100", self.search.query)
+        self.assertIn("OFFSET 50", self.search.query)
 
     @patch('SPARQLWrapper.SPARQLWrapper.query')
     def test_combined_search(self, query):
@@ -163,7 +163,7 @@ class TestGleanerSearch(unittest.TestCase):
             "FILTER(?end_date >= '2001-09-12'^^xsd:date)", self.search.query)
         self.assertIn(
             "FILTER(?end_date <= '2023-03-31'^^xsd:date)", self.search.query)
-        self.assertIn("OFFSET 150", self.search.query)
+        self.assertIn("OFFSET 100", self.search.query)
 
 
     # gross, but requests-mock does not touch the requests
@@ -193,12 +193,14 @@ class TestGleanerSearch(unittest.TestCase):
     def test_page_size(self):
         result = gleaner.GleanerSearch.build_query("", 0)
         self.assertIn("OFFSET 0", result)
+        result = gleaner.GleanerSearch.build_query("", -99)
+        self.assertIn("OFFSET 0", result)
         result = gleaner.GleanerSearch.build_query("", 25)
-        self.assertIn(f"OFFSET {gleaner.GleanerSearch.PAGE_SIZE * 25}", result)
+        self.assertIn(f"OFFSET {gleaner.GleanerSearch.PAGE_SIZE * 24}", result)
 
         gleaner.GleanerSearch.PAGE_SIZE = 32
         result = gleaner.GleanerSearch.build_query("", 3)
-        self.assertIn(f"OFFSET {gleaner.GleanerSearch.PAGE_SIZE * 3}", result)
+        self.assertIn(f"OFFSET {gleaner.GleanerSearch.PAGE_SIZE * 2}", result)
 
         # Set it back to the default so we do not get random test failures
         gleaner.GleanerSearch.PAGE_SIZE = search.SearcherBase.PAGE_SIZE
