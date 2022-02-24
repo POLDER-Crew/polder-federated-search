@@ -1,9 +1,8 @@
-<p class="results__number">
-  Showing {{ result_set.results|length }} results of {{ result_set.total_results }}:
-    {% with pages=result_set.available_pages, current_page=result_set.page_number %}
-      {% include 'partials/paginator.html' %}
-    {% endwith %}
-</p>
+
+{% with pages=result_set.available_pages, current_page=result_set.page_number %}
+  {% include 'partials/paginator.html' %}
+{% endwith %}
+
  <ul class="results">
  {% for result in result_set.results %}
   <li class="result" data-score={{ result.score }} data-source="{{ result.source }} data-id= {{ result.id }}">
@@ -53,9 +52,6 @@
  {% endfor %}
 </ul>
 
-<p class="results__number">
-  {% with pages=result_set.available_pages, current_page=result_set.page_number %}
-    {% include 'partials/paginator.html' %}
-  {% endwith %}
-</p>
-
+{% with pages=result_set.available_pages, current_page=result_set.page_number %}
+  {% include 'partials/paginator.html' %}
+{% endwith %}
