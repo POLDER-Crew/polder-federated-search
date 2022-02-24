@@ -135,9 +135,10 @@ class SearcherBase:
     PAGE_SIZE = 50
 
     @staticmethod
-    def build_query(user_query="", page_number=0):
+    def build_query(user_query="", page_number=1):
         """ Builds a query string for the search endpoint using the given parameters. user_query is a string that can
             be inserted in the query string in the appropriate place for this particular search endpoint.
+            Page number starts from 1 because it is a value exposed to the user.
             This is a helper function for the search methods.
         """
         raise NotImplementedError

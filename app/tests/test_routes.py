@@ -29,7 +29,7 @@ class TestRoutes(unittest.TestCase):
         client = app.test_client()
         response = client.get('/polder')
 
-        self.assertEqual(response.status, '302 FOUND')
+        self.assertEqual(response.status, '308 PERMANENT REDIRECT')
 
     @patch('app.search.dataone.SolrDirectSearch.combined_search')
     @patch('app.search.gleaner.GleanerSearch.combined_search')
