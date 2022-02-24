@@ -13,12 +13,12 @@ BAD_REQUEST_STATUS = 400
 def home():
     return render_template('index.html')
 
-# This is for backward compatibility, because /polder has been sent out to
-# a bunch of mailing lists.
-
 
 @app.route('/polder/')
 def polder():
+    """This is for backward compatibility, because /polder has been sent out to
+    a bunch of mailing lists.
+    """
     return redirect(url_for('home'))
 
 
