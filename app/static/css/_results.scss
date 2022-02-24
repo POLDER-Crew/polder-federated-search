@@ -3,12 +3,7 @@
 /* Search results */
 .results__container {
     background-color: constants.$soft-white;
-}
-
-.results__number {
-    color: constants.$dark-blue;
-    font-weight: constants.$font-weight-bold;
-    padding: 2rem 0 0 1rem;
+    padding-top: 2rem;
 }
 
 .results {
@@ -48,6 +43,20 @@
 
 .abstract--full {
     display: none;
+}
+
+.results__container--no-js {
+    .abstract {
+        cursor: default;
+    }
+
+    .abstract--full {
+        display: block;
+    }
+
+    .abstract--truncated {
+        display: none;
+    }
 }
 
 .result__title {

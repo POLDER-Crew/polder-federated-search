@@ -6,6 +6,9 @@ from urllib.error import HTTPError
 from urllib.response import addinfourl
 from app.search import gleaner, search
 
+count_result = {
+    'total_results': {'datatype': 'http://www.w3.org/2001/XMLSchema#double', 'type': 'literal', 'value': '200'}
+}
 result1 = {
     's': {'type': 'bnode', 'value': 'thing1'},
     'score': {'datatype': 'http://www.w3.org/2001/XMLSchema#double', 'type': 'literal', 'value': '0.01953125'},
@@ -30,7 +33,7 @@ class TestGleanerSearch(unittest.TestCase):
         # SPARQLWrapper, but that method returns an object that we immediately call convert() on,
         # and the results of that are what we work with.
         mock_convert = Mock(return_value={"results": {
-            "bindings": [result1, result2]
+            "bindings": [count_result, result1, result2]
         }})
         self.mock_query = Mock()
         self.mock_query.convert = mock_convert
@@ -47,15 +50,16 @@ class TestGleanerSearch(unittest.TestCase):
 
         # Do the actual test
         expected = search.SearchResultSet(
-            total_results=2,
-            page_start=0,
+            total_results=200,
+            available_pages=4,
+            page_number=5,
             results=[
                 self.search.convert_result(result1),
                 self.search.convert_result(result2)
             ]
 
         )
-        results = self.search.text_search('test')
+        results = self.search.text_search(text='test', page_number=5)
         self.assertEqual(results, expected)
         self.assertIn('?lit bds:search "test"', self.search.query)
 
@@ -112,7 +116,8 @@ class TestGleanerSearch(unittest.TestCase):
             start_min=date(1999, 1, 1),
             start_max=date(2020, 3, 3),
             end_min=date(2001, 9, 12),
-            end_max=date(2023, 3, 31)
+            end_max=date(2023, 3, 31),
+            page_number=2
         )
         self.assertIn(
             "FILTER(?start_date >= '1999-01-01'^^xsd:date)", self.search.query)
@@ -122,6 +127,7 @@ class TestGleanerSearch(unittest.TestCase):
             "FILTER(?end_date >= '2001-09-12'^^xsd:date)", self.search.query)
         self.assertIn(
             "FILTER(?end_date <= '2023-03-31'^^xsd:date)", self.search.query)
+        self.assertIn("OFFSET 50", self.search.query)
 
     @patch('SPARQLWrapper.SPARQLWrapper.query')
     def test_combined_search(self, query):
@@ -129,8 +135,9 @@ class TestGleanerSearch(unittest.TestCase):
 
         # Do the actual test
         expected = search.SearchResultSet(
-            total_results=2,
-            page_start=0,
+            total_results=200,
+            available_pages=4,
+            page_number=3,
             results=[
                 self.search.convert_result(result1),
                 self.search.convert_result(result2)
@@ -142,7 +149,8 @@ class TestGleanerSearch(unittest.TestCase):
             start_min=date(1999, 1, 1),
             start_max=date(2020, 3, 3),
             end_min=date(2001, 9, 12),
-            end_max=date(2023, 3, 31)
+            end_max=date(2023, 3, 31),
+            page_number=3
         )
         self.assertEqual(results, expected)
 
@@ -155,6 +163,7 @@ class TestGleanerSearch(unittest.TestCase):
             "FILTER(?end_date >= '2001-09-12'^^xsd:date)", self.search.query)
         self.assertIn(
             "FILTER(?end_date <= '2023-03-31'^^xsd:date)", self.search.query)
+        self.assertIn("OFFSET 100", self.search.query)
 
 
     # gross, but requests-mock does not touch the requests
@@ -179,7 +188,22 @@ class TestGleanerSearch(unittest.TestCase):
             "oh no", 500, {}, {}, test_response_fp
         )
         with self.assertRaises(SPARQLExceptions.EndPointInternalError):
-            results = self.search.text_search('test')
+            results = self.search.text_search(text='test')
+
+    def test_page_size(self):
+        result = gleaner.GleanerSearch.build_query("", 0)
+        self.assertIn("OFFSET 0", result)
+        result = gleaner.GleanerSearch.build_query("", -99)
+        self.assertIn("OFFSET 0", result)
+        result = gleaner.GleanerSearch.build_query("", 25)
+        self.assertIn(f"OFFSET {gleaner.GleanerSearch.PAGE_SIZE * 24}", result)
+
+        gleaner.GleanerSearch.PAGE_SIZE = 32
+        result = gleaner.GleanerSearch.build_query("", 3)
+        self.assertIn(f"OFFSET {gleaner.GleanerSearch.PAGE_SIZE * 2}", result)
+
+        # Set it back to the default so we do not get random test failures
+        gleaner.GleanerSearch.PAGE_SIZE = search.SearcherBase.PAGE_SIZE
 
     def test_convert_result(self):
         test_result = {

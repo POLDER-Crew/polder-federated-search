@@ -75,7 +75,11 @@ class SearchResultSet:
 
     def __init__(self, **kwargs):
         self.total_results = kwargs.pop('total_results', 0)
-        self.page_start = kwargs.pop('page_start', 0)
+        self.available_pages= kwargs.pop('available_pages', 0)
+
+        # NOTE: Page numbers start counting from 1, because this number gets exposed
+        # to the user, and people who are not programmers are weirded out by 0-indexed things
+        self.page_number = kwargs.pop('page_number', 1)
         self.results = kwargs.pop('results', [])
         # todo: do we want a shape for each result too? Probably eventually.
 
@@ -86,7 +90,8 @@ class SearchResultSet:
         if isinstance(other, self.__class__):
             return (
                 self.total_results == other.total_results and
-                self.page_start == other.page_start and
+                self.page_number == other.page_number and
+                self.available_pages == other.available_pages and
                 len(self.results) == len(other.results) and
                 all(
                     (
@@ -118,7 +123,8 @@ class SearchResultSet:
         )
         return SearchResultSet(
             total_results=a.total_results + b.total_results,
-            page_start=min(a.page_start, b.page_start),
+            available_pages=max(a.available_pages, b.available_pages),
+            page_number=min(a.page_number, b.page_number),
             results=results
         )
 
@@ -128,17 +134,33 @@ class SearcherBase:
     ENDPOINT_URL = ""
     PAGE_SIZE = 50
 
-    def text_search(self, text=None):
-        """ Makes a call to some search endpoint with the relevant text query"""
+    @staticmethod
+    def build_query(user_query="", page_number=1):
+        """ Builds a query string for the search endpoint using the given parameters. user_query is a string that can
+            be inserted in the query string in the appropriate place for this particular search endpoint.
+            Page number starts from 1 because it is a value exposed to the user.
+            This is a helper function for the search methods.
+        """
         raise NotImplementedError
 
-    def date_filter_search(self, start_min=None, start_max=None, end_min=None, end_max=None):
-        """ Makes a call to some search endpoint with the relevant date filter query"""
+    def text_search(self, **kwargs):
+        """ Makes a call to some search endpoint with the relevant text query
+            Actual supported arguments should look something like text=None, page_number=0
+        """
         raise NotImplementedError
 
-    def combined_search(self, text=None, start_min=None, start_max=None, end_min=None, end_max=None):
+    def date_filter_search(self, **kwargs):
+        """ Makes a call to some search endpoint with the relevant date filter query
+            Actual supported arguments should look something like this, if we were to write them out:
+            start_min=None, start_max=None, end_min=None, end_max=None, page_number=0
+        """
+        raise NotImplementedError
+
+    def combined_search(self, **kwargs):
         """  The search that will most commonly get used in the UI - a combination of
              all of the search methods.
+            Actual supported arguments should look something like this, if we were to write them out:
+            text=None, start_min=None, start_max=None, end_min=None, end_max=None, page_number=0
         """
         raise NotImplementedError
 

@@ -7,7 +7,7 @@ from urllib.parse import unquote
 from app.search import dataone, search
 
 test_response = json.loads(
-    '{"response": {"numFound": 1, "start": 5, "maxScore": 0.0, "docs": [{"some": "result", "score": 0, "id": "test1"}, {"another": "result", "score": 0, "id": "test2"}]}}')
+    '{"response": {"numFound": 100, "start": 1, "maxScore": 0.0, "docs": [{"some": "result", "score": 0, "id": "test1"}, {"another": "result", "score": 0, "id": "test2"}]}}')
 
 
 class TestSolrDirectSearch(unittest.TestCase):
@@ -21,15 +21,16 @@ class TestSolrDirectSearch(unittest.TestCase):
             json=test_response
         )
         expected = search.SearchResultSet(
-            total_results=1,
-            page_start=5,
+            total_results=100,
+            available_pages=2,
+            page_number=2,
             results=[
                 search.SearchResult(score=0, id="test1", source="DataONE"),
                 search.SearchResult(score=0, id="test2", source="DataONE"),
             ]
 
         )
-        results = self.search.text_search('test')
+        results = self.search.text_search(text='test', page_number=2)
         self.assertEqual(results, expected)
 
         # Did we make the query we expected?
@@ -38,12 +39,15 @@ class TestSolrDirectSearch(unittest.TestCase):
 
         # Did we add the latitude filter?
         self.assertIn(
-            f'?fq={dataone.SolrDirectSearch.LATITUDE_FILTER}',
+            f'&fq={dataone.SolrDirectSearch.LATITUDE_FILTER}',
             unquote(solr_url)
         )
 
         # Did we include the filter for duplicates?
         self.assertIn(dataone.SolrDirectSearch.DUPLICATE_FILTER, unquote(solr_url))
+
+        # Did we get the paging right?
+        self.assertIn('?start=50', unquote(solr_url))
 
     @requests_mock.Mocker()
     def test_date_filter_none(self, m):
@@ -52,8 +56,9 @@ class TestSolrDirectSearch(unittest.TestCase):
             json=test_response
         )
         expected = search.SearchResultSet(
-            total_results=1,
-            page_start=5,
+            total_results=100,
+            available_pages=2,
+            page_number=0,
             results=[
                 search.SearchResult(score=0, id="test1", source="DataONE"),
                 search.SearchResult(score=0, id="test2", source="DataONE"),
@@ -162,8 +167,9 @@ class TestSolrDirectSearch(unittest.TestCase):
         )
 
         expected = search.SearchResultSet(
-            total_results=1,
-            page_start=5,
+            total_results=100,
+            available_pages=2,
+            page_number=0,
             results=[
                 search.SearchResult(score=0, id="test1", source="DataONE"),
                 search.SearchResult(score=0, id="test2", source="DataONE"),
@@ -188,7 +194,7 @@ class TestSolrDirectSearch(unittest.TestCase):
 
         # Did we add the latitude filter?
         self.assertIn(
-            f'?fq={dataone.SolrDirectSearch.LATITUDE_FILTER}', solr_url)
+            f'&fq={dataone.SolrDirectSearch.LATITUDE_FILTER}', solr_url)
 
         # Did we include the filter for duplicates?
         self.assertIn(dataone.SolrDirectSearch.DUPLICATE_FILTER, solr_url)
@@ -200,7 +206,7 @@ class TestSolrDirectSearch(unittest.TestCase):
             status_code=500
         )
         with self.assertRaises(requests.exceptions.HTTPError):
-            results = self.search.text_search('test')
+            results = self.search.text_search(text='test')
 
     @requests_mock.Mocker()
     def test_missing_kwargs(self, m):
@@ -210,9 +216,24 @@ class TestSolrDirectSearch(unittest.TestCase):
         )
         results = self.search.text_search()
         self.assertIn(
-            f'?fq={dataone.SolrDirectSearch.LATITUDE_FILTER}',
+            f'&fq={dataone.SolrDirectSearch.LATITUDE_FILTER}',
             unquote(m.request_history[0].url)
         )
+
+    def test_page_size(self):
+        result = dataone.SolrDirectSearch.build_query("", 0)
+        self.assertIn("?start=0", result)
+        result = dataone.SolrDirectSearch.build_query("", -42)
+        self.assertIn("?start=0", result)
+        result = dataone.SolrDirectSearch.build_query("", 25)
+        self.assertIn(f"?start={dataone.SolrDirectSearch.PAGE_SIZE * 24}", result)
+
+        dataone.PAGE_SIZE = 32
+        result = dataone.SolrDirectSearch.build_query("", 3)
+        self.assertIn(f"?start={dataone.SolrDirectSearch.PAGE_SIZE * 2}", result)
+
+        # Set it back to the default so we do not get random test failures
+        dataone.PAGE_SIZE = search.SearcherBase.PAGE_SIZE
 
     def test_convert_full_result(self):
         self.search.max_score = 10

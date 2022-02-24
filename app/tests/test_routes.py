@@ -29,7 +29,7 @@ class TestRoutes(unittest.TestCase):
         client = app.test_client()
         response = client.get('/polder')
 
-        self.assertEqual(response.status, '302 FOUND')
+        self.assertEqual(response.status, '308 PERMANENT REDIRECT')
 
     @patch('app.search.dataone.SolrDirectSearch.combined_search')
     @patch('app.search.gleaner.GleanerSearch.combined_search')
@@ -42,15 +42,22 @@ class TestRoutes(unittest.TestCase):
         end_min = date(2010, 5, 13)
         end_max = date(2099, 5, 5)
 
+        expected = {
+            'text': 'Greenland',
+            'page_number': 2,
+            'start_min': start_min,
+            'start_max': start_max,
+            'end_min': end_min,
+            'end_max': end_max
+            }
+
         with app.test_client() as client:
             response = client.get(
-                '/search?start_max=2010-05-12&text=Greenland&end_min=2010-05-13&start_min=2008-01-01&end_max=2099-05-05')
+                '/search?start_max=2010-05-12&text=Greenland&end_min=2010-05-13&start_min=2008-01-01&end_max=2099-05-05&page=2')
             self.assertEqual(response.status, '200 OK')
 
-            gleaner.assert_called_with(
-                'Greenland', start_min, start_max, end_min, end_max)
-            dataone.assert_called_with(
-                'Greenland', start_min, start_max, end_min, end_max)
+            gleaner.assert_called_with(**expected)
+            dataone.assert_called_with(**expected)
 
     @patch('app.search.dataone.SolrDirectSearch.combined_search')
     @patch('app.search.gleaner.GleanerSearch.combined_search')
@@ -63,15 +70,67 @@ class TestRoutes(unittest.TestCase):
         end_min = date(2010, 5, 13)
         end_max = date(2099, 5, 5)
 
+        expected = {
+            'text': 'walrus',
+            'page_number': 5,
+            'start_min': start_min,
+            'start_max': start_max,
+            'end_min': end_min,
+            'end_max': end_max
+        }
+
         with app.test_client() as client:
             response = client.get(
-                '/api/search?end_min=2010-05-13&start_max=2010-05-12&start_min=2008-01-01&end_max=2099-05-05&text=walrus')
+                '/api/search?end_min=2010-05-13&start_max=2010-05-12&start_min=2008-01-01&end_max=2099-05-05&text=walrus&page=5')
             self.assertEqual(response.status, '200 OK')
 
-            gleaner.assert_called_with(
-                'walrus', start_min, start_max, end_min, end_max)
-            dataone.assert_called_with(
-                'walrus', start_min, start_max, end_min, end_max)
+            gleaner.assert_called_with(**expected)
+            dataone.assert_called_with(**expected)
+
+    @patch('app.search.dataone.SolrDirectSearch.combined_search')
+    @patch('app.search.gleaner.GleanerSearch.combined_search')
+    def test_defaults(self, gleaner, dataone):
+        gleaner.return_value = self.mock_result_set
+        dataone.return_value = self.mock_result_set
+
+        expected = {
+            'text': None,
+            'page_number': 1,
+            'start_min': None,
+            'start_max': None,
+            'end_min': None,
+            'end_max': None
+            }
+
+        with app.test_client() as client:
+            response = client.get('/api/search')
+            self.assertEqual(response.status, '200 OK')
+
+            gleaner.assert_called_with(**expected)
+            dataone.assert_called_with(**expected)
+
+    @patch('app.search.dataone.SolrDirectSearch.combined_search')
+    @patch('app.search.gleaner.GleanerSearch.combined_search')
+    def test_page(self, gleaner, dataone):
+        gleaner.return_value = self.mock_result_set
+        dataone.return_value = self.mock_result_set
+
+        expected = {
+            'text': None,
+            'page_number': 42,
+            'start_min': None,
+            'start_max': None,
+            'end_min': None,
+            'end_max': None
+            }
+
+        with app.test_client() as client:
+            response = client.get('/api/search?page=42')
+            self.assertEqual(response.status, '200 OK')
+
+            gleaner.assert_called_with(**expected)
+            dataone.assert_called_with(**expected)
+
 
     @patch('app.search.dataone.SolrDirectSearch.combined_search')
     @patch('app.search.gleaner.GleanerSearch.combined_search')
@@ -79,13 +138,22 @@ class TestRoutes(unittest.TestCase):
         gleaner.return_value = self.mock_result_set
         dataone.return_value = self.mock_result_set
 
+        expected = {
+            'text': 'walrus',
+            'page_number': 1,
+            'start_min': None,
+            'start_max': None,
+            'end_min': None,
+            'end_max': None
+            }
+
         with app.test_client() as client:
             response = client.get('/api/search?text=walrus')
             self.assertEqual(response.request.args['text'], 'walrus')
             self.assertEqual(response.status, '200 OK')
 
-            gleaner.assert_called_with('walrus', None, None, None, None)
-            dataone.assert_called_with('walrus', None, None, None, None)
+            gleaner.assert_called_with(**expected)
+            dataone.assert_called_with(**expected)
 
     @patch('app.search.dataone.SolrDirectSearch.combined_search')
     @patch('app.search.gleaner.GleanerSearch.combined_search')
@@ -98,37 +166,56 @@ class TestRoutes(unittest.TestCase):
         end_min = date(2010, 5, 13)
         end_max = date(2099, 5, 5)
 
+        expected = {
+            'text': None,
+            'page_number': 1,
+            'start_min': start_min,
+            'start_max': None,
+            'end_min': None,
+            'end_max': None
+        }
+
         with app.test_client() as client:
             response = client.get('/api/search?start_min=2008-01-01')
             self.assertEqual(response.status, '200 OK')
 
-            gleaner.assert_called_with(None, start_min, None, None, None)
-            dataone.assert_called_with(None, start_min, None, None, None)
+            gleaner.assert_called_with(**expected)
+            dataone.assert_called_with(**expected)
 
             response = client.get('/api/search?start_max=2010-05-12')
             self.assertEqual(response.status, '200 OK')
 
-            gleaner.assert_called_with(None, None, start_max, None, None)
-            dataone.assert_called_with(None, None, start_max, None, None)
+            expected['start_min'] = None
+            expected['start_max'] =  start_max
+
+            gleaner.assert_called_with(**expected)
+            dataone.assert_called_with(**expected)
 
             response = client.get('/api/search?end_min=2010-05-13')
             self.assertEqual(response.status, '200 OK')
 
-            gleaner.assert_called_with(None, None, None, end_min, None)
-            dataone.assert_called_with(None, None, None, end_min, None)
+            expected['end_min'] = end_min
+            expected['start_max'] =  None
+
+            gleaner.assert_called_with(**expected)
+            dataone.assert_called_with(**expected)
 
             response = client.get('/api/search?end_max=2099-05-05')
             self.assertEqual(response.status, '200 OK')
 
-            gleaner.assert_called_with(None, None, None, None, end_max)
-            dataone.assert_called_with(None, None, None, None, end_max)
+            expected['end_min'] = None
+            expected['end_max'] =  end_max
+
+            gleaner.assert_called_with(**expected)
+            dataone.assert_called_with(**expected)
 
             response = client.get(
                 '/api/search?start_min=2008-01-01&end_max=2099-05-05')
             self.assertEqual(response.status, '200 OK')
 
-            gleaner.assert_called_with(None, start_min, None, None, end_max)
-            dataone.assert_called_with(None, start_min, None, None, end_max)
+            expected['start_min'] = start_min
+            gleaner.assert_called_with(**expected)
+            dataone.assert_called_with(**expected)
 
     @patch('app.search.dataone.SolrDirectSearch.combined_search')
     @patch('app.search.gleaner.GleanerSearch.combined_search')
@@ -148,9 +235,18 @@ class TestRoutes(unittest.TestCase):
 
         start_min = date(2008, 1, 1)
 
+        expected = {
+            'text': None,
+            'page_number': 1,
+            'start_min': start_min,
+            'start_max': None,
+            'end_min': None,
+            'end_max': None
+        }
+
         with app.test_client() as client:
             response = client.get('/api/search?start_min=2008-01-01&start_max=')
             self.assertEqual(response.status, '200 OK')
 
-            gleaner.assert_called_with(None, start_min, None, None, None)
-            dataone.assert_called_with(None, start_min, None, None, None)
+            gleaner.assert_called_with(**expected)
+            dataone.assert_called_with(**expected)

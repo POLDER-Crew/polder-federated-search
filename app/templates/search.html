@@ -2,7 +2,12 @@
 
 {% block content %}
   <h2 class="search__header">Search Results</h2>
-  <div class="results__container">
-    {% include 'results.html' %}
+  <div class="results__container results__container--no-js">
+    {% with nojs=true %}
+      {% include 'results.html' %}
+    {% endwith %}
   </div>
 {% endblock %}
+
+{# This is meant to be a nojs experience #}
+{% block js %}{% endblock %}

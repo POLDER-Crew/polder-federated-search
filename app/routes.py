@@ -8,15 +8,19 @@ from app.search.search import SearchResultSet
 
 BAD_REQUEST_STATUS = 400
 
+
 @app.route('/')
 def home():
     return render_template('index.html')
 
-# This is for backward compatibility, because /polder has been sent out to
-# a bunch of mailing lists.
+
 @app.route('/polder/')
 def polder():
+    """This is for backward compatibility, because /polder has been sent out to
+    a bunch of mailing lists.
+    """
     return redirect(url_for('home'))
+
 
 def _get_date_from_args(arg_name, kwargs):
     arg_date = kwargs.pop(arg_name, None)
@@ -27,22 +31,26 @@ def _get_date_from_args(arg_name, kwargs):
 
 
 def _do_combined_search(template, **kwargs):
-    text = kwargs.pop('text', None)
+    sanitized_kwargs = {}
+    sanitized_kwargs['text'] = kwargs.pop('text', None)
+    # Human-readable pages start at 1
+    sanitized_kwargs['page_number'] = int(kwargs.pop('page', 1))
 
     # These all need to be date objects
     try:
-        start_min = _get_date_from_args('start_min', kwargs)
-        start_max = _get_date_from_args('start_max', kwargs)
-        end_min = _get_date_from_args('end_min', kwargs)
-        end_max = _get_date_from_args('end_max', kwargs)
+        sanitized_kwargs['start_min'] = _get_date_from_args(
+            'start_min', kwargs)
+        sanitized_kwargs['start_max'] = _get_date_from_args(
+            'start_max', kwargs)
+        sanitized_kwargs['end_min'] = _get_date_from_args('end_min', kwargs)
+        sanitized_kwargs['end_max'] = _get_date_from_args('end_max', kwargs)
 
     except ValueError as ve:  # we got some invalid dates
         return str(ve), BAD_REQUEST_STATUS
 
-    dataone = SolrDirectSearch().combined_search(
-        text, start_min, start_max, end_min, end_max)
-    gleaner = GleanerSearch(endpoint_url=app.config['GLEANER_ENDPOINT_URL']).combined_search(
-        text, start_min, start_max, end_min, end_max)
+    dataone = SolrDirectSearch().combined_search(**sanitized_kwargs)
+    gleaner = GleanerSearch(
+        endpoint_url=app.config['GLEANER_ENDPOINT_URL']).combined_search(**sanitized_kwargs)
 
     results = SearchResultSet.collate(dataone, gleaner)
 

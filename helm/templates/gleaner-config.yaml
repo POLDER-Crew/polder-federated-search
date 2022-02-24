@@ -39,13 +39,6 @@ data:
       properName: National Snow and Ice Data Center
       domain: https://nsidc.org
       type: sitemap
-      active: false
-    - name: usap-dc
-      type: sitemap
-      headless: true
-      url: https://www.usap-dc.org/view/dataset/sitemap.xml
-      properName: U.S. Antarctic Program Data Center
-      domain: https://www.usap-dc.org
       active: true
     - name: gem
       type: sitemap

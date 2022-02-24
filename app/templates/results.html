@@ -1,6 +1,8 @@
- <p class="results__number">
- Showing {{ result_set.results|length }} results of {{ result_set.total_results }}:
-</p>
+
+{% with pages=result_set.available_pages, current_page=result_set.page_number %}
+  {% include 'partials/paginator.html' %}
+{% endwith %}
+
  <ul class="results">
  {% for result in result_set.results %}
   <li class="result" data-score={{ result.score }} data-source="{{ result.source }} data-id= {{ result.id }}">
@@ -31,10 +33,12 @@
         {% endfor %}
       </p>
     {% endif %}
-    <p class="abstract abstract--truncated" aria-expanded="false">
-      {{ result.abstract | truncate(500) }}
-    </p>
-    <p class="abstract abstract--full" aria-hidden="true">
+    {% if nojs is not defined %}
+      <p class="abstract abstract--truncated" aria-expanded="false">
+        {{ result.abstract | truncate(500) }}
+      </p>
+    {% endif %}
+    <p class="abstract abstract--full" {% if nojs is not defined %}aria-hidden="true"{% endif %}>
       {{ result.abstract }}
     </p>
     {% for url in result.urls[1:] %}
@@ -47,3 +51,7 @@
   </li>
  {% endfor %}
 </ul>
+
+{% with pages=result_set.available_pages, current_page=result_set.page_number %}
+  {% include 'partials/paginator.html' %}
+{% endwith %}
