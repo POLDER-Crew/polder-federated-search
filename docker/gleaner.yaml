@@ -32,7 +32,7 @@ sources:
   properName: National Snow and Ice Data Center
   domain: https://nsidc.org
   type: sitemap
-  active: true
+  active: false
 - name: gem
   type: sitemap
   headless: true
