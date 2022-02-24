@@ -152,6 +152,8 @@ class GleanerSearch(SearcherBase):
         self.sparql.setReturnFormat(JSON)
         data = self.sparql.query().convert()
 
+        # The first result in each result set is now a row telling us the total number of
+        # available results.
         total_results = int(data['results']['bindings'].pop(0)[
             'total_results']['value'])
 
