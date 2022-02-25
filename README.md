@@ -12,10 +12,11 @@ There are many DataONE repositories, but of particular interest to the polar res
 - [Arctic Data Center]( https://arcticdata.io/)
 - [Netherlands Polar Data Center](https://npdc.nl)
 - [BCO-DMO](https://www.bco-dmo.org/)
+- [U.S. Antarctic Program Data Center](https://usap-dc.org)
+
 
 #### Repositories indexed by this app
 - [Greenland Ecosystem Monitoring](https://g-e-m.dk/)
-- [U.S. Antarctic Program Data Center](https://usap-dc.org)
 
 #### Future work
 - [Australian Antarctic Data Centre](https://data.aad.gov.au/)
@@ -44,7 +45,7 @@ Assuming that you're starting from **this directory**:
 1. `docker-compose --profile setup up -d` in order to start all of the necessary services and set up Gleaner for indexing.
 1. Do a crawl (these instructions assume you are in the `docker` directory):
     1. `curl -O https://schema.org/version/latest/schemaorg-current-https.jsonld`
-    1. `docker-compose --profile crawl up -d
+    1. `docker-compose --profile crawl up -d`
     NOTE: There is a missing step here. The crawled results need to be written to the triplestore. For now, you can run `./write-to-triplestore.sh`.
 1. Run the web app: `docker-compose --profile web up -d`
 
@@ -95,7 +96,7 @@ Note that the 30th of February has happened at least [twice](https://www.timeand
 Take a look at `helm/values.yaml` to customize this setup. Pay particular attention to `persistence` at the bottom; if you're running locally, you probably want `existing: false` in there.
 
 ### Development
-I'd love for people to use this for all kinds of scientific data repository searches - please feel free to fork it, submit a PR, or ask questions.
+I'd love for people to use this for all kinds of scientific data repository searches - please feel free to fork it, submit a PR, or ask questions. The [Customization](https://polder-crew.github.io/Federated-Search-Documentation/customization.html) section of the book will be particularly useful to you.
 
 #### Building
 To build the Docker image for the web app, run `docker image build . `.
@@ -103,7 +104,7 @@ To build the Docker image for the web app, run `docker image build . `.
 #### Setup
 Assuming that you're starting from **this directory**:
 
-The easiest setup for development on the web app itself is to use docker-compose for the dependencies, like Gleaner and Blazegraph, and run the app itself directly in Flask. To do that, follow the steps in the Deployment section under Docker, but skip the last one. Instead, do:
+The easiest setup for development on the web app itself is to use docker-compose for the dependencies, like Gleaner and Blazegraph (`docker-compose up -d`), and run the app itself directly in Flask. To do that, follow the steps in the Deployment -> Docker section above, but skip the last one. Instead, do:
 1. `cd ../` (to get back to **this directory**)
 1. `source venv/bin/activate`
 1. `pip install -r requirements.txt`
@@ -114,6 +115,11 @@ The easiest setup for development on the web app itself is to use docker-compose
 You should see Flask's startup message, and get an address for your locally running web app.
 
 #### Standards and practices
+
+##### Testing
+This app includes Python unit tests! To run them from this directory, do `python -m unittest` after you activate your virtual environment.
+
+Adding or updating tests as part of any contribution you make is strongly encouraged.
 
 ##### Styling
 The SCSS styles are built assuming a mobile-first philosophy. Here are the breakpoints, for your convenience; they are also in `_constants.scss`.
