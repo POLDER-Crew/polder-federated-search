@@ -1,0 +1,10 @@
+@use 'constants';
+
+.error {
+    padding: 2rem;
+}
+
+.error__link {
+    color: constants.$dark-blue;
+    font-weight: constants.$font-weight-bold;
+}

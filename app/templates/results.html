@@ -62,7 +62,7 @@
 <div class="results results--empty">
   <h3>No results were returned for your search.</h3>
   {% if nojs %}
-    <a class="result__url" href="/">Please try again.</a>
+    <a class="result__url" href="{{ url_for('home') }}">Please try again.</a>
   {% endif %}
 </div>
 {% endif %}
