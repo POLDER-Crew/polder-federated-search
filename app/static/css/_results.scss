@@ -20,6 +20,10 @@
     }
 }
 
+.results--empty {
+    padding-bottom: 2rem;
+}
+
 .result {
     background-color: constants.$white;
     border-bottom: 2px solid constants.$background;
