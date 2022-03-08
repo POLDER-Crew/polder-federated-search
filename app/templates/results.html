@@ -1,57 +1,68 @@
 
-{% with pages=result_set.available_pages, current_page=result_set.page_number %}
-  {% include 'partials/paginator.html' %}
-{% endwith %}
+{% if result_set.results %}
+  {% with pages=result_set.available_pages, current_page=result_set.page_number %}
+    {% include 'partials/paginator.html' %}
+  {% endwith %}
 
- <ul class="results">
- {% for result in result_set.results %}
-  <li class="result" data-score={{ result.score }} data-source="{{ result.source }} data-id= {{ result.id }}">
-    {% if result.doi %}
-      <div class="result__doi">
-        <a href="http://doi.org/{{ result.doi }}" class="doi__link" target="_blank" rel="noopener">
-          {{ result.doi }}
-        </a>
-      </div>
-    {% endif %}
-    <a href="{{ result.urls | first }}" target="_blank" rel="noopener">
-      <h3 class="result__title">
-        {{ result.title }}
-      </h3>
-    </a>
-    {% if result.temporal_coverage %}
-      <h4>Timespans covered:</h4>
-      <ul class="result__temporal-coverage">
-        {% for time in result.temporal_coverage %}
-          <li>{{ time }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-    {% if result.keywords %}
-      <p class="result__keywords">
-        {% for keyword in result.keywords %}
-        {{ keyword }}&nbsp;
-        {% endfor %}
+   <ul class="results">
+   {% for result in result_set.results %}
+    <li class="result" data-score={{ result.score }} data-source="{{ result.source }} data-id= {{ result.id }}">
+      {% if result.doi %}
+        <div class="result__doi">
+          <a href="http://doi.org/{{ result.doi }}" class="doi__link" target="_blank" rel="noopener">
+            {{ result.doi }}
+          </a>
+        </div>
+      {% endif %}
+      <a href="{{ result.urls | first }}" target="_blank" rel="noopener">
+        <h3 class="result__title">
+          {{ result.title }}
+        </h3>
+      </a>
+      {% if result.temporal_coverage %}
+        <h4>Timespans covered:</h4>
+        <ul class="result__temporal-coverage">
+          {% for time in result.temporal_coverage %}
+            <li>{{ time }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      {% if result.keywords %}
+        <p class="result__keywords">
+          {% for keyword in result.keywords %}
+          {{ keyword }}&nbsp;
+          {% endfor %}
+        </p>
+      {% endif %}
+      {% if nojs is not defined %}
+        <p class="abstract abstract--truncated" aria-expanded="false">
+          {{ result.abstract | truncate(500) }}
+        </p>
+      {% endif %}
+      <p class="abstract abstract--full" {% if nojs is not defined %}aria-hidden="true"{% endif %}>
+        {{ result.abstract }}
       </p>
-    {% endif %}
-    {% if nojs is not defined %}
-      <p class="abstract abstract--truncated" aria-expanded="false">
-        {{ result.abstract | truncate(500) }}
-      </p>
-    {% endif %}
-    <p class="abstract abstract--full" {% if nojs is not defined %}aria-hidden="true"{% endif %}>
-      {{ result.abstract }}
-    </p>
-    {% for url in result.urls[1:] %}
-      {% if loop.first %}Alternate sources for this data:{% endif %}
-        {% if url %}
-          <a href="{{ url }}" class="result__url" target="_blank" rel="noopener">{{ url.rpartition("//")[-1].partition("/")[0] }}</a>
-        {% endif %}
-      {% if not loop.last %}, {% endif %}
-    {% endfor %}
-  </li>
- {% endfor %}
-</ul>
+      {% for url in result.urls[1:] %}
+        {% if loop.first %}Alternate sources for this data:{% endif %}
+          {% if url %}
+            <a href="{{ url }}" class="result__url" target="_blank" rel="noopener">{{ url.rpartition("//")[-1].partition("/")[0] }}</a>
+          {% endif %}
+        {% if not loop.last %}, {% endif %}
+      {% endfor %}
+    </li>
+   {% endfor %}
+  </ul>
 
-{% with pages=result_set.available_pages, current_page=result_set.page_number %}
-  {% include 'partials/paginator.html' %}
-{% endwith %}
+
+  {% with pages=result_set.available_pages, current_page=result_set.page_number %}
+    {% include 'partials/paginator.html' %}
+  {% endwith %}
+
+{% else %} {# No search results were returned. #}
+<div class="results results--empty">
+  <h3>No results were returned for your search.</h3>
+  {% if nojs %}
+    <a class="result__url" href="{{ url_for('home') }}">Please try again.</a>
+  {% endif %}
+</div>
+{% endif %}

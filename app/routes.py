@@ -1,5 +1,7 @@
 from flask import redirect, render_template, request, url_for
 from datetime import date
+from sentry_sdk import capture_exception
+from werkzeug.exceptions import HTTPException
 
 from app import app
 from app.search.dataone import SolrDirectSearch
@@ -66,3 +68,16 @@ def nojs_combined_search():
 @app.route('/api/search')
 def combined_search():
     return _do_combined_search('results.html', **request.args)
+
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    # Record it in Sentry
+    capture_exception(e)
+
+    # pass through HTTP errors
+    if isinstance(e, HTTPException):
+        return e
+
+    # now you're handling non-HTTP exceptions only
+    return render_template("500_generic.html", e=e), 500

@@ -53,7 +53,9 @@ spec:
               key:  flaskSecretKey
               name: {{ .Release.Name }}-secrets
         - name: FLASK_ENV
-          value: {{ .Values.flaskEnv }}
+          value: production
+        - name: SENTRY_DSN
+          value: {{ .Values.sentryDsn }}
         ports:
         - name: http
           containerPort: {{ .Values.service.port }}
