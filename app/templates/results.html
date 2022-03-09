@@ -35,11 +35,11 @@
         </p>
       {% endif %}
       {% if nojs is not defined %}
-        <p class="abstract abstract--truncated" aria-expanded="false">
+        <p class="abstract abstract--truncated" role="region" aria-expanded="false">
           {{ result.abstract | truncate(500) }}
         </p>
       {% endif %}
-      <p class="abstract abstract--full" {% if nojs is not defined %}aria-hidden="true"{% endif %}>
+      <p class="abstract abstract--full" role="region" {% if nojs is not defined %}aria-hidden="true"{% endif %}>
         {{ result.abstract }}
       </p>
       {% for url in result.urls[1:] %}

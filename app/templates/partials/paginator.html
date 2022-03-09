@@ -1,7 +1,7 @@
 <p class="results__number">
   Showing page {{ current_page }} of {{ pages }}: {{ result_set.results|length }} results of {{ result_set.total_results }}
 </p>
-<nav role="navigation" class="paginator" aria-label="Search Results Pagination Navigation">
+<nav class="paginator" aria-label="pagination">
     <ul class="paginator__list">
         {% if current_page > 1 %}
             <li class="paginator__element">
