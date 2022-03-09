@@ -24,5 +24,9 @@
 .results__number {
     color: constants.$dark-blue;
     font-weight: constants.$font-weight-bold;
-    margin-left: 2rem;
+    margin-left: 0.25rem;
+
+    @include constants.breakpoint(medium-and-up) {
+        margin-left: 2rem;
+    }
 }

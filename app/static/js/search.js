@@ -29,6 +29,7 @@ function handleSearchResults($ajaxPromise) {
     })
     .always(function () {
       $searchButton.prop("disabled", false);
+      $resultsContainer.focus();
     });
 }
 

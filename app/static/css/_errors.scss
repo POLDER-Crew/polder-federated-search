@@ -1,7 +1,16 @@
 @use 'constants';
 
 .error {
-    padding: 2rem;
+    background-color: constants.$soft-white;
+    padding: 0.25rem;
+
+    @include constants.breakpoint(medium) {
+        padding: 1rem;
+    }
+
+    @include constants.breakpoint(large-and-up) {
+        padding: 2rem;
+    }
 }
 
 .error__link {
