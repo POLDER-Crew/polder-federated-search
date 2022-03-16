@@ -1,5 +1,8 @@
+set -e
+
 next="true"
 cursor="null"
+urls=()
 
 while [ "$next" = "true" ]
 do
@@ -10,14 +13,13 @@ do
         -H 'Connection: keep-alive' \
         -H 'DNT: 1' \
         -H 'Origin: https://api.datacite.org' \
-        --data-binary '{"query":"{\n  query: \n    organization(id: \"ror.org/01rhff309\")' \
-         "{\n      datasets(after: ${cursor}) {\n        totalCount\n        nodes {\n          id\n        }\n" \
-        'pageInfo {\n        endCursor\n\n        hasNextPage\n      }\n      }\n    }\n  }\n"}' \
-        --compressed
-        )
-    urls=$(echo jq -r '.. | .id? | select( . != null )' $results )
-    cursor=$(echo $results | jq '.. | .endCursor? | select( . != null )')
-    next=$(echo $results | jq '.. | .hasNextPage? | select( . != null )')
+        --compressed \
+        --data-binary   "{\"query\":\"{\n  query: \n    organization(id: \\\"ror.org/01rhff309\\\") {\n      datasets(after: ${cursor}) {\n        totalCount\n        nodes {\n          id\n        }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n      }\n    }\n  }\n\"}"
 
-    echo $urls
+    )
+    urls+=$(echo $results | jq -r '.. | .id? | select( . != null )')$'\n'
+    cursor=$(echo $results | jq '.. | .endCursor? | select( . != null )' | sed s/\"/\\\\\"/g)
+    next=$(echo $results | jq '.. | .hasNextPage? | select( . != null )')
 done
+
+printf "%s" "${urls[@]}" > bas-sitemap.txt
