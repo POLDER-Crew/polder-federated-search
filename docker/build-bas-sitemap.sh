@@ -1,5 +1,7 @@
 set -e
 
+mc policy set public minio/sitemaps/bas-sitemap.xml
+
 next="true"
 cursor="null"
 urls=()
@@ -17,9 +19,23 @@ do
         --data-binary   "{\"query\":\"{\n  query: \n    organization(id: \\\"ror.org/01rhff309\\\") {\n      datasets(after: ${cursor}) {\n        totalCount\n        nodes {\n          id\n        }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n      }\n    }\n  }\n\"}"
 
     )
-    urls+=$(echo $results | jq -r '.. | .id? | select( . != null )')$'\n'
+    batch=()
+    read -r -a batch <<< "$(echo $results | jq -rc '.. | .id? | select( . != null ) | split("\n")')"
+    urls+=${batch[@]}
     cursor=$(echo $results | jq '.. | .endCursor? | select( . != null )' | sed s/\"/\\\\\"/g)
     next=$(echo $results | jq '.. | .hasNextPage? | select( . != null )')
 done
 
-printf "%s" "${urls[@]}" > bas-sitemap.txt
+rm -f bas-sitemap.xml
+
+printf '<?xml version="1.0" encoding="UTF-8"?>\n' >> bas-sitemap.xml
+printf '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' >> bas-sitemap.xml
+
+for url in "${urls[@]}"
+do
+    printf "<loc><url>%s</loc></url>\n" "${url}" >> bas-sitemap.xml
+done
+
+printf "</urlset>" >> bas-sitemap.xml
+
+mc cp bas-sitemap.xml minio/sitemaps/bas-sitemap.xml
