@@ -42,6 +42,7 @@ sources:
   active: false
 - name: bas
   type: sitemap
+  headless: false
   url: http://s3system:9000/sitemaps/bas-sitemap.xml
   properName: British Antarctic Survey
   active: true

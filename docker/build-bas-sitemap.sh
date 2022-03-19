@@ -8,7 +8,7 @@ cursor="null"
 rm -f bas-sitemap.xml
 
 printf '<?xml version="1.0" encoding="UTF-8"?>\n' >> bas-sitemap.xml
-printf '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' >> bas-sitemap.xml
+printf '<urlset xsi:schemalocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">\n' >> bas-sitemap.xml
 
 while [ "$next" = "true" ]
 do
