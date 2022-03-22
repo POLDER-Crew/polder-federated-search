@@ -17,13 +17,14 @@ There are many DataONE repositories, but of particular interest to the polar res
 
 #### Repositories indexed by this app
 - [Greenland Ecosystem Monitoring](https://g-e-m.dk/)
+- [British Antarctic Survey](https://www.bas.ac.uk/), via DataCite's GraphQL API (see `docker/build-bas-sitemap.sh` for how that works)
 
 #### Future work
 - [Australian Antarctic Data Centre](https://data.aad.gov.au/)
 - [National Snow and Ice Data Center](https://nsidc.org])
 - CCADI
 - CRITTERBASE
-- BAS (most likely via DataCite)
+(most likely via DataCite)
 - [Canadian Watershed Information Network](https://dev.uni-manitoba.links.com.au/data/dataset/)
 
 ### Architecture
