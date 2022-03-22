@@ -8,8 +8,7 @@ cursor="null"
 rm -f bas-sitemap.xml
 
 printf '<?xml version="1.0" encoding="UTF-8"?>\n' >> bas-sitemap.xml
-printf '<urlset xsi:schemalocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">\n' >> bas-sitemap.xml
-
+printf '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemalocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">' >> bas-sitemap.xml
 while [ "$next" = "true" ]
 do
     results=$(curl -s 'https://api.datacite.org/graphql' \
@@ -23,7 +22,7 @@ do
         --data-binary   "{\"query\":\"{\n  query: \n    organization(id: \\\"ror.org/01rhff309\\\") {\n      datasets(after: ${cursor}) {\n        totalCount\n        nodes {\n          id\n        }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n      }\n    }\n  }\n\"}"
 
     )
-    line=$(echo $results | jq -rc '.. | .id? | select( . != null ) | "<loc><url>\(.)</url></loc>"')
+    line=$(echo $results | jq -rc '.. | .id? | select( . != null ) | "\t<url>\n\t\t<loc>\(.)</loc>\n\t</url>\n"')
     printf "%s" "${line}" >> bas-sitemap.xml
     cursor=$(echo $results | jq '.. | .endCursor? | select( . != null )' | sed s/\"/\\\\\"/g)
     next=$(echo $results | jq '.. | .hasNextPage? | select( . != null )')
