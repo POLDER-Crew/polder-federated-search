@@ -24,7 +24,6 @@ There are many DataONE repositories, but of particular interest to the polar res
 - [National Snow and Ice Data Center](https://nsidc.org])
 - CCADI
 - CRITTERBASE
-(most likely via DataCite)
 - [Canadian Watershed Information Network](https://dev.uni-manitoba.links.com.au/data/dataset/)
 
 ### Architecture
