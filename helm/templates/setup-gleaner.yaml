@@ -135,6 +135,8 @@ spec:
         - >
           set -e
 
+          mc config host add minio "http://${MINIO_SERVER_HOST}:${MINIO_SERVER_PORT_NUMBER}" "${MINIO_CLIENT_ACCESS_KEY}" "${MINIO_CLIENT_SECRET_KEY}" &&
+
           mc policy set public minio/sitemaps/bas-sitemap.xml
 
           next="true"
