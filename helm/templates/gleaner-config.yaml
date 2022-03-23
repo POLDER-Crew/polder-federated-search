@@ -39,7 +39,7 @@ data:
       properName: National Snow and Ice Data Center
       domain: https://nsidc.org
       type: sitemap
-      active: true
+      active: false
     - name: gem
       type: sitemap
       headless: true
@@ -47,3 +47,10 @@ data:
       properName: Greenland Ecosystem Monitoring Database
       domain: https://data.g-e-m.dk
       active: true
+    - name: bas
+      type: sitemap
+      headless: false
+      url: http://s3system:9000/sitemaps/bas-sitemap.xml
+      properName: British Antarctic Survey
+      active: true
+      domain: http://bas.ac.uk

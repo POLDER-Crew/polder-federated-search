@@ -104,6 +104,70 @@ spec:
         - name: gleaner-context
           mountPath: /context
         workingDir: /context
+      # Dynamically create the sitemap for BAS and put it somewhere
+      # that Gleaner can use to crawl
+      - name: build-bas-sitemap
+        image: nein09/mc-curl-jq:1.0
+        env:
+        - name: MINIO_CLIENT_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              key:  minioAccessKey
+              name: {{ .Release.Name }}-secrets
+        - name: MINIO_CLIENT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              key:  minioSecretKey
+              name: {{ .Release.Name }}-secrets
+        - name: MINIO_SERVER_HOST
+          value: {{ include "gleaner.s3system.endpoint" . }}
+        - name: MINIO_SERVER_PORT_NUMBER
+          value: "{{ .Values.s3system_service.api_port }}"
+        volumeMounts:
+        - name: gleaner-context
+          mountPath: /context
+        workingDir: /context
+        command:
+        # the first line of the following bash command is supposed to happen automatically, according to
+        # the documentation on docker hub, but it does not.
+        - /bin/bash
+        - -c
+        - >
+          set -e
+
+          mc policy set public minio/sitemaps/bas-sitemap.xml
+
+          next="true"
+          cursor="null"
+
+          rm -f bas-sitemap.xml
+
+          printf '<?xml version="1.0" encoding="UTF-8"?>\n' >> bas-sitemap.xml
+          printf '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemalocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">' >> bas-sitemap.xml
+          while [ "$next" = "true" ]
+          do
+              results=$(curl -s 'https://api.datacite.org/graphql' \
+                  -H 'Accept-Encoding: gzip, deflate, br' \
+                  -H 'Content-Type: application/json' \
+                  -H 'Accept: application/json' \
+                  -H 'Connection: keep-alive' \
+                  -H 'DNT: 1' \
+                  -H 'Origin: https://api.datacite.org' \
+                  --compressed \
+                  --data-binary   "{\"query\":\"{\n  query: \n    organization(id: \\\"ror.org/01rhff309\\\") {\n      datasets(after: ${cursor}) {\n        totalCount\n        nodes {\n          id\n        }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n      }\n    }\n  }\n\"}"
+
+              )
+              line=$(echo $results | jq -rc '.. | .id? | select( . != null ) | "\t<url>\n\t\t<loc>\(.)</loc>\n\t</url>\n"')
+              printf "%s" "${line}" >> bas-sitemap.xml
+              cursor=$(echo $results | jq '.. | .endCursor? | select( . != null )' | sed s/\"/\\\\\"/g)
+              next=$(echo $results | jq '.. | .hasNextPage? | select( . != null )')
+          done
+
+          printf "</urlset>" >> bas-sitemap.xml
+
+          mc cp bas-sitemap.xml minio/sitemaps/bas-sitemap.xml
+
+
       # Finally, index our data repositories!
       - name: gleaner-initial-index
         image: fils/gleaner:v3.0.3-developement

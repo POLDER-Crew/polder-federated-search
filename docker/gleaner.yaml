@@ -39,7 +39,7 @@ sources:
   url: https://data.g-e-m.dk/sitemap
   properName: Greenland Ecosystem Monitoring Database
   domain: https://data.g-e-m.dk
-  active: false
+  active: true
 - name: bas
   type: sitemap
   headless: false
