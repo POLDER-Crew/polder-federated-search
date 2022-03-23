@@ -78,14 +78,22 @@ That file will be structured like this:
 ```
 You can see that the values of the secrets are base64 encoded - in order to do this, run ` echo -n 'mysecretkey' | base64` on your command line for each value, and paste the result in where the key goes. Don't check in your real secrets anywhere!
   You can read more about secrets [here](https://kubernetes.io/docs/concepts/configuration/secret/).
-1. Assuming that you're starting from **this directory**, run `helm install polder ./helm` ; the `polder` can be replaced with whatever you want.
-1. The cluster will take a few minutes to spin up. In addition to downloading all these Docker images and starting the web app, it does the following:
-    1. Starts a Blazegraph Triplestore and creates a namespace in it
-    1. Starts a Minio / S3 storage system
-    1. Initializes Gleaner
-    1. Kicks off a Gleaner index of the data repositories we want to get from there
-    1. Writes the resulting indexed metadata to Blazegraph so we can search it
-1. If you're using Docker desktop for all this, you can visit [http://localhost](http://localhost) and see it running!
+
+In order to deploy to the `dev` or `prod` clusters, which are currently hosted in DataONE's analagous Kubernetes clusters, you need to ask someone in that organization for their Kubernetes config information. Name that file `polder.config` and put it in this directory; it'll get added to your environment automatically.
+
+Assuming that you're starting from **this directory**, run:
+```helm install polder ./helm -f values-local.yaml```
+
+Some notes: the `polder` can be replaced with whatever you want. For a dev or prod environment deploy, you need to first be using the correct Kubernetes context (`kubectl get-contexts` can tell you which ones are available to you). For dev, use `values-dev.yaml` instead of `values-local.yaml` and for a production deploy, use `values-prod.yaml`. Note that `values-dev` and `values-prod` are currently set up to deploy in DataONE's dev and prod Kubernetes clusters. They will not work without the correct keys and permissions from DataONE.
+
+The cluster will take a few minutes to spin up. In addition to downloading all these Docker images and starting the web app, it does the following:
+1. Starts a Blazegraph Triplestore and creates a namespace in it
+1. Starts a Minio / S3 storage system
+1. Initializes Gleaner
+1. Kicks off a Gleaner index of the data repositories we want to get from there
+1. Writes the resulting indexed metadata to Blazegraph so we can search it
+
+If you're using Docker desktop for all this, you can visit [http://localhost](http://localhost) and see it running!
 
 The Helm chart also includes a Kubernetes `CronJob` that tells Gleaner to index [once a week](https://cron.help/#0_0_*_*_3). You can see it at `helm/templates/crawl.yaml`.
 
