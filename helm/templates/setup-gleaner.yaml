@@ -107,7 +107,7 @@ spec:
       # Dynamically create the sitemap for BAS and put it somewhere
       # that Gleaner can use to crawl
       - name: build-bas-sitemap
-        image: nein09/mc-curl-jq:1.0
+        image: nein09/mc-curl-jq:1.5
         env:
         - name: MINIO_CLIENT_ACCESS_KEY
           valueFrom:
@@ -128,15 +128,12 @@ spec:
           mountPath: /context
         workingDir: /context
         command:
-        # the first line of the following bash command is supposed to happen automatically, according to
-        # the documentation on docker hub, but it does not.
         - /bin/bash
         - -c
         - >
           set -e
 
-          mc config host add minio "http://${MINIO_SERVER_HOST}:${MINIO_SERVER_PORT_NUMBER}" "${MINIO_CLIENT_ACCESS_KEY}" "${MINIO_CLIENT_SECRET_KEY}" &&
-
+          mc config host add minio http://${MINIO_SERVER_HOST}:${MINIO_SERVER_PORT_NUMBER} ${MINIO_CLIENT_ACCESS_KEY} ${MINIO_CLIENT_SECRET_KEY}
           mc policy set public minio/sitemaps/bas-sitemap.xml
 
           next="true"
@@ -157,7 +154,6 @@ spec:
                   -H 'Origin: https://api.datacite.org' \
                   --compressed \
                   --data-binary   "{\"query\":\"{\n  query: \n    organization(id: \\\"ror.org/01rhff309\\\") {\n      datasets(after: ${cursor}) {\n        totalCount\n        nodes {\n          id\n        }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n      }\n    }\n  }\n\"}"
-
               )
               line=$(echo $results | jq -rc '.. | .id? | select( . != null ) | "\t<url>\n\t\t<loc>\(.)</loc>\n\t</url>\n"')
               printf "%s" "${line}" >> bas-sitemap.xml
