@@ -3,7 +3,8 @@
 set -e
 
 # 'download' does not work for some reason, but 'public' permissions do
-mc policy set public minio/sitemaps/bas-sitemap.xml
+mc stat minio/sitemaps || mc mb minio/sitemaps
+mc policy set public minio/sitemaps
 
 next="true"
 cursor="null"

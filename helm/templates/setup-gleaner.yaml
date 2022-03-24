@@ -107,7 +107,7 @@ spec:
       # Dynamically create the sitemap for BAS and put it somewhere
       # that Gleaner can use to crawl
       - name: build-bas-sitemap
-        image: nein09/mc-curl-jq:1.5
+        image: nein09/build-bas-sitemap:1.0
         env:
         - name: MINIO_CLIENT_ACCESS_KEY
           valueFrom:
