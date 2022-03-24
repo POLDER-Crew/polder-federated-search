@@ -17,6 +17,17 @@ spec:
           name: nabu-config
       - name: gleaner-context
         emptyDir: {}
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+          - 10.96.0.10
+        searches:
+        - {{ .Release.Namespace }}.svc.cluster.local
+        - svc.cluster.local
+        - cluster.local
+        options:
+        - name: ndots
+          value: "5"
       initContainers:
         # Literally wait for Blazegraph to come up so we can create a namespace
       - name: wait-for-triplestore-up
