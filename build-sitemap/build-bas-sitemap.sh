@@ -2,6 +2,8 @@
 
 set -e
 
+mc config host add minio "http://${MINIO_SERVER_HOST}:${MINIO_SERVER_PORT_NUMBER}" "${MINIO_CLIENT_ACCESS_KEY}" "${MINIO_CLIENT_SECRET_KEY}"
+
 # 'download' does not work for some reason, but 'public' permissions do
 mc stat minio/sitemaps || mc mb minio/sitemaps
 mc policy set public minio/sitemaps

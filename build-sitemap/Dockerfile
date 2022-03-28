@@ -24,8 +24,8 @@ RUN  \
      apk add ca-certificates curl jq bash && \
      rm -rf /var/cache/apk/*
 
-COPY build-bas-sitemap.sh /context/build-bas-sitemap.sh
+COPY build-bas-sitemap.sh /usr/local/bin/build-bas-sitemap.sh
 
-RUN chmod +x /context/build-bas-sitemap.sh
+RUN chmod +x /usr/local/bin/build-bas-sitemap.sh
 
-ENTRYPOINT ["/context/build-bas-sitemap.sh"]
+ENTRYPOINT ["build-bas-sitemap.sh"]

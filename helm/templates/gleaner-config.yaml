@@ -50,7 +50,7 @@ data:
     - name: bas
       type: sitemap
       headless: false
-      url: http://s3system:9000/sitemaps/bas-sitemap.xml
+      url: http://s3system-svc:{{ .Values.s3system_service.api_port }}/sitemaps/bas-sitemap.xml
       properName: British Antarctic Survey
       active: true
       domain: http://bas.ac.uk
