@@ -1,0 +1,33 @@
+@use 'constants';
+
+.about__container {
+    background-color: constants.$soft-white;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+
+    @include constants.breakpoint(medium-and-up) {
+        margin: 2rem;
+        padding: 2rem;
+    }
+}
+
+.partner {
+    display: flex;
+    flex-direction: column;
+
+    @include constants.breakpoint(medium-and-up) {
+        flex-direction: row;
+    }
+}
+
+.partner--logo, .partner--text {
+    margin: 0.5rem auto;
+
+    @include constants.breakpoint(medium-and-up) {
+        margin: 0.5rem;
+    }
+}
+
+.d1_logo {
+    fill: url('#theme-gradient');
+}

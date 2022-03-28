@@ -4,6 +4,8 @@
 .main-nav {
     background-color: constants.$soft-white;
     border-bottom: 2px solid constants.$light-blue;
+    display: flex;
+    justify-content: space-between;
     margin: 0;
     padding: 0.5rem;
 
@@ -18,4 +20,8 @@
     &:visited {
         color: constants.$dark-blue;
     }
+}
+
+.nav__link--small {
+    align-self: flex-end;
 }
