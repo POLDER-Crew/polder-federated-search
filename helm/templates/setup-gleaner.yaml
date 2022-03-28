@@ -104,6 +104,29 @@ spec:
         - name: gleaner-context
           mountPath: /context
         workingDir: /context
+      # Dynamically create the sitemap for BAS and put it somewhere
+      # that Gleaner can use to crawl
+      - name: build-bas-sitemap
+        image: nein09/build-bas-sitemap:1.2
+        env:
+        - name: MINIO_CLIENT_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              key:  minioAccessKey
+              name: {{ .Release.Name }}-secrets
+        - name: MINIO_CLIENT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              key:  minioSecretKey
+              name: {{ .Release.Name }}-secrets
+        - name: MINIO_SERVER_HOST
+          value: {{ include "gleaner.s3system.endpoint" . }}
+        - name: MINIO_SERVER_PORT_NUMBER
+          value: "{{ .Values.s3system_service.api_port }}"
+        volumeMounts:
+        - name: gleaner-context
+          mountPath: /context
+        workingDir: /context
       # Finally, index our data repositories!
       - name: gleaner-initial-index
         image: fils/gleaner:v3.0.3-developement
