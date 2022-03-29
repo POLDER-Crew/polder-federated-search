@@ -4,6 +4,8 @@
 .main-nav {
     background-color: constants.$soft-white;
     border-bottom: 2px solid constants.$light-blue;
+    display: flex;
+    justify-content: space-between;
     margin: 0;
     padding: 0.5rem;
 
@@ -17,5 +19,19 @@
     text-decoration: none;
     &:visited {
         color: constants.$dark-blue;
+    }
+}
+
+.nav__link--small {
+    align-self: flex-end;
+    color: constants.$light-blue;
+    font-weight: constants.$font-weight-bold;
+
+    &:visited {
+        color: constants.$light-blue;
+    }
+
+    &:hover {
+        color: constants.$accent-warm;
     }
 }

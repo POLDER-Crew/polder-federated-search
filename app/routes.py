@@ -24,6 +24,11 @@ def polder():
     return redirect(url_for('home'))
 
 
+@app.route('/about/')
+def about():
+    return render_template('about.html')
+
+
 def _get_date_from_args(arg_name, kwargs):
     arg_date = kwargs.pop(arg_name, None)
     if arg_date:

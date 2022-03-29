@@ -1,0 +1,97 @@
+@use 'constants';
+
+.about__container {
+    background-color: constants.$soft-white;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+
+    @include constants.breakpoint(medium-and-up) {
+        margin: 2rem;
+        padding: 2rem;
+    }
+}
+
+.about__header {
+    color: constants.$dark-blue;
+    margin-top: 3rem;
+    text-align: center;
+}
+
+.about__content {
+    padding: 0 0.5rem;
+    @include constants.breakpoint(medium-and-up) {
+        padding: 0 2rem;
+    }
+}
+
+.about__link {
+    color: constants.$light-blue;
+    font-weight: constants.$font-weight-bold;
+
+    &:visited {
+        color: constants.$light-blue;
+    }
+
+    &:hover {
+        color: constants.$accent-warm;
+    }
+}
+
+.dataone {
+    display: flex;
+    flex-direction: column;
+
+    @include constants.breakpoint(large-and-up) {
+        flex-direction: row;
+    }
+}
+
+.dataone__logo, .dataone__text, .partner__name {
+    align-self: center;
+    margin: 0.5rem auto;
+
+    @include constants.breakpoint(medium-and-up) {
+        margin: 0.5rem;
+    }
+}
+
+.d1_logo {
+    fill: url('#theme-gradient');
+}
+
+.partners {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.partner {
+    text-align: center;
+    margin: 0.25rem;
+    padding: 0.25rem;
+
+    &:hover {
+        -moz-box-shadow: 0 0 2px 2px constants.$light-blue;
+        -webkit-box-shadow: 0 0 2px 2px constants.$light-blue;
+    }
+
+    @include constants.breakpoint(medium-and-up) {
+        margin: 1rem;
+        padding: 1rem;
+    }
+}
+
+.partner__logo--horizontal img {
+    max-height: 50px;
+    max-width: 100%;
+}
+
+.partner__logo--vertical img {
+    max-width: 100px;
+}
+
+.partner__name {
+    align-self: center;
+    color: constants.$soft-black;
+}
+
