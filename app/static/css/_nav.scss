@@ -24,4 +24,14 @@
 
 .nav__link--small {
     align-self: flex-end;
+    color: constants.$light-blue;
+    font-weight: constants.$font-weight-bold;
+
+    &:visited {
+        color: constants.$light-blue;
+    }
+
+    &:hover {
+        color: constants.$accent-warm;
+    }
 }
