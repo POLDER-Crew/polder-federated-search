@@ -11,7 +11,7 @@
     }
 }
 
-.partner {
+.dataone {
     display: flex;
     flex-direction: column;
 
@@ -20,7 +20,7 @@
     }
 }
 
-.partner--logo, .partner--text {
+.dataone__logo, .dataone__text, .partner__name {
     margin: 0.5rem auto;
 
     @include constants.breakpoint(medium-and-up) {
@@ -31,3 +31,27 @@
 .d1_logo {
     fill: url('#theme-gradient');
 }
+
+.partners {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.partner {
+    text-align: center;
+}
+
+.partner__logo--horizontal img {
+    max-height: 50px;
+}
+
+.partner__logo--vertical img {
+    max-width: 100px;
+}
+
+.partner__name {
+    align-self: center;
+    color: constants.$soft-black;
+}
+

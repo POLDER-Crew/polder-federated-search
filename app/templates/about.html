@@ -9,15 +9,67 @@
     <p>Find out more by reading the <a href="https://polder-crew.github.io/Federated-Search-Documentation/intro.html" rel="noopener" target="_blank">documentation book</a> or exploring the <a href="https://github.com/nein09/polder-federated-search" rel="noopener" target="_blank">GitHub repository</a>.</p>
 
     <h2>Special Thanks</h2>
-    <div class="partner">
-        <div class="partner--logo">
+    <div class="dataone">
+        <div class="dataone__logo">
             {% include 'partials/dataone-logo.html' %}
         </div>
-        <p class="partner--text">
+        <p class="dataone__text">
             The production and development environments are currently hosted by <a href="https://www.dataone.org/" rel="noopener" target="_blank">DataONE</a>, who are graciously providing computing infrastructure and support.
         </p>
     </div>
 
     <h2>Partners</h2>
+    <div class="partners">
+        <a href="https://arcticdc.org/" rel="noopener" target="_blank">
+            <div class="partner">
+                <div class="partner__logo--horizontal">
+                    <img src="{{ url_for('static', filename='img/adc-logo.jpg') }}">
+                </div>
+                <p class="partner__name">
+                    The Arctic Data Committee
+                </p>
+            </div>
+        </a>
+        <a href="https://ccadi.ca/" rel="noopener" target="_blank">
+            <div class="partner">
+                <div class="partner__logo--vertical">
+                    <img src="{{ url_for('static', filename='img/CCADI-logo.png') }}">
+                </div>
+                <p class="partner__name">
+                    The Canadian Consortium for Arctic Data Interoperability
+                </p>
+            </div>
+        </a>
+        <a href="https://www.scar.org/" rel="noopener" target="_blank">
+            <div class="partner">
+                <div class="partner__logo--vertical">
+                    <img src="{{ url_for('static', filename='img/SCAR-logo.png') }}">
+                </div>
+                <p class="partner__name">
+                    The Scientific Committee on Antarctic Research
+                </p>
+            </div>
+        </a>
+        <a href="https://soos.aq/" rel="noopener" target="_blank">
+            <div class="partner">
+                <div class="partner__logo--horizontal">
+                    <img src="{{ url_for('static', filename='img/SooS-logo.png') }}">
+                </div>
+                <p class="partner__name">
+                    The Southern Ocean Observing System
+                </p>
+            </div>
+        </a>
+        <a href="https://www.worlddatasystem.org/" rel="noopener" target="_blank">
+            <div class="partner">
+                <div class="partner__logo--vertical">
+                    <img src="{{ url_for('static', filename='img/WDS-logo.png') }}">
+                </div>
+                <p class="partner__name">
+                    The World Data System
+                </p>
+            </div>
+        </a>
+    </div>
 </div>
 {% endblock %}
