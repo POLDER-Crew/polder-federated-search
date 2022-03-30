@@ -4,13 +4,13 @@
 .main-nav {
     background-color: constants.$soft-white;
     border-bottom: 2px solid constants.$light-blue;
-    display: flex;
-    justify-content: space-between;
     margin: 0;
     padding: 0.5rem;
+    padding-bottom: 0.25rem;
 
     @include constants.breakpoint(medium-and-up) {
         padding: 1rem;
+        padding-bottom: 0.5rem;
     }
 }
 
@@ -26,6 +26,7 @@
     align-self: flex-end;
     color: constants.$light-blue;
     font-weight: constants.$font-weight-bold;
+    font-size: 1.2rem;
 
     &:visited {
         color: constants.$light-blue;
