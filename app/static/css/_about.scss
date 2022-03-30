@@ -25,11 +25,11 @@
 }
 
 .about__link {
-    color: constants.$light-blue;
+    color: constants.$dark-blue;
     font-weight: constants.$font-weight-bold;
 
     &:visited {
-        color: constants.$light-blue;
+        color: constants.$dark-blue;
     }
 
     &:hover {
