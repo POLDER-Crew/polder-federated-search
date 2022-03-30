@@ -7,6 +7,7 @@
     <h2>About the POLDER Federated Search App</h2>
     <p>This is a customizable federated search website, originally created for the <a class="about__link" href="https://polder.info" rel="noopener" target="_blank">polar research community</a>. The intentions behind creating it are to have something that came from, and is meant to serve, an international community of polar (Arctic and Antarctic) researchers. We hope to build an easy to use, fast, accessible site that is tailored to this specific community and responds to its needs.</p>
     <p>Find out more by reading the <a class="about__link" href="https://polder-crew.github.io/Federated-Search-Documentation/intro.html" rel="noopener" target="_blank">documentation book</a> or exploring the <a class="about__link" href="https://github.com/nein09/polder-federated-search" rel="noopener" target="_blank">GitHub repository</a>.</p>
+    <p>If you'd like to send us questions or comments directly, you are welcome to <a class="about__link" href="mailto:cverhey@oceannetworks.ca">email us</a>.</p>
 
     <h2 class="about__header">Special Thanks</h3>
     <div class="about__content dataone">
@@ -23,51 +24,49 @@
         <a href="https://arcticdc.org/" rel="noopener" target="_blank">
             <div class="partner">
                 <div class="partner__logo--horizontal">
-                    <img src="{{ url_for('static', filename='img/adc-logo.jpg') }}">
+                    <img src="{{ url_for('static', filename='img/adc-logo.jpg') }}" alt="Arctic Data Committee">
                 </div>
-                <p class="partner__name">
-                    The Arctic Data Committee
-                </p>
+            </div>
+        </a>
+        <a href="https://alliancecan.ca/" rel="noopener" target="blank">
+            <div class="partner">
+                <div class="partner__logo--horizontal">
+                    <img src="{{ url_for('static', filename='img/alliance-logo.svg') }}" alt="Digital Research Alliance of Canada / Alliance de recherche numérique du Canada">
+                </div>
             </div>
         </a>
         <a href="https://ccadi.ca/" rel="noopener" target="_blank">
             <div class="partner">
-                <div class="partner__logo--vertical">
-                    <img src="{{ url_for('static', filename='img/CCADI-logo.png') }}">
+                <div class="partner__logo--horizontal">
+                    <img src="{{ url_for('static', filename='img/CCADI-logo.png') }}" alt="Canadian Consortium for Arctic Data Interoperability (CCADI)">
                 </div>
                 <p class="partner__name">
-                    The Canadian Consortium for Arctic Data Interoperability
+                    Canadian Consortium for Arctic Data Interoperability
                 </p>
             </div>
         </a>
         <a href="https://www.scar.org/" rel="noopener" target="_blank">
             <div class="partner">
                 <div class="partner__logo--vertical">
-                    <img src="{{ url_for('static', filename='img/SCAR-logo.png') }}">
+                    <img src="{{ url_for('static', filename='img/SCAR-logo.png') }}" alt="Scientific Committee on Antarctic Research (SCAR)">
                 </div>
-                <p class="partner__name">
-                    The Scientific Committee on Antarctic Research
-                </p>
             </div>
         </a>
         <a href="https://soos.aq/" rel="noopener" target="_blank">
             <div class="partner">
                 <div class="partner__logo--horizontal">
-                    <img src="{{ url_for('static', filename='img/SooS-logo.png') }}">
+                    <img src="{{ url_for('static', filename='img/SooS-logo.png') }}" alt="Southern Ocean Observing System (SOOS)">
                 </div>
                 <p class="partner__name">
-                    The Southern Ocean Observing System
+                    Southern Ocean Observing System
                 </p>
             </div>
         </a>
-        <a href="https://www.worlddatasystem.org/" rel="noopener" target="_blank">
+        <a href="https://www.wds-ito.org/" rel="noopener" target="_blank">
             <div class="partner">
                 <div class="partner__logo--vertical">
-                    <img src="{{ url_for('static', filename='img/WDS-logo.png') }}">
+                    <img src="{{ url_for('static', filename='img/WDS-logo.png') }}" alt="World Data System">
                 </div>
-                <p class="partner__name">
-                    The World Data System
-                </p>
             </div>
         </a>
     </div>

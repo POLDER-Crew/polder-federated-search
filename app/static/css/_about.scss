@@ -40,10 +40,6 @@
 .dataone {
     display: flex;
     flex-direction: column;
-
-    @include constants.breakpoint(large-and-up) {
-        flex-direction: row;
-    }
 }
 
 .dataone__logo, .dataone__text, .partner__name {
@@ -57,6 +53,8 @@
 
 .d1_logo {
     fill: url('#theme-gradient');
+    width: 286px;
+    height: 64px;
 }
 
 .partners {
@@ -82,16 +80,20 @@
 }
 
 .partner__logo--horizontal img {
-    max-height: 50px;
+    max-height: 60px;
     max-width: 100%;
 }
 
 .partner__logo--vertical img {
     max-width: 100px;
+    @include constants.breakpoint(medium-and-up) {
+        max-width: 200px;
+    }
 }
 
 .partner__name {
     align-self: center;
     color: constants.$soft-black;
+    font-size: 0.8rem;
 }
 
