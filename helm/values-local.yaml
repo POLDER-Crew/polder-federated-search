@@ -68,16 +68,11 @@ ingress:
     nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, OPTIONS"
     nginx.ingress.kubernetes.io/cors-allow-origin: '$http_origin'
     nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
   hosts:
-    - host: search-dev.polder.info
+    - host: localhost
       paths:
         - path: /
           pathType: ImplementationSpecific
-  tls:
-  - hosts:
-    - search-dev.polder.info
-    secretName: ingress-nginx-tls-cert
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

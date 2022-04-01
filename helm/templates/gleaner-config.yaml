@@ -34,10 +34,10 @@ data:
       graph: true
     sources:
     - name: nsidc
-      url: https://nsidc.org/sitemap.xml
+      url: http://nsidc.org/sitemap.xml
       headless: false
       properName: National Snow and Ice Data Center
-      domain: https://nsidc.org
+      domain: http://nsidc.org
       type: sitemap
       active: false
     - name: gem
