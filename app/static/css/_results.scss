@@ -3,10 +3,10 @@
 /* Search results */
 .results__container {
     background-color: constants.$soft-white;
-    padding-top: 0.5rem;
+    padding: 0.5rem 0;
 
     @include constants.breakpoint(medium-and-up) {
-        padding-top: 2rem;
+        padding: 2rem 0;
     }
 }
 
