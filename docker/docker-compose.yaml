@@ -48,7 +48,7 @@ services:
           <entry key="com.bigdata.rdf.store.AbstractTripleStore.geoSpatial">true</entry>
           <entry key="com.bigdata.rdf.store.AbstractTripleStore.statementIdentifiers">false</entry>
         </properties>
-    - 'http://triplestore:9999/blazegraph/namespace'
+    - 'http://triplestore:8080/bigdata/namespace'
 
   gleaner:
     image: fils/gleaner:v3.0.3-developement
@@ -67,18 +67,14 @@ services:
     working_dir: /config
 
   triplestore:
-    image: nawer/blazegraph
-    environment:
-      JAVA_XMS: 2g
-      JAVA_XMX: 8g
-      JAVA_OPTS: -Xmx6g -Xms2g --XX:+UseG1GC
+    image: islandora/blazegraph:1.0.0-alpha-15
     ports:
-      - 9999:9999
+      - 9999:8080
     volumes:
       - triplestore:/var/lib/blazegraph
 
   s3system:
-    image: minio/minio:latest
+    image: minio/minio:RELEASE.2022-04-01T03-41-39Z
     ports:
       - 54321:54321
       - 9000:9000
@@ -92,7 +88,7 @@ services:
     command: ["server", "/data", "--console-address", ":54321"]
 
   headless:
-    image: chromedp/headless-shell:latest
+    image: chromedp/headless-shell:stable
     ports:
       - 9222:9222
     environment:
@@ -110,7 +106,7 @@ services:
       - 8096:8000
     environment:
       # Overrides the environment variable so that we get the service endpoint IP from Docker.
-      - GLEANER_ENDPOINT_URL=http://triplestore:9999/blazegraph/namespace/polder/sparql
+      - GLEANER_ENDPOINT_URL=http://triplestore:8080/bigdata/namespace/polder/sparql
       - FLASK_APP
       - FLASK_RUN_HOST
       - SECRET_KEY
