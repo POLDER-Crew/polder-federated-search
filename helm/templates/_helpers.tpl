@@ -84,7 +84,7 @@ Create the name of the service account to use
 Complicated service URLS
 */}}
 {{- define "gleaner.triplestore.endpoint" -}}
-http://triplestore-svc.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.triplestore_service.port }}/blazegraph/
+http://triplestore-svc.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.triplestore_service.port }}/bigdata/
 {{- end }}
 {{- define "gleaner.s3system.endpoint" -}}
 s3system-svc.{{ .Release.Namespace }}.svc.cluster.local

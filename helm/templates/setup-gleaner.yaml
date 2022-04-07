@@ -31,7 +31,7 @@ spec:
       initContainers:
         # Literally wait for Blazegraph to come up so we can create a namespace
       - name: wait-for-triplestore-up
-        image: curlimages/curl:7.80.0
+        image: curlimages/curl:7.82.0
         command:
         - /bin/sh
         - -c
@@ -43,7 +43,7 @@ spec:
           done
       # Next, create the blazegraph namespace that we want to use for this app
       - name: setup-triplestore
-        image: curlimages/curl:7.80.0
+        image: curlimages/curl:7.82.0
         command:
         - curl
         - -X
@@ -95,7 +95,7 @@ spec:
           subPath: gleaner.yaml
       # We need the latest schema.org context, so fetch it
       - name: get-contextfiles
-        image: curlimages/curl:7.80.0
+        image: curlimages/curl:7.82.0
         command:
         - curl
         - -O
@@ -154,7 +154,7 @@ spec:
           mountPath: /config
       containers:
       - name: write-to-triplestore
-        image: bitnami/minio-client:2021.11.16
+        image: bitnami/minio-client:2022
         env:
         - name: MINIO_CLIENT_ACCESS_KEY
           valueFrom:
@@ -178,5 +178,5 @@ spec:
         - >
           mc config host add minio "http://${MINIO_SERVER_HOST}:${MINIO_SERVER_PORT_NUMBER}" "${MINIO_CLIENT_ACCESS_KEY}" "${MINIO_CLIENT_SECRET_KEY}" &&
           for i in $(mc find minio/{{ .Values.storageNamespace }}/milled); do
-            mc cat $i | curl -X POST -H 'Content-Type:text/x-nquads' --data-binary  @- {{ include "gleaner.triplestore.endpoint" . }}namespace/{{ .Values.storageNamespace }}/sparql
+            mc cat $i | curl -X POST -H 'Content-Type:text/rdf+n3' --data-binary  @- {{ include "gleaner.triplestore.endpoint" . }}namespace/{{ .Values.storageNamespace }}/sparql
           done

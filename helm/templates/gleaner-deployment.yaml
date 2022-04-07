@@ -48,7 +48,7 @@ spec:
           value: "5"
       containers:
       - name: triplestore
-        image: nawer/blazegraph
+        image: islandora/blazegraph:1.0.0-alpha-15
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         volumeMounts:
         - mountPath: /var/lib/blazegraph
@@ -87,7 +87,7 @@ spec:
               key:  minioSecretKey
               name: {{ .Release.Name }}-secrets
       - name: headless
-        image: chromedp/headless-shell:97.0.4692.71
+        image: chromedp/headless-shell:stable
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: {{ .Values.headless_service.port }}
