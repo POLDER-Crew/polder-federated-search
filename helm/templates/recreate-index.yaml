@@ -23,7 +23,7 @@ spec:
             emptyDir: {}
           initContainers:
           - name: remove-minio-files
-            image: bitnami/minio-client:2021.11.16
+            image: bitnami/minio-client:2022
             env:
             - name: MINIO_CLIENT_ACCESS_KEY
               valueFrom:
@@ -82,7 +82,7 @@ spec:
             - name: gleaner-context
               mountPath: /config
           - name: clear-triplestore
-            image: curlimages/curl:7.80.0
+            image: curlimages/curl:7.82.0
             command:
             - curl
             - --get
@@ -93,7 +93,7 @@ spec:
             - {{ include "gleaner.triplestore.endpoint" . }}namespace/{{ .Values.storageNamespace }}/sparql
           containers:
           - name: write-to-triplestore
-            image: bitnami/minio-client:2021.11.16
+            image: bitnami/minio-client:2022
             env:
             - name: MINIO_CLIENT_ACCESS_KEY
               valueFrom:
@@ -117,5 +117,5 @@ spec:
             - >
               mc config host add minio "http://${MINIO_SERVER_HOST}:${MINIO_SERVER_PORT_NUMBER}" "${MINIO_CLIENT_ACCESS_KEY}" "${MINIO_CLIENT_SECRET_KEY}" &&
               for i in $(mc find minio/{{ .Values.storageNamespace }}/milled); do
-                mc cat $i | curl -X POST -H 'Content-Type:text/x-nquads' --data-binary  @- {{ include "gleaner.triplestore.endpoint" . }}namespace/{{ .Values.storageNamespace }}/sparql
+                mc cat $i | curl -X POST -H 'Content-Type:text/rdf+n3' --data-binary  @- {{ include "gleaner.triplestore.endpoint" . }}namespace/{{ .Values.storageNamespace }}/sparql
               done
