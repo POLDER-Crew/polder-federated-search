@@ -19,9 +19,8 @@ services:
     volumes:
       - ./:/config
     working_dir: /config
-
   triplestore-setup:
-    image: curlimages/curl:7.80.0
+    image: curlimages/curl:7.82.0
     depends_on:
     - triplestore
     command:
