@@ -35,7 +35,6 @@ class GleanerSearch(SearcherBase):
                 (GROUP_CONCAT(DISTINCT ?spatial_coverage ; separator=", ") as ?spatial_coverage)
 
             {{
-
                 ?s a schema:Dataset  .
                 ?s schema:name ?title .
                 {{ ?s schema:keywords ?keywords . }} UNION {{
