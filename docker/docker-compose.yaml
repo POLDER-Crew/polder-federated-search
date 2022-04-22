@@ -19,35 +19,6 @@ services:
     volumes:
       - ./:/config
     working_dir: /config
-  triplestore-setup:
-    image: curlimages/curl:7.82.0
-    depends_on:
-    - triplestore
-    command:
-    - curl
-    - -X
-    - POST
-    - -H
-    - 'Content-type: application/xml'
-    - --data
-    - >
-      <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-        <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
-        <properties>
-          <entry key="com.bigdata.rdf.store.AbstractTripleStore.textIndex">true</entry>
-          <entry key="com.bigdata.rdf.store.AbstractTripleStore.axiomsClass">com.bigdata.rdf.axioms.NoAxioms</entry>
-          <entry key="com.bigdata.rdf.sail.isolatableIndices">false</entry>
-          <entry key="com.bigdata.rdf.sail.truthMaintenance">false</entry>
-          <entry key="com.bigdata.rdf.store.AbstractTripleStore.justify">false</entry>
-          <entry key="com.bigdata.rdf.sail.namespace">polder</entry>
-          <entry key="com.bigdata.rdf.store.AbstractTripleStore.quads">true</entry>
-          <entry key="com.bigdata.namespace.polder.spo.com.bigdata.btree.BTree.branchingFactor">1024</entry>
-          <entry key="com.bigdata.journal.Journal.groupCommit">false</entry>
-          <entry key="com.bigdata.namespace.polder.lex.com.bigdata.btree.BTree.branchingFactor">400</entry>
-          <entry key="com.bigdata.rdf.store.AbstractTripleStore.geoSpatial">true</entry>
-          <entry key="com.bigdata.rdf.store.AbstractTripleStore.statementIdentifiers">false</entry>
-        </properties>
-    - 'http://triplestore:8080/bigdata/namespace'
 
   gleaner:
     image: nsfearthcube/gleaner:dev-v3.0.4-development
@@ -66,11 +37,10 @@ services:
     working_dir: /config
 
   triplestore:
-    image: islandora/blazegraph:1.0.0-alpha-15
+    image: nein09/fuseki-geosparql-lucene:0.1
     ports:
-      - 9999:8080
-    volumes:
-      - triplestore:/var/lib/blazegraph
+      - 9999:3030
+
 
   s3system:
     image: minio/minio
