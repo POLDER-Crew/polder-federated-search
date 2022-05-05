@@ -117,9 +117,10 @@ The easiest setup for development on the web app itself is to use docker-compose
 1. `cd ../` (to get back to **this directory**)
 1. `source venv/bin/activate`
 1. `pip install -r requirements.txt`
-1. `yarn install`
-1. `yarn watch` (assuming that you want to make JavaScript or CSS changes - if not, `yarn build` will do)
-1. `flask run`
+2. `npm install --global yarn` (assuming you do not have yarn installed)
+3. `yarn install`
+4. `yarn watch` (assuming that you want to make JavaScript or CSS changes - if not, `yarn build` will do)
+5. `flask run`
 
 You should see Flask's startup message, and get an address for your locally running web app.
 
