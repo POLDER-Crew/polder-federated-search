@@ -38,7 +38,11 @@ A pre-built image for the web app is on Docker Hub as [nein09/polder-federated-s
 Assuming that you're starting from **this directory**:
 1. To build and run the web app, Docker needs to know about some environment variables. There are examples ones in `dev.env` - copy it to `.env` and fill in the correct values for you. Save the file and then run `source .env`.
 1. Install [Docker](https://docker.com)
+patch-1
     - Also, for windows, [click here](https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi) to install the WSL (windows subsystem for linux)
+
+   1. Also, For windows, click [here](https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi) to install the WSL 2 (Windows Subsystem for Linux, version 2)
+ main
 3. `cd docker`
 4. `docker-compose up -d`
 5. Go to your [local Blazegraph instance](http://localhost:9999/blazegraph/#namespaces) and add a new namespace - this is because the default one does not come with a full text index. Name it `polder` (or whatever you want, but you will need to change the GLEANER_ENDPOINT_URL environment variable if you don't name it that). Select 'quads' in the mode dropdown menu, and check the text boxes after "Full text index" and "Enable geospatial".
@@ -117,9 +121,10 @@ The easiest setup for development on the web app itself is to use docker-compose
 1. `cd ../` (to get back to **this directory**)
 1. `source venv/bin/activate`
 1. `pip install -r requirements.txt`
-1. `yarn install`
-1. `yarn watch` (assuming that you want to make JavaScript or CSS changes - if not, `yarn build` will do)
-1. `flask run`
+2. `npm install --global yarn` (assuming you do not have yarn installed)
+3. `yarn install`
+4. `yarn watch` (assuming that you want to make JavaScript or CSS changes - if not, `yarn build` will do)
+5. `flask run`
 
 You should see Flask's startup message, and get an address for your locally running web app.
 
