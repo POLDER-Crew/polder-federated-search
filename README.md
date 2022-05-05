@@ -39,12 +39,12 @@ Assuming that you're starting from **this directory**:
 1. To build and run the web app, Docker needs to know about some environment variables. There are examples ones in `dev.env` - copy it to `.env` and fill in the correct values for you. Save the file and then run `source .env`.
 1. Install [Docker](https://docker.com)
    1. Also, For windows, click [here](https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi) to install the WSL 2 (Windows Subsystem for Linux, version 2)
-3. `cd docker`
-4. `docker-compose up -d`
-5. Go to your [local Blazegraph instance](http://localhost:9999/blazegraph/#namespaces) and add a new namespace - this is because the default one does not come with a full text index. Name it `polder` (or whatever you want, but you will need to change the GLEANER_ENDPOINT_URL environment variable if you don't name it that). Select 'quads' in the mode dropdown menu, and check the text boxes after "Full text index" and "Enable geospatial".
-6. If you want to try queries out on Blazegraph directly, be sure to click 'Use' next to your new namespace after you create it.
-7. `docker-compose --profile setup up -d` in order to start all of the necessary services and set up Gleaner for indexing.
-8. Do a crawl (these instructions assume you are in the `docker` directory):
+1. `cd docker`
+1 `docker-compose up -d`
+1 Go to your [local Blazegraph instance](http://localhost:9999/blazegraph/#namespaces) and add a new namespace - this is because the default one does not come with a full text index. Name it `polder` (or whatever you want, but you will need to change the GLEANER_ENDPOINT_URL environment variable if you don't name it that). Select 'quads' in the mode dropdown menu, and check the text boxes after "Full text index" and "Enable geospatial".
+1 If you want to try queries out on Blazegraph directly, be sure to click 'Use' next to your new namespace after you create it.
+1 `docker-compose --profile setup up -d` in order to start all of the necessary services and set up Gleaner for indexing.
+1 Do a crawl (these instructions assume you are in the `docker` directory):
     1. `curl -O https://schema.org/version/latest/schemaorg-current-https.jsonld`
     1. `docker-compose --profile crawl up -d`
     NOTE: There is a missing step here. The crawled results need to be written to the triplestore. For now, you can run `./write-to-triplestore.sh`.
@@ -117,10 +117,10 @@ The easiest setup for development on the web app itself is to use docker-compose
 1. `cd ../` (to get back to **this directory**)
 1. `source venv/bin/activate`
 1. `pip install -r requirements.txt`
-2. `npm install --global yarn` (assuming you do not have yarn installed)
-3. `yarn install`
-4. `yarn watch` (assuming that you want to make JavaScript or CSS changes - if not, `yarn build` will do)
-5. `flask run`
+1.`npm install --global yarn` (assuming you do not have yarn installed)
+1 `yarn install`
+1 `yarn watch` (assuming that you want to make JavaScript or CSS changes - if not, `yarn build` will do)
+1 `flask run`
 
 You should see Flask's startup message, and get an address for your locally running web app.
 
