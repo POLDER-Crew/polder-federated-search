@@ -40,14 +40,17 @@ Assuming that you're starting from **this directory**:
 1. Install [Docker](https://docker.com)
    1. Also, For windows, click [here](https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi) to install the WSL 2 (Windows Subsystem for Linux, version 2)
 1. `cd docker`
-1 `docker-compose up -d`
-1 Go to your [local Blazegraph instance](http://localhost:9999/blazegraph/#namespaces) and add a new namespace - this is because the default one does not come with a full text index. Name it `polder` (or whatever you want, but you will need to change the GLEANER_ENDPOINT_URL environment variable if you don't name it that). Select 'quads' in the mode dropdown menu, and check the text boxes after "Full text index" and "Enable geospatial".
-1 If you want to try queries out on Blazegraph directly, be sure to click 'Use' next to your new namespace after you create it.
-1 `docker-compose --profile setup up -d` in order to start all of the necessary services and set up Gleaner for indexing.
-1 Do a crawl (these instructions assume you are in the `docker` directory):
+1. `docker-compose up -d`
+1. Go to your [local Blazegraph instance](http://localhost:9999/blazegraph/#namespaces) and add a new namespace - this is because the default one does not come with a full text index. Name it `polder` (or whatever you want, but you will need to change the GLEANER_ENDPOINT_URL environment variable if you don't name it that). Select 'quads' in the mode dropdown menu, and check the text boxes after "Full text index" and "Enable geospatial".
+1. If you want to try queries out on Blazegraph directly, be sure to click 'Use' next to your new namespace after you create it.
+1. `docker-compose --profile setup up -d` in order to start all of the necessary services and set up Gleaner for indexing.
+1. Do a crawl (these instructions assume you are in the `docker` directory):
     1. `curl -O https://schema.org/version/latest/schemaorg-current-https.jsonld`
     1. `docker-compose --profile crawl up -d`
     NOTE: There is a missing step here. The crawled results need to be written to the triplestore. For now, you can run `./write-to-triplestore.sh`.
+         1. For windows, you need to download [Cygwin](https://www.cygwin.com/setup-x86_64.exe).
+         1. Change directory to the docker in Cygwin (`cd docker`).
+         1. Run the `./write-to-triplestore.sh`. to write to triplestore.
 1. Run the web app: `docker-compose --profile web up -d`
 
 If you're using Docker Desktop, you can use the UI to open the docker-webapp image in a browser.
