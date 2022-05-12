@@ -22,9 +22,19 @@ There are many DataONE repositories, but of particular interest to the polar res
 #### Future work
 - [Australian Antarctic Data Centre](https://data.aad.gov.au/)
 - [National Snow and Ice Data Center](https://nsidc.org])
-- CCADI
+- [NASA / GCMD](https://earthdata.nasa.gov/earth-observation-data/find-data/idn/gcmd-keywords)
+- [CLIVAR and Carbon Hydrographic Data Office (CCHDO)](https://cchdo.ucsd.edu/)
 - CRITTERBASE
-- [Canadian Watershed Information Network](https://dev.uni-manitoba.links.com.au/data/dataset/)
+- Repositories in the [Canadian Consortium for Arctic Data Interoperability (CCADI)](https://ccadi.ca/) network:
+  - [Polar Data Catalogue](http://polardata.ca)
+  - [Nordicana D](https://www.cen.ulaval.ca/nordicanad/en_BDDescription.aspx)
+  - Committee on earth observing satellites ([CEOS](https://www.cen.ulaval.ca/nordicanad/en_BDDescription.aspx))
+  - Arctic Science and Technology Information System ([ASTIS](https://www.cen.ulaval.ca/nordicanad/en_BDDescription.aspx))
+  - [ArcticConnect](https://arcticconnect.ca/)
+  - Arctic Spatial Data Infrastructure ([ASDI](https://arctic-sdi.org/))
+  - [INTERACT](https://eu-interact.org/)
+  - Canadian Watershed Information Network ([CWIN](https://dev.uni-manitoba.links.com.au/data/dataset/))
+
 
 ### Architecture
 This tool uses Docker images to manage the different services that it depends on. One of those is [Gleaner](https://gleaner.io).
