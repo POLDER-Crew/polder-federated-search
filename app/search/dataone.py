@@ -133,9 +133,9 @@ class SolrDirectSearch(SearcherBase):
             result['temporal_coverage'] = datetime.date(
                 begin).isoformat() + "/" + datetime.date(end).isoformat()
         boundingbox = {'south': result.pop('southBoundCoord',None), 'north':result.pop('northBoundCoord',None),'west': result.pop('westBoundCoord',None), 'east':result.pop('eastBoundCoord',None)}
-        
+
         if boundingbox:
-            # Make a Point if the (north and south) and (east and west) have the same coordinates 
+            # Make a Point if the (north and south) and (east and west) have the same coordinates
             if boundingbox['north']==boundingbox['south'] and boundingbox['east']==boundingbox['west']:
                 geometry = Point(coordinates=
                     (boundingbox['north'],boundingbox['east'])
@@ -151,14 +151,15 @@ class SolrDirectSearch(SearcherBase):
                 (boundingbox['east'],boundingbox['south']),]
             ]
         )
-       
+
 
 
         return SearchResult(
             # Because Blazegraph uses normalized query scores, we can approximate search
             # ranking by normalizing these as well. However, this does nothing for the
             # cases where the DataOne result set is more or less relevant, on average, than
-            # the one fr om Blazegraph / Gleaner.
+            # the one from Blazegraph / Gleaner.
+            # todo: How does this work for GraphDB, which uses Lucene?
             score=(result.pop('score') / self.max_score),
             title=result.pop('title', None),
             id=identifier,

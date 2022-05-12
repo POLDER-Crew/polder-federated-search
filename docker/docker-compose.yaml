@@ -20,6 +20,23 @@ services:
       - ./:/config
     working_dir: /config
 
+  triplestore-setup:
+    image: curlimages/curl:7.82.0
+    depends_on:
+    - triplestore
+    volumes:
+      - ./:/config
+    working_dir: /config
+    command:
+    - curl
+    - -X
+    - POST
+    - -H
+    - 'Content-Type:multipart/form-data'
+    - -F
+    - "config=@./polder.ttl"
+    - "http://triplestore:7200/rest/repositories"
+
   gleaner:
     image: nsfearthcube/gleaner:dev-v3.0.4-development
     command: -cfg gleaner
@@ -77,7 +94,7 @@ services:
       - 8096:8000
     environment:
       # Overrides the environment variable so that we get the service endpoint IP from Docker.
-      - GLEANER_ENDPOINT_URL=http://triplestore:8080/bigdata/namespace/polder/sparql
+      - GLEANER_ENDPOINT_URL=http://triplestore:7200/polder/
       - FLASK_APP
       - FLASK_RUN_HOST
       - SECRET_KEY
