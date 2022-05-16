@@ -63,6 +63,32 @@
     }
 }
 
+.clear__button {
+    background-color: constants.$accent-warm;
+    border: 2px solid constants.$accent-warm;
+    border-radius: 0;
+    color: constants.$white;
+    cursor: pointer;
+    font-size: 1.5rem;
+    text-decoration: none;
+    float: right;
+    margin: 0 1rem;
+    padding: 0.5rem;
+    transition-duration: 0.5s;
+
+    &:hover {
+        background-color: constants.$white;
+        color: constants.$accent-warm;
+    }
+
+    &:disabled {
+        cursor: default;
+        background-color: constants.$soft-white;
+        border-color: constants.$grey;
+        color: constants.$grey
+    }
+}
+
 .date-picker {
     justify-content: flex-start;
     margin: 0;

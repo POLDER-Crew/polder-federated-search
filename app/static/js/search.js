@@ -1,7 +1,16 @@
 import $ from "jquery";
 
+
 const $resultsContainer = $(".results__container");
 const $searchButton = $(".search__button");
+const $clearButton = $(".clear__button");
+
+var elem = document.getElementById('clear');
+
+var text = document.getElementById('text2');
+
+
+
 
 // A helper method to clear away existing search
 // results and disable the

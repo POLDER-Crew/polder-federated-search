@@ -35,13 +35,13 @@
         </p>
       {% endif %}
       {% if nojs is not defined %}
-        <p class="abstract abstract--truncated" role="region" aria-expanded="false">
-          {{ result.abstract | truncate(500) }}
-        </p>
+        <div class="abstract abstract--truncated" role="region" aria-expanded="false">
+          {{ result.abstract|safe|truncate(500) }}
+        </div>
       {% endif %}
-      <p class="abstract abstract--full" role="region" {% if nojs is not defined %}aria-hidden="true"{% endif %}>
-        {{ result.abstract }}
-      </p>
+      <div class="abstract abstract--full" role="region" {% if nojs is not defined %}aria-hidden="true"{% endif %}>
+        {{ result.abstract|safe}}
+      </div>
       {% for url in result.urls[1:] %}
         {% if loop.first %}Alternate sources for this data:{% endif %}
           {% if url %}
