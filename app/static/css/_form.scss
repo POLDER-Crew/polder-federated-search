@@ -64,8 +64,8 @@
 }
 
 .clear__button {
-    background-color: constants.$accent-warm;
-    border: 2px solid constants.$accent-warm;
+    background-color: constants.$light-blue;
+    border: 2px solid constants.$light-blue;
     border-radius: 0;
     color: constants.$white;
     cursor: pointer;
@@ -78,7 +78,7 @@
 
     &:hover {
         background-color: constants.$white;
-        color: constants.$accent-warm;
+        color: constants.$light-blue;
     }
 
     &:disabled {
