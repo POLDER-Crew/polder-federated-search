@@ -17,7 +17,8 @@
   "scripts": {
     "build": "parcel build",
     "watch": "parcel watch",
-    "docker": "parcel build --no-cache"
+    "docker": "parcel build --no-cache",
+    "start": "call env.bat && nest start"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.11",
@@ -28,3 +29,4 @@
     "jquery": "^3.6.0"
   }
 }
+

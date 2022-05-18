@@ -165,3 +165,7 @@ gleaner.db
 
 # things we generate
 bas-sitemap.xml
+
+
+# Ignore my bat file
+env.bat
