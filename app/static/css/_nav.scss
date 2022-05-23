@@ -22,11 +22,20 @@
     }
 }
 
+.nav_list {
+    list-style-type: none;
+    overflow: hidden;
+    text-align: center;
+    display: flex;
+}
+
+
 .nav__link--small {
-    align-self: flex-end;
     color: constants.$light-blue;
     font-weight: constants.$font-weight-bold;
     font-size: 1.2rem;
+    text-align: center;
+   
 
     &:visited {
         color: constants.$light-blue;
@@ -35,4 +44,9 @@
     &:hover {
         color: constants.$accent-warm;
     }
+}
+
+.each_elem {
+    color: constants.$accent-warm;
+    margin: 0px 10px;
 }

@@ -12,14 +12,17 @@
   </head>
   <body>
       {% block nav %}
-      <nav class="main-nav">
-          <h1>
-            <a href="{{ url_for('home') }}" class="nav__link">POLDER Federated Search</a>
+      
+      <div class="main-nav"> 
+        <h1>
+            <a class="nav__link">POLDER Federated Search</a>
           </h1>
-          <div class="nav__link-container">
-            <a href="{{ url_for('about') }}" class="nav__link nav__link--small">About</a>
-          </div>
-      </nav>
+          <ul class="nav_list" >
+            <li class ="each_elem" > <a class="nav__link--small" href="{{ url_for('home') }}">Home</a></li>
+            <li class="each_elem" > <a class="nav__link--small" href="{{ url_for('about') }}">About</a></li>
+            
+          </ul>
+      </div>
       {% endblock %}
       <section class="content">
         <header>

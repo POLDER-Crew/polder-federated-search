@@ -47,3 +47,10 @@ sources:
   properName: British Antarctic Survey
   active: true
   domain: http://bas.ac.uk
+- name : CCHDO
+  url: https://cchdo.ucsd.edu/sitemap.xml
+  type: sitemap
+  headless: false
+  properName: CLIVAR and Carbon Hydrographic Data Office
+  domain: https://cchdo.ucsd.edu
+  active: true
