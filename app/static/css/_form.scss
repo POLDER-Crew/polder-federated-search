@@ -100,9 +100,11 @@
 }
 
 
-.loading{
-    width:00px; 
-    margin:0 auto;
+.loading {
+    width: 00px; 
+    margin: 0 auto;
+    display: none;
+    background-color: constants.$soft-white;
 }
 
 
@@ -139,17 +141,3 @@
   }
 }
 
-@keyframes load {
-  0% {
-    content: 'Loading';
-  }
-  33% {
-    content: 'Loading';
-  }
-  67% {
-    content: 'Loading';
-  }
-  100% {
-    content: 'Loading';
-  }
-}
