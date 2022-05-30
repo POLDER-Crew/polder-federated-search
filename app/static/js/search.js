@@ -2,6 +2,7 @@ import $ from "jquery";
 
 const $resultsContainer = $(".results__container");
 const $searchButton = $(".search__button");
+var load = document.getElementById("load");
 
 // A helper method to clear away existing search
 // results and disable the
@@ -9,6 +10,7 @@ const $searchButton = $(".search__button");
 function showSearchPending() {
   $resultsContainer.empty();
   $searchButton.prop("disabled", true);
+  load.style.display ="block";
 }
 
 // A helper method to handle the chain of events that
@@ -30,6 +32,7 @@ function handleSearchResults($ajaxPromise) {
     .always(function () {
       $searchButton.prop("disabled", false);
       $resultsContainer.focus();
+      load.style.display = "none";
     });
 }
 

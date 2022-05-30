@@ -98,3 +98,46 @@
 .date-picker__group {
     flex: 0 1 auto;
 }
+
+
+.loading {
+    width: 00px; 
+    margin: 0 auto;
+    display: none;
+    background-color: constants.$soft-white;
+}
+
+
+
+.loader-wheel {
+  animation: spin 1s infinite linear;
+  border: 2px solid rgba(30, 30, 30, 0.5);
+  border-left: 4px solid #fff;
+  border-radius: 50%;
+  height: 50px;
+  margin-bottom: 10px;
+  width: 50px;
+}
+
+.loader-text {
+  color: constants.$dark-blue;
+  font-family: arial, sans-serif;
+  font-weight: constants.$font-weight-bold;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.loader-text:after {
+  content: 'Loading';
+  animation: load 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
