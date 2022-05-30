@@ -13,7 +13,7 @@
   <body>
       {% block nav %}
       
-      <div class="main-nav"> 
+      <nav class="main-nav"> 
         <h1>
             <a href="{{ url_for('home') }}" class="nav__link">POLDER Federated Search</a>
           </h1>
@@ -22,7 +22,7 @@
             <li class="each_elem" > <a class="nav__link--small" href="{{ url_for('about') }}">About</a></li>
             
           </ul>
-      </div>
+      </nav>
       {% endblock %}
       <section class="content">
         <header>
