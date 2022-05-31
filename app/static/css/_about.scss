@@ -98,12 +98,12 @@
 
 .bas {
 
-    background-color: black;
+    background-color: constants.$black;
 }
 
 .bco {
 
-    background-color: black;
+    background-color: constants.$black;
 }
 
 .partner__logo--horizontal img {
@@ -118,6 +118,15 @@
     }
     margin: 1.5rem;
 }
+
+.dataone_repos__logo--horizontal img {
+    max-width: 100px;
+    @include constants.breakpoint(medium-and-up) {
+        max-width: 200px;
+    }
+    margin: 1.5rem;
+}
+
 
 
 .partner__logo--vertical img {
