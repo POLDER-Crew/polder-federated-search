@@ -9,6 +9,92 @@
     <p>Find out more by reading the <a class="about__link" href="https://polder-crew.github.io/Federated-Search-Documentation/intro.html" rel="noopener" target="_blank">documentation book</a> or exploring the <a class="about__link" href="https://github.com/nein09/polder-federated-search" rel="noopener" target="_blank">GitHub repository</a>.</p>
     <p>If you'd like to send us questions or comments directly, you are welcome to <a class="about__link" href="mailto:cverhey@oceannetworks.ca">email us</a>.</p>
 
+    
+        <div clas="covered_repositories">
+        <h2>Covered data repositories </h2>
+        <p>There are two ways a repository is included in searches that are made from this application- if the repository is indexed DataONE (and has data within the search parameters), and if the repository is indexed by the app itself.</p>
+        <h3>DataONE Repositories</h3>
+        <p>There are many DataONE repositories, but of particular interest to the polar research community are:</p>
+        
+         <div>
+            <a  href="https://arcticdata.io/", rel="noopener", target="_blank">
+                <div class="dataone_repos">
+                <div class="dataone_repos__logo--vertical">
+                <img src="{{ url_for('static', filename='img/arcticdata-logo.png') }}" alt="Arctic Data Committee">
+               
+                </div>
+                </div>
+            </a>
+             <a  href="https://npdc.nl/", rel="noopener", target="_blank">
+                <div class="dataone_repos">
+                <div class="dataone_repos__logo--vertical">
+                <img src="{{ url_for('static', filename='img/npdc-logo.png') }}" alt="Netherlands Polar Data Center">
+               
+                </div>
+                </div>
+            </a>
+             <a  href="https://www.bco-dmo.org/", rel="noopener", target="_blank">
+                <div class="dataone_repos">
+                <div class="dataone_repos__logo--vertical">
+                <img class="bco" src="{{ url_for('static', filename='img/bco-logo.png') }}" alt="BCO-DMO">
+               
+                </div>
+                 <p class="partner__name">BCO-DMO</p>
+                </div>
+            </a>
+             <a  href="usap-dc.org/", rel="noopener", target="_blank">
+                <div class="dataone_repos">
+                    <div class="dataone_repos__logo--vertical">
+                        <img src="{{ url_for('static', filename='img/usap_dc_logo.png') }}" alt="U.S. Antarctic Program Data Center">
+                
+               
+                    </div>
+                        <p class="partner__name">
+                            U.S. Antarctic Program Data Center
+                        </p>
+
+                </div>
+            </a>
+
+        </div>
+         
+                
+                
+
+
+        <h3>Repositories indexed by this app:</h3>
+        
+          <div>
+            <a  href="https://g-e-m.dk/", rel="noopener", target="_blank">
+                <div class="dataone_repos">
+                    <div class="dataone_repos__logo--vertical">
+                        <img src="{{ url_for('static', filename='img/gem.jpg') }}" alt="Greenland Ecosystem Monitoring">
+                        
+                    </div>
+                    <p class="partner__name">Greenland Ecosystem Monitoring</p>
+                </div>
+            </a>
+             <a  href="https://www.bas.ac.uk/", rel="noopener", target="_blank">
+                <div class="dataone_repos">
+                    <div class="dataone_repos__logo--vertical">
+                        <img class="bas" src="{{ url_for('static', filename='img/bas.png') }}" alt="British Antarctic Survey">
+                        
+                    </div>
+                    <p class="partner__name">
+                        British Antarctic Survey
+                    </p>
+                </div>
+            </a>
+        </div>
+    </div>
+    
+
+
+
+            
+          
+
+
     <h2 class="about__header">Special Thanks</h3>
     <div class="about__content dataone">
         <div class="dataone__logo">
@@ -40,7 +126,7 @@
                 <div class="partner__logo--horizontal">
                     <img src="{{ url_for('static', filename='img/CCADI-logo.png') }}" alt="Canadian Consortium for Arctic Data Interoperability (CCADI)">
                 </div>
-                <p class="partner__name">
+                <p class="partner__name"> 
                     Canadian Consortium for Arctic Data Interoperability
                 </p>
             </div>
