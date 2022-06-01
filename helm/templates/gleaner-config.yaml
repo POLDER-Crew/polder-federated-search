@@ -52,5 +52,12 @@ data:
       headless: false
       url: http://s3system-svc:{{ .Values.s3system_service.api_port }}/sitemaps/bas-sitemap.xml
       properName: British Antarctic Survey
-      active: true
+      active: false
       domain: http://bas.ac.uk
+    - name : CCHDO
+      url: https://cchdo.ucsd.edu/sitemap.xml
+      type: sitemap
+      headless: false
+      properName: CLIVAR and Carbon Hydrographic Data Office
+      domain: https://cchdo.ucsd.edu
+      active: true
