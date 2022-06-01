@@ -79,10 +79,55 @@
     }
 }
 
+.dataone_repos {
+    text-align: center;
+    margin: 0.25rem;
+    padding: 0.25rem;
+    display: inline-block;
+
+    &:hover {
+        -moz-box-shadow: 0 0 2px 2px constants.$light-blue;
+        -webkit-box-shadow: 0 0 2px 2px constants.$light-blue;
+    }
+
+    @include constants.breakpoint(medium-and-up) {
+        margin: 1rem;
+        padding: 1rem;
+    }
+}
+
+.bas {
+
+    background-color: constants.$black;
+}
+
+.bco {
+
+    background-color: constants.$black;
+}
+
 .partner__logo--horizontal img {
     max-height: 60px;
     max-width: 100%;
 }
+
+.dataone_repos__logo--vertical img {
+    max-width: 100px;
+    @include constants.breakpoint(medium-and-up) {
+        max-width: 200px;
+    }
+    margin: 1.5rem;
+}
+
+.dataone_repos__logo--horizontal img {
+    max-width: 100px;
+    @include constants.breakpoint(medium-and-up) {
+        max-width: 200px;
+    }
+    margin: 1.5rem;
+}
+
+
 
 .partner__logo--vertical img {
     max-width: 100px;
