@@ -101,8 +101,8 @@
 
 
 .loading {
-    width: 00px; 
-    margin: 0 auto;
+    width: 100%; 
+    margin:  auto;
     display: none;
     background-color: constants.$soft-white;
 }
@@ -115,6 +115,7 @@
   border-left: 4px solid #fff;
   border-radius: 50%;
   height: 50px;
+  margin: auto;
   margin-bottom: 10px;
   width: 50px;
 }
@@ -123,8 +124,10 @@
   color: constants.$dark-blue;
   font-family: arial, sans-serif;
   font-weight: constants.$font-weight-bold;
+  text-align: center;
   margin-left: auto;
   margin-right: auto;
+
 }
 
 .loader-text:after {
