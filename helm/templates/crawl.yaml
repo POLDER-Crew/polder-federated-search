@@ -19,6 +19,17 @@ spec:
               name: gleaner-config
           - name: gleaner-context
             emptyDir: {}
+          dnsPolicy: None
+          dnsConfig:
+            nameservers:
+              - 10.96.0.10
+            searches:
+            - {{ .Release.Namespace }}.svc.cluster.local
+            - svc.cluster.local
+            - cluster.local
+            options:
+            - name: ndots
+              value: "5"
           initContainers:
           - name: get-contextfiles
             image: curlimages/curl:7.82.0
