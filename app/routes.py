@@ -1,3 +1,4 @@
+import logging
 from flask import redirect, render_template, request, url_for
 from datetime import date
 from sentry_sdk import capture_exception
@@ -10,6 +11,7 @@ from app.search.search import SearchResultSet
 
 BAD_REQUEST_STATUS = 400
 
+logger = logging.getLogger('app')
 
 @app.route('/')
 def home():
@@ -77,8 +79,11 @@ def combined_search():
 
 @app.errorhandler(Exception)
 def handle_exception(e):
-    # Record it in Sentry
-    capture_exception(e)
+    logger.debug("Exception in routes", e)
+
+    # Record it in Sentry if we're in production
+    if app.debug == False:
+        capture_exception(e)
 
     # pass through HTTP errors
     if isinstance(e, HTTPException):
