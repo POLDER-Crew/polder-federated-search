@@ -24,9 +24,14 @@
 
 .nav_list {
     list-style-type: none;
-    overflow: hidden;
+    padding: 0;
     text-align: center;
     display: flex;
+    justify-content: space-evenly;
+
+    @include constants.breakpoint(medium-and-up) {
+        justify-content: start;
+    }
 }
 
 
