@@ -20,6 +20,7 @@ class SearchResult:
         self.keywords = kwargs.pop('keywords', [])
         self.origin = kwargs.pop('origin', [])
         self.id = kwargs.pop('id')
+        self.license = kwargs.pop('license', None)
         # May or may not be the same as the ID
         self.doi = kwargs.pop('doi', None)
         self.spatial_coverage = kwargs.pop('spatial_coverage', None)
@@ -34,6 +35,8 @@ class SearchResult:
         self.urls = list(set(x for x in self.urls if x))
 
         # If we have a DOI somewhere, use it as much as possible
+
+        
         if not self.doi:
             if self.id and self.id.startswith('doi:'):
                 self.doi = self.id

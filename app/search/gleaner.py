@@ -15,7 +15,7 @@ class GleanerSearch(SearcherBase):
             PREFIX sschema: <https://schema.org/>
             PREFIX schema: <http://schema.org/>
 
-            SELECT ?total_results ?score ?id ?abstract ?url ?title ?sameAs ?keywords ?temporal_coverage
+            SELECT ?total_results ?score ?id ?abstract ?url ?title ?sameAs ?keywords ?temporal_coverage ?license
 
             WITH {{
             SELECT
@@ -23,6 +23,7 @@ class GleanerSearch(SearcherBase):
                 ?id
                 ?url
                 ?title
+                ?license
                 (GROUP_CONCAT(DISTINCT ?abstract ; separator=", ") as ?abstract)
                 (GROUP_CONCAT(DISTINCT ?sameAs ; separator=", ") as ?sameAs)
                 (GROUP_CONCAT(DISTINCT ?keywords ; separator=", ") as ?keywords)
@@ -42,6 +43,10 @@ class GleanerSearch(SearcherBase):
                 OPTIONAL {{
                     ?s sschema:sameAs ?sameAs .
                 }}
+                OPTIONAL {{
+                    ?s sschema:license ?license .
+                    
+                }}
               }}
               UNION
               {{
@@ -55,13 +60,16 @@ class GleanerSearch(SearcherBase):
                 OPTIONAL {{
                     ?s schema:sameAs ?sameAs .
                 }}
+                OPTIONAL {{
+                    ?s schema:license ?license .
+                }}
 
               }}
               FILTER(ISLITERAL(?id)) .
 
               {user_query}
             }}
-            GROUP BY ?id ?url ?title
+            GROUP BY ?id ?url ?title ?license 
         }} AS %search
         {{
             {{
@@ -70,7 +78,7 @@ class GleanerSearch(SearcherBase):
             }}
             UNION
             {{
-                SELECT ?score ?id ?abstract ?url ?title ?sameAs ?keywords ?temporal_coverage
+                SELECT ?score ?id ?abstract ?url ?title ?sameAs ?keywords ?temporal_coverage ?license
                 {{ INCLUDE %search . }}
                 OFFSET {page_start}
                 LIMIT {GleanerSearch.PAGE_SIZE}
@@ -147,6 +155,7 @@ class GleanerSearch(SearcherBase):
 
     def execute_query(self, page_number):
         self.sparql.setQuery(self.query)
+        
 
         # a note: BlazeGraph relevance scores go from 0.0 to 1.0; all results are normalized.
         self.sparql.setReturnFormat(JSON)
