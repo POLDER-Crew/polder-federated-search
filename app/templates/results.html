@@ -41,9 +41,12 @@
       {% endif %}
       <div class="abstract abstract--full" role="region" {% if nojs is not defined %}aria-hidden="true"{% endif %}>
         {{ result.abstract|safe}}
-        <div>
-        {{ result.license }}
-      </div>
+        {% if result.license %}
+              <div class="license">
+                <h4>License:</h4>
+                  {{ result.license }}
+              </div>
+        {% endif %}
       </div>
       {% for url in result.urls[1:] %}
         {% if loop.first %}Alternate sources for this data:{% endif %}
