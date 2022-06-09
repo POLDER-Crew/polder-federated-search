@@ -36,12 +36,17 @@ class SearchResult:
 
         # If we have a DOI somewhere, use it as much as possible
 
+        print(self.urls)
+
+
         
         if not self.doi:
             if self.id and self.id.startswith('doi:'):
                 self.doi = self.id
             elif any((match := url).startswith('http://dx.doi.org/') for url in self.urls):
                 self.doi = 'doi:' + match.lstrip('http://dx.doi.org/')
+            elif any ((match := url).startswith('http://data.g-e-m.dk/datasets?doi=') for url in self.urls):
+                self.doi = 'doi' + match.lstrip('http://data.g-e-m.dk/datasets?doi=')
 
     """ Methods to make these sortable """
 
