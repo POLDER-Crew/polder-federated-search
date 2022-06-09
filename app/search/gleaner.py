@@ -15,7 +15,7 @@ class GleanerSearch(SearcherBase):
             PREFIX sschema: <https://schema.org/>
             PREFIX schema: <http://schema.org/>
 
-            SELECT ?total_results ?score ?id ?abstract ?url ?title ?sameAs ?keywords ?temporal_coverage ?license
+            SELECT ?total_results ?score ?s ?id ?abstract ?url ?title ?sameAs ?keywords ?license ?temporal_coverage ?spatial_coverage
 
             WITH {{
             SELECT
@@ -28,34 +28,45 @@ class GleanerSearch(SearcherBase):
                 (GROUP_CONCAT(DISTINCT ?sameAs ; separator=", ") as ?sameAs)
                 (GROUP_CONCAT(DISTINCT ?keywords ; separator=", ") as ?keywords)
                 (GROUP_CONCAT(DISTINCT ?temporal_coverage ; separator=", ") as ?temporal_coverage)
+                (GROUP_CONCAT(DISTINCT ?spatial_coverage ; separator=", ") as ?spatial_coverage)
 
             {{
               VALUES ?type {{ schema:Dataset sschema:Dataset }}
               ?s a ?type .
               {{
                 ?s sschema:name ?title .
-                ?s sschema:keywords ?keywords .
-                ?s sschema:url ?url .
+                {{ ?s sschema:keywords ?keywords . }} UNION {{
+                    ?catalog ?relationship ?s .
+                    ?catalog sschema:keywords ?keywords .
+                }}
                 ?s sschema:description | sschema:description/sschema:value  ?abstract .
-                ?s sschema:identifier | sschema:identifier/sschema:value ?id .
                 ?s sschema:temporalCoverage ?temporal_coverage .
+                ?s sschema:spatialCoverage ?spatial_coverage .
 
                 OPTIONAL {{
                     ?s sschema:sameAs ?sameAs .
                 }}
                 OPTIONAL {{
                     ?s sschema:license ?license .
-                    
+                }}
+                OPTIONAL {{
+                    ?s sschema:url ?url .
+                }}
+                OPTIONAL {{
+                    ?s sschema:identifier | sschema:identifier/sschema:value ?id .
+                    FILTER(ISLITERAL(?id)) .
                 }}
               }}
               UNION
               {{
                 ?s schema:name ?title .
-                ?s schema:keywords ?keywords .
-                ?s schema:url ?url .
-                ?s schema:description | schema:description/schema:value ?abstract .
-                ?s schema:identifier | schema:identifier/schema:value ?id .
+                {{ ?s schema:keywords ?keywords . }} UNION {{
+                    ?catalog ?relationship ?s .
+                    ?catalog schema:keywords ?keywords .
+                }}
+                ?s schema:description | schema:description/schema:value  ?abstract .
                 ?s schema:temporalCoverage ?temporal_coverage .
+                ?s schema:spatialCoverage ?spatial_coverage .
 
                 OPTIONAL {{
                     ?s schema:sameAs ?sameAs .
@@ -63,13 +74,17 @@ class GleanerSearch(SearcherBase):
                 OPTIONAL {{
                     ?s schema:license ?license .
                 }}
-
-              }}
-              FILTER(ISLITERAL(?id)) .
+                OPTIONAL {{
+                    ?s schema:url ?url .
+                }}
+                OPTIONAL {{
+                    ?s schema:identifier | schema:identifier/schema:value ?id .
+                    FILTER(ISLITERAL(?id)) .
+                }}
 
               {user_query}
             }}
-            GROUP BY ?id ?url ?title ?license 
+            GROUP BY ?s ?id ?url ?title
         }} AS %search
         {{
             {{
@@ -78,7 +93,7 @@ class GleanerSearch(SearcherBase):
             }}
             UNION
             {{
-                SELECT ?score ?id ?abstract ?url ?title ?sameAs ?keywords ?temporal_coverage ?license
+                SELECT ?score ?s ?id ?abstract ?url ?title ?sameAs ?keywords ?license ?temporal_coverage ?spatial_coverage
                 {{ INCLUDE %search . }}
                 OFFSET {page_start}
                 LIMIT {GleanerSearch.PAGE_SIZE}
@@ -155,7 +170,7 @@ class GleanerSearch(SearcherBase):
 
     def execute_query(self, page_number):
         self.sparql.setQuery(self.query)
-        
+
 
         # a note: BlazeGraph relevance scores go from 0.0 to 1.0; all results are normalized.
         self.sparql.setReturnFormat(JSON)
