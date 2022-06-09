@@ -36,10 +36,6 @@ class SearchResult:
 
         # If we have a DOI somewhere, use it as much as possible
 
-        print(self.urls)
-
-
-        
         if not self.doi:
             if self.id and self.id.startswith('doi:'):
                 self.doi = self.id
