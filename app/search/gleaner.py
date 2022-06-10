@@ -1,7 +1,9 @@
+import logging
 import math
 from SPARQLWrapper import SPARQLWrapper, JSON
 from .search import SearcherBase, SearchResultSet, SearchResult
 
+logger = logging.getLogger('app')
 
 class GleanerSearch(SearcherBase):
     @staticmethod
@@ -81,10 +83,10 @@ class GleanerSearch(SearcherBase):
                     ?s schema:identifier | schema:identifier/schema:value ?id .
                     FILTER(ISLITERAL(?id)) .
                 }}
-
+              }}
               {user_query}
             }}
-            GROUP BY ?s ?id ?url ?title
+            GROUP BY ?s ?id ?url ?title ?license
         }} AS %search
         {{
             {{
@@ -169,6 +171,7 @@ class GleanerSearch(SearcherBase):
         self.sparql = SPARQLWrapper(ENDPOINT_URL)
 
     def execute_query(self, page_number):
+        logger.debug(self.query)
         self.sparql.setQuery(self.query)
 
 
