@@ -8,4 +8,5 @@ requests-mock==1.9.3
 sentry-sdk==1.5.6
 SPARQLWrapper==1.8.5
 typing-extensions==3.10.0.2
+validators==0.20.0
 Werkzeug==2.0.2

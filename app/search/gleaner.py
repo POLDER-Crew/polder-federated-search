@@ -1,5 +1,7 @@
 import logging
 import math
+import validators
+
 from SPARQLWrapper import SPARQLWrapper, JSON
 from .search import SearcherBase, SearchResultSet, SearchResult
 
@@ -17,7 +19,7 @@ class GleanerSearch(SearcherBase):
             PREFIX sschema: <https://schema.org/>
             PREFIX schema: <http://schema.org/>
 
-            SELECT ?total_results ?score ?s ?id ?abstract ?url ?title ?sameAs ?keywords ?license ?temporal_coverage ?spatial_coverage
+            SELECT ?total_results ?score ?id ?abstract ?url ?title ?sameAs ?keywords ?license ?temporal_coverage ?spatial_coverage
 
             WITH {{
             SELECT
@@ -85,8 +87,9 @@ class GleanerSearch(SearcherBase):
                 }}
               }}
               {user_query}
+              BIND(COALESCE(?id, ?s) AS ?id)
             }}
-            GROUP BY ?s ?id ?url ?title ?license
+            GROUP BY ?id ?url ?title ?license
         }} AS %search
         {{
             {{
@@ -247,6 +250,9 @@ class GleanerSearch(SearcherBase):
             result['urls'].append(url)
         if sameAs is not None:
             result['urls'].append(sameAs)
+        if validators.url(result['id']):
+            result['urls'].append(result['id'])
+
         keywords = result.pop('keywords', '')
         result['keywords'] = keywords.split(',')
         result['source'] = "Gleaner"
