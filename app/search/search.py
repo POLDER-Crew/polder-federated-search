@@ -35,14 +35,18 @@ class SearchResult:
         self.urls = list(set(x for x in self.urls if x))
 
         # If we have a DOI somewhere, use it as much as possible
+        prefixes = ['doi:','http://dx.doi.org/',"http://data.g-e-m.dk/datasets?doi=" ]
+
 
         if not self.doi:
-            if self.id and self.id.startswith('doi:'):
-                self.doi = self.id
-            elif any((match := url).startswith('http://dx.doi.org/') for url in self.urls):
-                self.doi = 'doi:' + match.lstrip('http://dx.doi.org/')
-            elif any ((match := url).startswith('http://data.g-e-m.dk/datasets?doi=') for url in self.urls):
-                self.doi = 'doi' + match.lstrip('http://data.g-e-m.dk/datasets?doi=')
+            for x in prefixes:
+                if self.id and self.id.startswith(x):
+                    self.doi = self.id
+                elif any((match := url).startswith(x) for url in self.urls):
+                    self.doi = 'doi:' + match.lstrip(x)
+                elif any ((match := url).startswith(x) for url in self.urls):
+                    self.doi = 'doi' + match.lstrip(x)
+     
 
     """ Methods to make these sortable """
 
