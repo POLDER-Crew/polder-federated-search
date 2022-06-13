@@ -222,6 +222,7 @@ class GleanerSearch(SearcherBase):
         # This is a workaround for now.
         result['score'] = result.pop('score', 1)
         result['urls'] = []
+        
         url = result.pop('url', None)
         sameAs = result.pop('sameAs', None)
         if url is not None:
