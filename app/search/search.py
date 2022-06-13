@@ -44,9 +44,7 @@ class SearchResult:
                     self.doi = self.id
                 elif any((match := url).startswith(x) for url in self.urls):
                     self.doi = 'doi:' + match.lstrip(x)
-                elif any ((match := url).startswith(x) for url in self.urls):
-                    self.doi = 'doi' + match.lstrip(x)
-     
+                
 
     """ Methods to make these sortable """
 
