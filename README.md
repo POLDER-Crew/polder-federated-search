@@ -18,12 +18,12 @@ There are many DataONE repositories, but of particular interest to the polar res
 #### Repositories indexed by this app
 - [Greenland Ecosystem Monitoring](https://g-e-m.dk/)
 - [British Antarctic Survey](https://www.bas.ac.uk/), via DataCite's GraphQL API (see `docker/build-bas-sitemap.sh` for how that works)
+- [CLIVAR and Carbon Hydrographic Data Office (CCHDO)](https://cchdo.ucsd.edu/)
 
 #### Future work
 - [Australian Antarctic Data Centre](https://data.aad.gov.au/)
 - [National Snow and Ice Data Center](https://nsidc.org])
 - [NASA / GCMD](https://earthdata.nasa.gov/earth-observation-data/find-data/idn/gcmd-keywords)
-- [CLIVAR and Carbon Hydrographic Data Office (CCHDO)](https://cchdo.ucsd.edu/)
 - CRITTERBASE
 - Repositories in the [Canadian Consortium for Arctic Data Interoperability (CCADI)](https://ccadi.ca/) network:
   - [Polar Data Catalogue](http://polardata.ca)

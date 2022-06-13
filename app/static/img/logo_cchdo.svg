@@ -1,0 +1,24 @@
+<svg version="1.1"
+     baseProfile="full"
+     width="300" height="300"
+     viewBox="0 0 300 300"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     >
+
+     <circle id="outer_circle" cx="40" cy="150" r="40" fill="black" />
+
+     <use xlink:href="#outer_circle" transform="rotate(45, 150, 150)" />
+     <use xlink:href="#outer_circle" transform="rotate(90, 150, 150)" />
+     <use xlink:href="#outer_circle" transform="rotate(135, 150, 150)" />
+     <use xlink:href="#outer_circle" transform="rotate(-45, 150, 150)" />
+     <use xlink:href="#outer_circle" transform="rotate(-90, 150, 150)" />
+     <use xlink:href="#outer_circle" transform="rotate(-135, 150, 150)" />
+
+     <circle id="inner_circle" cx="95" cy="150" r="20" fill="black" transform="rotate(22.5,150,150)" />
+     <use xlink:href="#inner_circle" transform="rotate(45, 150, 150)" />
+     <use xlink:href="#inner_circle" transform="rotate(90, 150, 150)" />
+     <use xlink:href="#inner_circle" transform="rotate(-45, 150, 150)" />
+     <use xlink:href="#inner_circle" transform="rotate(-90, 150, 150)" />
+     <use xlink:href="#inner_circle" transform="rotate(-135, 150, 150)" />
+</svg>

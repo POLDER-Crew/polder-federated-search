@@ -10,24 +10,24 @@
     <p>If you'd like to send us questions or comments directly, you are welcome to <a class="about__link" href="mailto:cverhey@oceannetworks.ca">email us</a>.</p>
 
     
-        <div class="covered_repositories">
-        <h2>Covered data repositories </h2>
+    <div class="covered_repositories">
+        <h2>Covered data repositories</h2>
         <p>There are two ways a repository is included in searches that are made from this application- if the repository is indexed DataONE (and has data within the search parameters), and if the repository is indexed by the app itself.</p>
         <h3>DataONE Repositories</h3>
         <p>There are many DataONE repositories, but of particular interest to the polar research community are:</p>
         
-         <div>
+         <div class="repositories">
             <a  href="https://arcticdata.io/" rel="noopener" target="_blank">
                 <div class="dataone_repos">
-                <div class="dataone_repos__logo--horizontal">
-                <img src="{{ url_for('static', filename='img/arcticdata-logo.png') }}" alt="Arctic Data Committee">
+                    <div class="dataone_repos__logo--vertical">
+                        <img src="{{ url_for('static', filename='img/arcticdata-logo.png') }}" alt="Arctic Data Committee">
                
-                </div>
+                    </div>
                 </div>
             </a>
              <a  href="https://npdc.nl/" rel="noopener" target="_blank">
                 <div class="dataone_repos">
-                <div class="dataone_repos__logo--horizontal">
+                <div class="dataone_repos__logo--vertical">
                 <img src="{{ url_for('static', filename='img/npdc-logo.png') }}" alt="Netherlands Polar Data Center">
                
                 </div>
@@ -44,10 +44,8 @@
             </a>
              <a  href="https://www.usap-dc.org/" rel="noopener" target="_blank">
                 <div class="dataone_repos">
-                    <div class="dataone_repos__logo--horizontal">
+                    <div class="dataone_repos__logo--vertical">
                         <img src="{{ url_for('static', filename='img/usap_dc_logo.png') }}" alt="U.S. Antarctic Program Data Center">
-                
-               
                     </div>
                         <p class="partner__name">
                             U.S. Antarctic Program Data Center
@@ -55,21 +53,15 @@
 
                 </div>
             </a>
-
         </div>
          
-                
-                
-
-
         <h3>Repositories indexed by this app:</h3>
         
-          <div>
+        <div class="repositories">
             <a  href="https://g-e-m.dk/" rel="noopener" target="_blank">
                 <div class="dataone_repos">
                     <div class="dataone_repos__logo--horizontal">
                         <img src="{{ url_for('static', filename='img/gem.jpg') }}" alt="Greenland Ecosystem Monitoring">
-                        
                     </div>
                     <p class="partner__name">Greenland Ecosystem Monitoring</p>
                 </div>
@@ -82,6 +74,17 @@
                     </div>
                     <p class="partner__name">
                         British Antarctic Survey
+                    </p>
+                </div>
+            </a>
+            <a  href="https://cchdo.ucsd.edu/" rel="noopener" target="_blank">
+                <div class="dataone_repos">
+                    <div class="dataone_repos__logo--vertical">
+                        <img class="cchdo" src="{{ url_for('static', filename='img/logo_cchdo.svg') }}" alt="">
+
+                    </div>
+                    <p class="partner__name">
+                        CLIVAR and Carbon Hydrographic Data Office
                     </p>
                 </div>
             </a>
