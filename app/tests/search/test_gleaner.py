@@ -69,7 +69,7 @@ class TestGleanerSearch(unittest.TestCase):
         results = self.search.date_filter_search()
         self.assertNotIn('FILTER(?start_date', self.search.query)
         self.assertNotIn('FILTER(?end_date', self.search.query)
-        self.assertNotIn('BIND', self.search.query)
+        self.assertNotIn('CONTAINS(?temporal_coverage', self.search.query)
 
     @patch('SPARQLWrapper.SPARQLWrapper.query')
     def test_date_filter_start_min(self, query):
@@ -221,5 +221,24 @@ class TestGleanerSearch(unittest.TestCase):
         result.urls.sort()
         self.assertIsInstance(result, search.SearchResult)
         self.assertEqual(result.urls, ['url1', 'url2'])
+        self.assertEqual(result.keywords, ['keyword1', 'keyword2', 'keyword3'])
+        self.assertEqual(result.source, "Gleaner")
+
+    def test_convert_result_with_url_in_id(self):
+        test_result = {
+            'score': {'datatype': 'http://www.w3.org/2001/XMLSchema#double', 'type': 'literal', 'value': '0.375'},
+            'abstract': {'type': 'literal', 'value': 'This data file contains information'},
+            'title': {'type': 'literal', 'value': 'Iceflux trawl (SUIT & RMT) and ice stations'},
+            'url': {'type': 'literal', 'value': 'url1'},
+            'sameAs': {'type': 'literal', 'value': 'url2'},
+            'spatial_coverage': {'type': 'literal', 'value': '-70.5397 -10.4515 -57.4443 0.018'},
+            'temporal_coverage': {'type': 'literal', 'value': '2015-05-27/2015-06-20'},
+            'id': {'type': 'literal', 'value': 'http://www.mycooldataset.com'},
+            'keywords': {'type': 'literal', 'value': 'keyword1,keyword2,keyword3'}
+        }
+        result = self.search.convert_result(test_result)
+        result.urls.sort()
+        self.assertIsInstance(result, search.SearchResult)
+        self.assertEqual(result.urls, ['http://www.mycooldataset.com', 'url1', 'url2'])
         self.assertEqual(result.keywords, ['keyword1', 'keyword2', 'keyword3'])
         self.assertEqual(result.source, "Gleaner")
