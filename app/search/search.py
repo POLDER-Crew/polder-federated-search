@@ -42,8 +42,10 @@ class SearchResult:
             for x in prefixes:
                 if self.id and self.id.startswith(x):
                     self.doi = self.id
-                elif any((match := url).startswith(x) for url in self.urls):
+                    break
+                elif any((match := url).startswith(x) for url in self.urls) :
                     self.doi = 'doi:' + match.lstrip(x)
+                    break
                 
 
     """ Methods to make these sortable """
