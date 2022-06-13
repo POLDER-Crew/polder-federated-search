@@ -70,6 +70,15 @@ class TestSearchResult(unittest.TestCase):
         self.assertListEqual(
             test_obj_2.urls, ['http://doi.org/test2_test2', 'http://test1'])
 
+        test_obj_3 = search.SearchResult(id='doi:test3_test3', score=4, urls=[
+                                        'http://test3', 'http://data.g-e-m.dk/datasets?doi=test3_test3'])
+        self.assertEqual(test_obj_3.id, 'doi:test3_test3')
+        self.assertEqual(test_obj_3.doi, 'doi:test3_test3')
+        test_obj_3.urls.sort()
+        self.assertListEqual(
+            test_obj_3.urls, ['http://data.g-e-m.dk/datasets?doi=test3_test3', 'http://test3'])
+
+
         test_existing_doi = search.SearchResult(
             id='doi:test3', score=1, doi='existing_value')
         self.assertEqual(test_existing_doi.id, 'doi:test3')
