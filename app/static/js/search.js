@@ -2,7 +2,11 @@ import $ from "jquery";
 
 const $resultsContainer = $(".results__container");
 const $searchButton = $(".search__button");
+var showmore = document.getElementById("show_more");
+
 var load = document.getElementById("load");
+
+
 
 // A helper method to clear away existing search
 // results and disable the
@@ -22,6 +26,13 @@ function handleSearchResults($ajaxPromise) {
       $resultsContainer.append(data);
 
       // Need to add event handlers for these after inserting them on the page
+
+      if ($.trim($(".abstract abstract--full").text().split(" ")).length < 500) {
+        $(".show_more_button").hide()
+        $(".show_less_button").hide()
+
+      }
+    
       $(".abstract--truncated").click(showFullAbstract);
       $(".abstract--full").click(hideFullAbstract);
       $(".pagination").click(paginate);
@@ -64,6 +75,9 @@ function showFullAbstract(event) {
     .removeAttr("aria-hidden")
     .attr("aria-expanded", true)
     .show();
+   
+
+    
 }
 
 function hideFullAbstract(event) {
@@ -76,6 +90,7 @@ function hideFullAbstract(event) {
     .removeAttr("aria-hidden")
     .attr("aria-expanded", false)
     .show();
+    
 }
 
 // When js is enabled, paginate and show results in the
