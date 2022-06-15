@@ -34,6 +34,7 @@ class SearchResult:
         self.keywords = [k for k in self.keywords if k]
         self.urls = list(set(x for x in self.urls if x))
 
+
         # If we have a DOI somewhere, use it as much as possible
         prefixes = ['doi:','http://dx.doi.org/',"http://data.g-e-m.dk/datasets?doi=" ]
 

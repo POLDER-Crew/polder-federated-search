@@ -2,7 +2,10 @@ import $ from "jquery";
 
 const $resultsContainer = $(".results__container");
 const $searchButton = $(".search__button");
+
 var load = document.getElementById("load");
+
+
 
 // A helper method to clear away existing search
 // results and disable the
@@ -22,9 +25,11 @@ function handleSearchResults($ajaxPromise) {
       $resultsContainer.append(data);
 
       // Need to add event handlers for these after inserting them on the page
-      $(".abstract--truncated").click(showFullAbstract);
-      $(".abstract--full").click(hideFullAbstract);
       $(".pagination").click(paginate);
+      $(".show_less_button").hide();
+      $(".show_more_button").click(showFullResult);
+      $(".show_less_button").click(hideFullResult);
+
     })
     .fail(function (error) {
       $resultsContainer.append(error.responseText);
@@ -33,6 +38,7 @@ function handleSearchResults($ajaxPromise) {
       $searchButton.prop("disabled", false);
       $resultsContainer.focus();
       load.style.display = "none";
+       
     });
 }
 
@@ -53,29 +59,53 @@ function searchFormSubmit(event) {
   );
 }
 
-// Search result UI; show and hide the full abstract
-function showFullAbstract(event) {
+// Search result UI; show and hide the full result
+function showFullResult(event) {
   $(event.delegateTarget)
+    .siblings(".result--truncated")
     .removeAttr("aria-expanded")
     .attr("aria-hidden", true)
     .hide();
+    
   $(event.delegateTarget)
-    .siblings(".abstract--full")
+    .siblings(".result--full")
     .removeAttr("aria-hidden")
     .attr("aria-expanded", true)
     .show();
+  $(event.delegateTarget)
+    .siblings('.show_less_button')
+    .show();
+  $(event.delegateTarget)
+    .hide();
+
+
+   
+
+   
+
+    
 }
 
-function hideFullAbstract(event) {
+
+
+function hideFullResult(event) {
   $(event.delegateTarget)
+    .siblings(".result--full")
     .removeAttr("aria-expanded")
     .attr("aria-hidden", true)
     .hide();
   $(event.delegateTarget)
-    .siblings(".abstract--truncated")
+    .siblings(".result--truncated")
     .removeAttr("aria-hidden")
     .attr("aria-expanded", false)
     .show();
+
+  $(event.delegateTarget)
+    .hide();
+  $(event.delegateTarget)
+    .siblings('.show_more_button')
+    .show();
+    
 }
 
 // When js is enabled, paginate and show results in the
@@ -95,8 +125,8 @@ function paginate(event) {
 }
 
 $(document).ready(function () {
+
+ 
   $("form.search").submit(searchFormSubmit);
-  $(".abstract--truncated").click(showFullAbstract);
-  $(".abstract--full").click(hideFullAbstract);
   $(".pagination").click(paginate);
 });
