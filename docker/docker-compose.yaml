@@ -50,7 +50,7 @@ services:
     - 'http://triplestore:8080/bigdata/namespace'
 
   gleaner:
-    image: nein09/gleaner:v3.1-development
+    image: nein09/gleaner:v3.2-development
     command: -cfg gleaner
     depends_on:
       - triplestore
