@@ -38,7 +38,10 @@ class GleanerSearch(SearcherBase):
 
                 ?s a schema:Dataset  .
                 ?s schema:name ?title .
-                ?s schema:keywords ?keywords .
+                {{ ?s schema:keywords ?keywords . }} UNION {{
+                    ?catalog ?relationship ?s .
+                    ?catalog schema:keywords ?keywords .
+                }}
                 ?s schema:description | schema:description/schema:value  ?abstract .
                 ?s schema:temporalCoverage ?temporal_coverage .
                 ?s schema:spatialCoverage ?spatial_coverage .

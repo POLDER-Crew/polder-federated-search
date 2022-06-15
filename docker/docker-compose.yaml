@@ -5,7 +5,7 @@ volumes:
 services:
 
   gleaner-setup:
-    image: nein09/gleaner:v3.1-development
+    image: nein09/gleaner:v3.2-development
     command: -cfg gleaner -setup
     depends_on:
       - triplestore
