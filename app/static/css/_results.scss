@@ -45,24 +45,27 @@
     font-weight: constants.$font-weight-light;
 }
 
-.abstract {
+.result_field {
     cursor: pointer;
 }
 
-.abstract--full {
+.result--full {
     display: none;
 }
 
+.result--truncated {
+    display: inline;
+}
 .results__container--no-js {
-    .abstract {
+    .result_field {
         cursor: default;
     }
 
-    .abstract--full {
+    .result_field--full {
         display: block;
     }
 
-    .abstract--truncated {
+    .result_field--truncated {
         display: none;
     }
 }

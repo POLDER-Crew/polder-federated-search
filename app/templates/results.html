@@ -35,25 +35,27 @@
         </p>
       {% endif %}
       {% if nojs is not defined %}
-        <div class="abstract abstract--truncated" role="region" aria-expanded="false">
+        <div class="result_field result--truncated" role="region" aria-expanded="false">
           {{ result.abstract|safe|truncate(500) }}
-           <button class="show_more_button" id ="show_more">Show more</button>
+           
           
 
         </div>
       {% endif %}
-      <div class="abstract abstract--full" role="region" {% if nojs is not defined %}aria-hidden="true"{% endif %}>
+      <div class="result_field result--full" role="region" {% if nojs is not defined %}aria-hidden="true"{% endif %}>
         {{ result.abstract|safe}}
         {% if result.license %}
               <div class="license">
                 <h4>License:</h4>
                   {{ result.license }}
-                   
+
 
               </div>
         {% endif %}
-        <button class="show_less_button" id ="show_less">Show less</button>
+        
       </div>
+      <button class="show_more_button" id ="show_more">Show more</button>
+      <button class="show_less_button" id ="show_less">Show less</button>
      
       {% for url in result.urls[1:] %}
         {% if loop.first %}Alternate sources for this data:{% endif %}
