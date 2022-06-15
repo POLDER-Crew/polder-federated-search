@@ -152,3 +152,16 @@ The SCSS styles are built assuming a mobile-first philosophy. Here are the break
 - Medium: 480 - 767px wide
 - Large: 768 - 1199px wide
 - XLarge: 1200px and wider
+
+#### Taking Performance Measurements
+
+The file `docker_performance.ipynb` is meant to give you nifty graphs of the resources used by this app, broken out by docker container. You can use this method to look at the Kubernetes cluster performance too.
+
+To set it up from **this directory**:
+1. `source venv/bin/activate`
+1. `pip install -r requirements-performance.txt`
+1. Start your cluster using Docker or Helm
+1. Use the `docker stats` command to write csv files like so: `while true; do docker stats --no-stream | cat >> ./`date -u +"%Y%m%d.csv"`; sleep 10; done`
+1. Have the app do what you want to measure it doing (a setup and crawl, perhaps)
+1. Start jupyter notebook by running `jupyter notebook` in this directory
+1. Hit the Run button in the notebook, and you should see performance metrics. Depending on where you put the CSVs, you may need to change the code in the notebook a bit.
