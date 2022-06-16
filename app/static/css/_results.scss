@@ -10,6 +10,8 @@
     }
 }
 
+
+
 .results {
     background-color: constants.$soft-white;
     list-style:  none;
@@ -98,7 +100,8 @@
     font-size: 1.0rem;
     text-decoration: none;
     float: unset;
-    margin: 0 1rem;
+    display: block;
+    margin: 1rem 0;
     padding: 0.5rem;
     transition-duration: 0.5s;
 

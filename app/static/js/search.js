@@ -75,6 +75,9 @@ function showFullResult(event) {
   $(event.delegateTarget)
     .siblings('.show_less_button')
     .show();
+ 
+
+    
   $(event.delegateTarget)
     .hide();
 
@@ -105,6 +108,8 @@ function hideFullResult(event) {
   $(event.delegateTarget)
     .siblings('.show_more_button')
     .show();
+
+ 
     
 }
 
