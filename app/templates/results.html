@@ -19,7 +19,38 @@
           {{ result.title }}
         </h3>
       </a>
-      {% if result.temporal_coverage %}
+      
+
+      {% if result.keywords %}
+        <p class="result__keywords">
+          <h4>Keywords:</h4>
+          {% for keyword in result.keywords %}
+          {{ keyword }}&nbsp;
+          {% endfor %}
+        </p>
+      {% endif %}
+
+        
+        
+     
+      {% if nojs is not defined %}
+        <div class="result_field result--truncated" role="region" aria-expanded="false">
+          <h4>Abstract:</h4>
+          {{ result.abstract|safe|truncate(500) }}
+           
+        </div>
+
+
+      {% endif %}
+      <div class="result_field result--full" role="region" {% if nojs is not defined %}aria-hidden="true"{% endif %}>
+         {% if result.author %}
+              <div class="author">
+                <h4>Author:</h4>
+                  {{ result.author }}
+              </div>
+        {% endif %}
+
+        {% if result.temporal_coverage %}
         <div class="timespan_covered"> 
           <h4>Timespans covered:</h4>
               <ul class="result__temporal-coverage">
@@ -29,33 +60,7 @@
               </ul>
         </div>
       {% endif %}
-
-        
-        
-      {% if result.author %}
-              <div class="author">
-                <h4>Author:</h4>
-                  {{ result.author }}
-              </div>
-        {% endif %}
-      {% if result.keywords %}
-        <p class="result__keywords">
-          <h4>Keywords:</h4>
-          {% for keyword in result.keywords %}
-          {{ keyword }}&nbsp;
-          {% endfor %}
-        </p>
-      {% endif %}
-      {% if nojs is not defined %}
-        <div class="result_field result--truncated" role="region" aria-expanded="false">
-          <h4>Abstract:</h4>
-          {{ result.abstract|safe|truncate(500) }}
-           
-          
-
-        </div>
-      {% endif %}
-      <div class="result_field result--full" role="region" {% if nojs is not defined %}aria-hidden="true"{% endif %}>
+      
         <h4>Abstract:</h4>
         {{ result.abstract|safe}}
         {% if result.license %}

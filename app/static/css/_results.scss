@@ -11,13 +11,6 @@
 }
 
 
-.author {
-    display: none;
-    
-}
-.timespan_covered {
-    display: none;  
-}
 
 .results {
     background-color: constants.$soft-white;
@@ -108,7 +101,7 @@
     text-decoration: none;
     float: unset;
     display: block;
-    margin: 0 1rem;
+    margin: 1rem 0;
     padding: 0.5rem;
     transition-duration: 0.5s;
 
