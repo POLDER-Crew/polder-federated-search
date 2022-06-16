@@ -10,6 +10,15 @@
     }
 }
 
+
+.author {
+    display: none;
+    
+}
+.timespan_covered {
+    display: none;  
+}
+
 .results {
     background-color: constants.$soft-white;
     list-style:  none;
@@ -98,6 +107,7 @@
     font-size: 1.0rem;
     text-decoration: none;
     float: unset;
+    display: block;
     margin: 0 1rem;
     padding: 0.5rem;
     transition-duration: 0.5s;

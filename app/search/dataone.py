@@ -98,7 +98,6 @@ class SolrDirectSearch(SearcherBase):
         end_min = kwargs.pop('end_min', None)
         end_max = kwargs.pop('end_max', None)
         page_number = kwargs.pop('page_number', 0)
-
         query = self._build_text_search_query(text)
         query += self._build_date_filter_query(
             start_min, start_max, end_min, end_max)
@@ -146,6 +145,7 @@ class SolrDirectSearch(SearcherBase):
             # westBoundCoord and southBoundCoord in this data source
             # But there is also a named place available, which is what is being used here
             spatial_coverage=result.pop('placeKey', None),
+            author = result.pop('author',None),
             doi=doi,
             keywords=result.pop('keywords', []),
             origin=result.pop('origin', []),

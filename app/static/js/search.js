@@ -76,6 +76,14 @@ function showFullResult(event) {
     .siblings('.show_less_button')
     .show();
   $(event.delegateTarget)
+    .siblings('.timespan_covered')
+    .show();
+  $(event.delegateTarget)
+    .siblings('.author')
+    .show();
+
+    
+  $(event.delegateTarget)
     .hide();
 
 
@@ -105,6 +113,13 @@ function hideFullResult(event) {
   $(event.delegateTarget)
     .siblings('.show_more_button')
     .show();
+
+  $(event.delegateTarget)
+    .siblings('.timespan_covered')
+    .hide();
+  $(event.delegateTarget)
+    .siblings('.author')
+    .hide();
     
 }
 
