@@ -148,7 +148,7 @@ class SolrDirectSearch(SearcherBase):
             spatial_coverage=result.pop('placeKey', None),
             author = result.pop('author',None),
             doi=doi,
-            keywords=result.pop('keywords', ''),
+            keywords=result.pop('keywords', []),
             origin=result.pop('origin', []),
             temporal_coverage=result.pop('temporal_coverage', ""),
             urls=urls,

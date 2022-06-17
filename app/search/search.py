@@ -20,7 +20,7 @@ class SearchResult:
         self.keywords = kwargs.pop('keywords', [])
         self.origin = kwargs.pop('origin', [])
         self.id = kwargs.pop('id')
-        self.author = kwargs.pop('author',[])
+        self.author = kwargs.pop('author',None)
         self.license = kwargs.pop('license', None)
         # May or may not be the same as the ID
         self.doi = kwargs.pop('doi', None)

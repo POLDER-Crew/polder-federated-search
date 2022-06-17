@@ -166,7 +166,7 @@ class GleanerSearch(SearcherBase):
 
         # Then do the actual filtering, depending on what the user asked for
         if start_min is not None:
-            user_query += f"FILTER(?start_date >= '{start_min.isoformat()}'^^?s sschema:creator/sschema:name ?author .xsd:date)"
+            user_query += f"FILTER(?start_date >= '{start_min.isoformat()}'^^xsd:date)"
         if start_max is not None:
             user_query += f"FILTER(?start_date <= '{start_max.isoformat()}'^^xsd:date)"
         if end_min is not None:
