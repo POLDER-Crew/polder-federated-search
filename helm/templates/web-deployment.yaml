@@ -55,7 +55,10 @@ spec:
         - name: FLASK_ENV
           value: production
         - name: SENTRY_DSN
-          value: {{ .Values.sentryDsn }}
+          valueFrom:
+            secretKeyRef:
+              key: sentryDsn
+              name: {{ .Release.Name }}-secrets
         ports:
         - name: http
           containerPort: {{ .Values.service.port }}
