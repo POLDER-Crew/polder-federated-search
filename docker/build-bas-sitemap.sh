@@ -3,7 +3,6 @@
 set -e
 
 # 'download' does not work for some reason, but 'public' permissions do
-mc stat minio/sitemaps || mc mb minio/sitemaps
 mc policy set public minio/sitemaps
 
 next="true"
@@ -23,7 +22,6 @@ do # A paged GraphQL query, against the datacite API. ror.org/01rhff309 is the O
         -H 'Connection: keep-alive' \
         -H 'DNT: 1' \
         -H 'Origin: https://api.datacite.org' \
-        --compressed \
         --data-binary   "{\"query\":\"{\n  query: \n    organization(id: \\\"ror.org/01rhff309\\\") {\n      datasets(after: ${cursor}) {\n        totalCount\n        nodes {\n          id\n        }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n      }\n    }\n  }\n\"}"
 
     )

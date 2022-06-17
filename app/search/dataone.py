@@ -132,6 +132,7 @@ class SolrDirectSearch(SearcherBase):
             result['temporal_coverage'] = datetime.date(
                 begin).isoformat() + "/" + datetime.date(end).isoformat()
 
+
         return SearchResult(
             # Because Blazegraph uses normalized query scores, we can approximate search
             # ranking by normalizing these as well. However, this does nothing for the
@@ -147,7 +148,7 @@ class SolrDirectSearch(SearcherBase):
             spatial_coverage=result.pop('placeKey', None),
             author = result.pop('author',None),
             doi=doi,
-            keywords=result.pop('keywords', []),
+            keywords=result.pop('keywords', ''),
             origin=result.pop('origin', []),
             temporal_coverage=result.pop('temporal_coverage', ""),
             urls=urls,
