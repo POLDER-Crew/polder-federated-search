@@ -89,6 +89,7 @@ That file will be structured like this:
       minioAccessKey: <your base64 encoded value here>
       minioSecretKey: <your base64 encoded value here>
       flaskSecretKey: <your base64 encoded value here>
+      sentryDsn: <your base64 encoded value here>
 ```
 You can see that the values of the secrets are base64 encoded - in order to do this, run ` echo -n 'mysecretkey' | base64` on your command line for each value, and paste the result in where the key goes. Don't check in your real secrets anywhere!
   You can read more about secrets [here](https://kubernetes.io/docs/concepts/configuration/secret/).
