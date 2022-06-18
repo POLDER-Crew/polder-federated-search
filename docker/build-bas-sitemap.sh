@@ -3,8 +3,9 @@
 set -e
 
 # 'download' does not work for some reason, but 'public' permissions do
-mc policy set public minio/sitemaps
 mc stat minio/sitemaps || mc mb minio/sitemaps
+mc policy set public minio/sitemaps
+
 next="true"
 cursor="null"
 
@@ -22,8 +23,9 @@ do # A paged GraphQL query, against the datacite API. ror.org/01rhff309 is the O
         -H 'Connection: keep-alive' \
         -H 'DNT: 1' \
         -H 'Origin: https://api.datacite.org' \
-        --data-binary   "{\"query\":\"{\n  query: \n    organization(id: \\\"ror.org/01rhff309\\\") {\n      datasets(after: ${cursor}) {\n        totalCount\n        nodes {\n          id\n        }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n      }\n    }\n  }\n\"}"
         --compressed \
+        --data-binary   "{\"query\":\"{\n  query: \n    organization(id: \\\"ror.org/01rhff309\\\") {\n      datasets(after: ${cursor}) {\n        totalCount\n        nodes {\n          id\n        }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n      }\n    }\n  }\n\"}"
+        
     )
     # Use jq to grab each DOI and output one line of a very basic sitemap
     line=$(echo $results | jq -rc '.. | .id? | select( . != null ) | "\t<url>\n\t\t<loc>\(.)</loc>\n\t</url>\n"')
