@@ -25,7 +25,7 @@ do # A paged GraphQL query, against the datacite API. ror.org/01rhff309 is the O
         -H 'Origin: https://api.datacite.org' \
         --compressed \
         --data-binary   "{\"query\":\"{\n  query: \n    organization(id: \\\"ror.org/01rhff309\\\") {\n      datasets(after: ${cursor}) {\n        totalCount\n        nodes {\n          id\n        }\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n      }\n    }\n  }\n\"}"
-
+        
     )
     # Use jq to grab each DOI and output one line of a very basic sitemap
     line=$(echo $results | jq -rc '.. | .id? | select( . != null ) | "\t<url>\n\t\t<loc>\(.)</loc>\n\t</url>\n"')
