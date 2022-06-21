@@ -47,10 +47,6 @@
     font-weight: constants.$font-weight-light;
 }
 
-.result_field {
-    cursor: pointer;
-}
-
 .result--full {
     display: none;
 }
@@ -59,10 +55,6 @@
     display: inline;
 }
 .results__container--no-js {
-    .result_field {
-        cursor: default;
-    }
-
     .result_field--full {
         display: block;
     }
@@ -73,7 +65,8 @@
 }
 
 .result__title {
-    color: constants.$light-blue;
+    color: constants.$dark-blue;
+    font-size: 1.5rem;
 }
 
 .result__url {
@@ -97,7 +90,7 @@
     border-radius: 0;
     color: constants.$white;
     cursor: pointer;
-    font-size: 1.0rem;
+    font-size: 1.5rem;
     text-decoration: none;
     float: unset;
     display: block;
