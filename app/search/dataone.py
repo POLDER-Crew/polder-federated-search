@@ -147,6 +147,7 @@ class SolrDirectSearch(SearcherBase):
             # But there is also a named place available, which is what is being used here
             spatial_coverage=result.pop('placeKey', None),
             author = result.pop('author',None),
+            boundingbox = {'south': result.pop('southBoundCoord',None), 'north':result.pop('northBoundCoord',None),'west': result.pop('westBoundCoord',None), 'east':result.pop('eastBoundCoord',None)},
             data_source = {'name': result.pop('datasource', None), 'url':'','logo':''},
             doi=doi,
             keywords=result.pop('keywords', []),
