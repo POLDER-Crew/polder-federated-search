@@ -35,8 +35,10 @@
      
       {% if nojs is not defined %}
         <div class="result_field result--truncated" role="region" aria-expanded="false">
+          {% if result.abstract %}
           <h4>Abstract:</h4>
           {{ result.abstract|safe|truncate(500) }}
+          {% endif %}
            
         </div>
 
@@ -60,15 +62,26 @@
               </ul>
         </div>
       {% endif %}
-      
-        <h4>Abstract:</h4>
-        {{ result.abstract|safe}}
-        {% if result.license %}
+
+        {% if result.abstract %}
+            <h4>Abstract:</h4>
+            {{ result.abstract|safe}}
+        {% endif %}
+
+      {% if result.license %}
               <div class="license">
                 <h4>License:</h4>
                   {{ result.license }}
+              </div>
+        {% endif %}
 
-
+        {% if result.data_source_dict %}
+              <div class="data_source">
+                <h4>Data Source:</h4>
+                  {{ result.data_source_dict['name'] }}
+                  <a  href={{ result.data_source_dict['url'] }} rel="noopener" target="_blank">
+                        <img class={{ result.data_source_dict['name'] }} src="{{ url_for('static', filename= result.data_source_dict['logo']) }}" alt= {{ result.data_source_dict['name'] }}>
+                  </a>
               </div>
         {% endif %}
         

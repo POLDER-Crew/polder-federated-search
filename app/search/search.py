@@ -21,6 +21,7 @@ class SearchResult:
         self.origin = kwargs.pop('origin', [])
         self.id = kwargs.pop('id')
         self.author = kwargs.pop('author',None)
+        self.data_source_dict = kwargs.pop('data_source', None)
         self.license = kwargs.pop('license', None)
         # May or may not be the same as the ID
         self.doi = kwargs.pop('doi', None)
@@ -36,6 +37,26 @@ class SearchResult:
         self.urls = list(set(x for x in self.urls if x))
         # If we have a DOI somewhere, use it as much as possible
         prefixes = ['doi:','http://dx.doi.org/',"http://data.g-e-m.dk/datasets?doi=" ]
+
+        if self.data_source_dict:
+            self.data_source_dict['name'] = self.data_source_dict['name'].lstrip("urn:node:")
+            if self.data_source_dict['name']=='NPDC':
+                self.data_source_dict['url'] = "https://npdc.nl/"
+                self.data_source_dict['logo'] = 'img/npdc-logo.png'
+            elif self.data_source_dict['name']=='ARCTIC':
+                self.data_source_dict['url'] = "https://arcticdata.io/"
+                self.data_source_dict['logo'] = 'img/arcticdata-logo.png'
+            elif self.data_source_dict['name']=='BCODMO':
+                self.data_source_dict['url'] = "https://www.bco-dmo.org/"
+                self.data_source_dict['logo'] = 'img/bco-logo.png'
+            elif self.data_source_dict['name']=='IEDA_USAP':
+                self.data_source_dict['url'] = "https://www.usap-dc.org/"
+                self.data_source_dict['logo'] = 'img/usap_dc_logo.png'
+
+
+
+
+
 
 
         if not self.doi:

@@ -30,6 +30,9 @@ function handleSearchResults($ajaxPromise) {
       $(".show_more_button").click(showFullResult);
       $(".show_less_button").click(hideFullResult);
 
+    
+
+
     })
     .fail(function (error) {
       $resultsContainer.append(error.responseText);
