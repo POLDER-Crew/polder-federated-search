@@ -118,7 +118,7 @@ class GleanerSearch(SearcherBase):
     def _build_text_search_query(text=None):
         if text:
             return f"""
-                ?lit bds:search "{text}" .
+                ?lit bds:search '''{text}''' .
                 ?lit bds:matchAllTerms "false" .
                 ?lit bds:relevance ?relevance .
                 ?s ?p ?lit .

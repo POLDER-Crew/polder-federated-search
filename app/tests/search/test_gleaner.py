@@ -38,6 +38,7 @@ class TestGleanerSearch(unittest.TestCase):
         self.mock_query = Mock()
         self.mock_query.convert = mock_convert
 
+
     @patch('SPARQLWrapper.SPARQLWrapper.query')
     def test_text_search_none(self, query):
         query.return_value = self.mock_query
@@ -61,7 +62,7 @@ class TestGleanerSearch(unittest.TestCase):
         )
         results = self.search.text_search(text='test', page_number=5)
         self.assertEqual(results, expected)
-        self.assertIn('?lit bds:search "test"', self.search.query)
+        self.assertIn("?lit bds:search '''test'''", self.search.query)
 
     @patch('SPARQLWrapper.SPARQLWrapper.query')
     def test_date_filter_none(self, query):
