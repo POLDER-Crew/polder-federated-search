@@ -49,14 +49,15 @@ class SearchResult:
                 elif any((match := url).startswith(x) for url in self.urls) :
                     self.doi = 'doi:' + match.lstrip(x)
                     break
-        if self.data_source_key:
-            DATA_SOURCES = {
+
+        DATA_SOURCES = {
                             'NPDC': {'key': 'npdc', 'name': "Netherlands Polar Data Centre", 'url': 'https://npdc.nl', 'logo': 'img/npdc-logo.png' },
                             'ARCTIC': {'key': 'ARCTIC', 'name': "Arctic Data Committee", 'url': 'https://arcticdata.io/', 'logo': 'img/arcticdata-logo.png'},
                             'BCODMO': {'key': 'BCODMO', 'name': "BCO-DMO", 'url': 'https://www.bco-dmo.org/', 'logo': 'img/bco-logo.png'},
                             'IEDA_USAP': {'key': 'IEDA_USAP', 'name': "U.S. Antarctic Program Data Center", 'url': 'https://www.usap-dc.org/', 'logo': 'img/usap_dc_logo.png'} 
                 }
-           
+
+        if self.data_source_key in DATA_SOURCES:
             self.data_source_dict = DATA_SOURCES[self.data_source_key] 
           
 

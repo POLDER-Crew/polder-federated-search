@@ -125,5 +125,15 @@ class TestSearchResult(unittest.TestCase):
         self.assertTrue(a == a)
         self.assertTrue(a is a)
 
-  
+    def test_data_source(self):
+        test_obj_4 = search.SearchResult(id='test test', score=7, data_source_key='BCODMO')
+        print(test_obj_4.data_source_key)
+
+        data_source_dict = test_obj_4.data_source_dict
+        self.assertEqual(data_source_dict['key'], 'BCODMO')
+        self.assertEqual(data_source_dict['url'], 'https://www.bco-dmo.org/')
+        self.assertEqual(data_source_dict['logo'], 'img/bco-logo.png')
+        self.assertEqual(data_source_dict['name'], 'BCO-DMO')
+       
+
 
