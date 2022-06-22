@@ -23,6 +23,8 @@ class TestSearchResult(unittest.TestCase):
 
                         """,
             'id': 'an identifier',
+            'author': 'John Doe', 
+            'datasource': "urn:node:BCODMO",
             'spatial_coverage': 'some spatial coverage object',
             'temporal_coverage': '2001-01-01/2002-03-03, 2003-04-04/2005-05-05, Holocene',
             'score': 42
@@ -38,6 +40,7 @@ class TestSearchResult(unittest.TestCase):
         self.assertEqual(test_obj.temporal_coverage,
                          ['2001-01-01 to 2002-03-03', '2003-04-04 to 2005-05-05', 'Holocene'])
         self.assertEqual(test_obj.score, kwargs_dict['score'])
+        self.assertEqual(test_obj.author, kwargs_dict['author'])
 
     def test_init_missing_id(self):
         with self.assertRaises(ValueError):
@@ -121,3 +124,6 @@ class TestSearchResult(unittest.TestCase):
         self.assertFalse(d == c)
         self.assertTrue(a == a)
         self.assertTrue(a is a)
+
+  
+

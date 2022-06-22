@@ -148,7 +148,7 @@ class SolrDirectSearch(SearcherBase):
             spatial_coverage=result.pop('placeKey', None),
             author = result.pop('author',None),
             boundingbox = {'south': result.pop('southBoundCoord',None), 'north':result.pop('northBoundCoord',None),'west': result.pop('westBoundCoord',None), 'east':result.pop('eastBoundCoord',None)},
-            data_source = {'name': result.pop('datasource', None), 'url':'','logo':''},
+            data_source_key = result.pop('datasource', None).lstrip("urn:node:"),
             doi=doi,
             keywords=result.pop('keywords', []),
             origin=result.pop('origin', []),

@@ -77,10 +77,10 @@
 
         {% if result.data_source_dict %}
               <div class="data_source">
-                <h4>Data Source:</h4>
+                <h4>Original Source:</h4>
                   {{ result.data_source_dict['name'] }}
                   <a  href={{ result.data_source_dict['url'] }} rel="noopener" target="_blank">
-                        <img class={{ result.data_source_dict['name'] }} src="{{ url_for('static', filename= result.data_source_dict['logo']) }}" alt= {{ result.data_source_dict['name'] }}>
+                        <img class={{ result.data_source_dict['key'] }} src="{{ url_for('static', filename= result.data_source_dict['logo']) }}" alt= {{ result.data_source_dict['name'] }}>
                   </a>
               </div>
         {% endif %}
