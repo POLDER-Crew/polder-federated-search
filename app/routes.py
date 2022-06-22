@@ -80,7 +80,7 @@ def combined_search():
 
 @app.errorhandler(NotFound)
 def handle_404(e):
-    logger.debug("404 for url %s", request.url)
+    logger.error("404 for url %s", request.url)
     return render_template("404.html", e=e), 404
 
 
