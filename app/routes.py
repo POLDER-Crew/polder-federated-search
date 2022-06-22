@@ -2,7 +2,7 @@ import logging
 from flask import redirect, render_template, request, url_for
 from datetime import date
 from sentry_sdk import capture_exception
-from werkzeug.exceptions import HTTPException
+from werkzeug.exceptions import HTTPException, NotFound
 
 from app import app
 from app.search.dataone import SolrDirectSearch
@@ -12,6 +12,7 @@ from app.search.search import SearchResultSet
 BAD_REQUEST_STATUS = 400
 
 logger = logging.getLogger('app')
+
 
 @app.route('/')
 def home():
@@ -77,9 +78,15 @@ def combined_search():
     return _do_combined_search('results.html', **request.args)
 
 
+@app.errorhandler(NotFound)
+def handle_404(e):
+    logger.error("404 for url %s", request.url)
+    return render_template("404.html", e=e), 404
+
+
 @app.errorhandler(Exception)
 def handle_exception(e):
-    logger.debug("Exception in routes", e)
+    logger.error("Exception while handling request for %s: %s", request.url, e)
 
     # Record it in Sentry if we're in production
     if app.debug == False:

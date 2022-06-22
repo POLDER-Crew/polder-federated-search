@@ -61,7 +61,7 @@ class TestGleanerSearch(unittest.TestCase):
         )
         results = self.search.text_search(text='test', page_number=5)
         self.assertEqual(results, expected)
-        self.assertIn('?lit bds:search "test"', self.search.query)
+        self.assertIn("?lit bds:search '''test'''", self.search.query)
 
     @patch('SPARQLWrapper.SPARQLWrapper.query')
     def test_date_filter_none(self, query):
@@ -154,7 +154,7 @@ class TestGleanerSearch(unittest.TestCase):
         )
         self.assertEqual(results, expected)
 
-        self.assertIn('?lit bds:search "test"', self.search.query)
+        self.assertIn("?lit bds:search '''test'''", self.search.query)
         self.assertIn(
             "FILTER(?start_date >= '1999-01-01'^^xsd:date)", self.search.query)
         self.assertIn(
@@ -165,13 +165,13 @@ class TestGleanerSearch(unittest.TestCase):
             "FILTER(?end_date <= '2023-03-31'^^xsd:date)", self.search.query)
         self.assertIn("OFFSET 100", self.search.query)
 
-
     # gross, but requests-mock does not touch the requests
     # that SPARQLWrapper makes using good old urllib
     # for some reason, even if I try to capture
     # every request, so here we are creating fake file handles
     # because that's what the response object that
     # SPARQLWrapper knows how to work with expects
+
     @patch('SPARQLWrapper.Wrapper.urlopener')
     def test_search_error(self, urlopen):
         with patch("builtins.open", mock_open(read_data="some data")) as file_patch:
@@ -239,6 +239,7 @@ class TestGleanerSearch(unittest.TestCase):
         result = self.search.convert_result(test_result)
         result.urls.sort()
         self.assertIsInstance(result, search.SearchResult)
-        self.assertEqual(result.urls, ['http://www.mycooldataset.com', 'url1', 'url2'])
+        self.assertEqual(
+            result.urls, ['http://www.mycooldataset.com', 'url1', 'url2'])
         self.assertEqual(result.keywords, ['keyword1', 'keyword2', 'keyword3'])
         self.assertEqual(result.source, "Gleaner")
