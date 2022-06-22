@@ -19,7 +19,7 @@ class GleanerSearch(SearcherBase):
             PREFIX sschema: <https://schema.org/>
             PREFIX schema: <http://schema.org/>
 
-            SELECT ?total_results ?score ?id ?abstract ?url ?title ?sameAs ?keywords ?license ?temporal_coverage ?spatial_coverage ?author
+            SELECT ?total_results ?score ?id ?abstract ?url ?title ?sameAs ?keywords ?license ?temporal_coverage ?spatial_coverage
 
             WITH {{
             SELECT
@@ -27,7 +27,6 @@ class GleanerSearch(SearcherBase):
                 ?id
                 ?url
                 ?title
-                ?author
                 ?license
                 (GROUP_CONCAT(DISTINCT ?abstract ; separator=", ") as ?abstract)
                 (GROUP_CONCAT(DISTINCT ?sameAs ; separator=", ") as ?sameAs)
@@ -58,9 +57,6 @@ class GleanerSearch(SearcherBase):
                     ?s sschema:url ?url .
                 }}
                 OPTIONAL {{
-                    ?s sschema:creator/sschema:name ?author .
-                }}
-                OPTIONAL {{
                     ?s sschema:identifier | sschema:identifier/sschema:value ?id .
                     FILTER(ISLITERAL(?id)) .
                 }}
@@ -89,14 +85,11 @@ class GleanerSearch(SearcherBase):
                     ?s schema:identifier | schema:identifier/schema:value ?id .
                     FILTER(ISLITERAL(?id)) .
                 }}
-                OPTIONAL {{
-                    ?s schema:creator/schema:name ?author .
-                }}  
               }}
               {user_query}
               BIND(COALESCE(?id, ?s) AS ?id)
             }}
-            GROUP BY ?id ?url ?title ?license ?author
+            GROUP BY ?id ?url ?title ?license
         }} AS %search
         {{
             {{
@@ -105,7 +98,7 @@ class GleanerSearch(SearcherBase):
             }}
             UNION
             {{
-                SELECT ?score ?s ?id ?abstract ?url ?title ?sameAs ?keywords ?license ?temporal_coverage ?spatial_coverage ?author
+                SELECT ?score ?s ?id ?abstract ?url ?title ?sameAs ?keywords ?license ?temporal_coverage ?spatial_coverage
                 {{ INCLUDE %search . }}
                 OFFSET {page_start}
                 LIMIT {GleanerSearch.PAGE_SIZE}

@@ -132,7 +132,6 @@ class SolrDirectSearch(SearcherBase):
             result['temporal_coverage'] = datetime.date(
                 begin).isoformat() + "/" + datetime.date(end).isoformat()
 
-
         return SearchResult(
             # Because Blazegraph uses normalized query scores, we can approximate search
             # ranking by normalizing these as well. However, this does nothing for the
