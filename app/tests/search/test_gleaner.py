@@ -155,7 +155,7 @@ class TestGleanerSearch(unittest.TestCase):
         )
         self.assertEqual(results, expected)
 
-        self.assertIn('?lit bds:search "test"', self.search.query)
+        self.assertIn("?lit bds:search '''test'''", self.search.query)
         self.assertIn(
             "FILTER(?start_date >= '1999-01-01'^^xsd:date)", self.search.query)
         self.assertIn(
