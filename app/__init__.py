@@ -29,6 +29,9 @@ except OSError:
 
 from app import routes, template_helpers
 
+# Default, on production / non-debug environments
+app.logger.setLevel(logging.INFO)
+
 if __name__ == "__main__":
     # Only for debugging while developing
     app.logger.setLevel(logging.DEBUG)
