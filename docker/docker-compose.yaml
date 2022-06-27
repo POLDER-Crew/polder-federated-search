@@ -54,7 +54,7 @@ services:
     working_dir: /config
 
   triplestore:
-    image: nein09/graphdb:9.11.1-free
+    image: nein09/graphdb:9.11.2-free
     volumes:
       - triplestore:/data/graphdb
     ports:
