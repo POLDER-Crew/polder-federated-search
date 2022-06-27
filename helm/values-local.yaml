@@ -103,6 +103,8 @@ javaXMS: 2g
 javaXmx: 8g
 javaOpts: -Xmx6g -Xms2g --XX:+UseG1GC
 
+sentryEnvironment: local
+
 storageNamespace: polder
 
 ## Persist data to a persistent volume.

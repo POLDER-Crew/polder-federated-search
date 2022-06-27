@@ -110,6 +110,8 @@ services:
       - FLASK_RUN_HOST
       - SECRET_KEY
       - FLASK_ENV
+      - SENTRY_DSN
+      - SENTRY_ENVIRONMENT
       # These are both for running in a subdirectory. IF you don't want to do that,
       # you can delete the next two lines.
       # - SERVER_NAME=None

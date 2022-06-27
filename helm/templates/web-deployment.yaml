@@ -59,6 +59,8 @@ spec:
             secretKeyRef:
               key: sentryDsn
               name: {{ .Release.Name }}-secrets
+        - name: SENTRY_ENVIRONMENT
+          value: {{ .Values.sentryEnvironment }}
         ports:
         - name: http
           containerPort: {{ .Values.service.port }}

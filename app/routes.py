@@ -80,17 +80,17 @@ def combined_search():
 
 @app.errorhandler(NotFound)
 def handle_404(e):
-    logger.error("404 for url %s", request.url)
     return render_template("404.html", e=e), 404
 
 
 @app.errorhandler(Exception)
 def handle_exception(e):
-    logger.error("Exception while handling request for %s: %s", request.url, e)
-
     # Record it in Sentry if we're in production
     if app.debug == False:
         capture_exception(e)
+    else:
+        logger.exception(
+            "Exception while handling request for %s: %s", request.url, e)
 
     # pass through HTTP errors
     if isinstance(e, HTTPException):
