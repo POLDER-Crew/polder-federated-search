@@ -89,8 +89,8 @@ def handle_exception(e):
     if app.debug == False:
         capture_exception(e)
     else:
-        logger.error("Exception while handling request for %s: %s", request.url, e)
-
+        logger.error(
+            "Exception while handling request for %s: %s", request.url, e)
 
     # pass through HTTP errors
     if isinstance(e, HTTPException):

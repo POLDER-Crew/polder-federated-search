@@ -1,3 +1,4 @@
+from app import routes, template_helpers
 import logging
 import os
 import sentry_sdk
@@ -27,10 +28,6 @@ try:
 except OSError:
     pass
 
-from app import routes, template_helpers
-
-# Default, on production / non-debug environments
-app.logger.setLevel(logging.INFO)
 
 if __name__ == "__main__":
     # Only for debugging while developing
