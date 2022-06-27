@@ -75,6 +75,13 @@
               </div>
         {% endif %}
 
+        {% if result.boundingbox %}
+              <div class="location">
+                <h4>Location:</h4>
+                  {{ result.boundingbox }}
+              </div>
+        {% endif %}
+
         {% if result.data_source_dict %}
               <div class="data_source">
                 <h4>Original Source:</h4>

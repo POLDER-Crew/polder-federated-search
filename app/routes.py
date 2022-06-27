@@ -87,6 +87,7 @@ def handle_404(e):
 @app.errorhandler(Exception)
 def handle_exception(e):
     logger.error("Exception while handling request for %s: %s", request.url, e)
+    raise(e)
 
     # Record it in Sentry if we're in production
     if app.debug == False:

@@ -30,6 +30,7 @@ class SearchResult:
         self.score = float(kwargs.pop('score'))
         # Good for debugging
         self.source = kwargs.pop('source', 'Anonymous')
+        self.boundingbox = kwargs.pop('boundingbox',None)
 
         # Format and remove blank terms and duplicates
         self.temporal_coverage = [t.replace('/', ' to ') for t in self.temporal_coverage if t]
@@ -38,6 +39,9 @@ class SearchResult:
 
         # If we have a DOI somewhere, use it as much as possible
         prefixes = ['doi:','http://dx.doi.org/',"http://data.g-e-m.dk/datasets?doi=" ]
+
+
+        print(self.boundingbox)
 
 
 
