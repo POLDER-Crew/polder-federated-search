@@ -26,7 +26,7 @@ class SolrDirectSearch(SearcherBase):
     @staticmethod
     def _build_text_search_query(text=None):
         if text:
-            return f"&q={text}"
+            return f"&q={quote(text)}"
         else:
             return ""
 

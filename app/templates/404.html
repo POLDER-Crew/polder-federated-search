@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Not Found{% endblock %}
+
+{% block content %}
+    <div class="container error">
+        <h2>Sorry, that page doesn't exist.</h2>
+        <p>You may want to <a href="{{ url_for('home') }}" class="error__link">try again</a>.</p>
+        <p>If you'd like help with whatever happened, please <a href="mailto:ito-webdev1@oceannetworks.ca" class="error__link">email us</a>.</p>
+    </div>
+{% endblock %}
