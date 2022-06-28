@@ -148,6 +148,7 @@ class SolrDirectSearch(SearcherBase):
             spatial_coverage=result.pop('placeKey', None),
             author = result.pop('author',None),
             doi=doi,
+             boundingbox = {'south': result.pop('southBoundCoord',None), 'north':result.pop('northBoundCoord',None),'west': result.pop('westBoundCoord',None), 'east':result.pop('eastBoundCoord',None)},
             keywords=result.pop('keywords', []),
             origin=result.pop('origin', []),
             temporal_coverage=result.pop('temporal_coverage', ""),
