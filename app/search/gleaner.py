@@ -18,50 +18,51 @@ class GleanerSearch(SearcherBase):
         # GraphDB doesn't allow named subqueries. So we write our query out twice - once to get the total
         # result count, in order to do paging, and once to get the actual results and page through them.
         base_query = f"""
-            SELECT (MAX(?relevance) AS ?score)
-                    ?s
-                    ?id
-                    ?url
-                    ?title
-                    ?author
-                    ?license
-                    (GROUP_CONCAT(DISTINCT ?abstract ; separator=", ") as ?abstract)
-                    (GROUP_CONCAT(DISTINCT ?sameAs ; separator=", ") as ?sameAs)
-                    (GROUP_CONCAT(DISTINCT ?keywords ; separator=", ") as ?keywords)
-                    (GROUP_CONCAT(DISTINCT ?temporal_coverage ; separator=", ") as ?temporal_coverage)
-                    {{
+            SELECT
+            (MAX(?relevance) AS ?score)
+            ?s
+            ?id
+            ?url
+            ?title
+            ?author
+            ?license
+            (GROUP_CONCAT(DISTINCT ?abstract ; separator=", ") as ?abstract)
+            (GROUP_CONCAT(DISTINCT ?sameAs ; separator=", ") as ?sameAs)
+            (GROUP_CONCAT(DISTINCT ?keywords ; separator=", ") as ?keywords)
+            (GROUP_CONCAT(DISTINCT ?temporal_coverage ; separator=", ") as ?temporal_coverage)
+            {{
 
-                        {text_query}
-                        ?s a schema:Dataset  .
-                        ?s schema:name ?title .
-                        {{ ?s schema:keywords ?keywords . }} UNION {{
-                            ?catalog ?relationship ?s .
-                            ?catalog schema:keywords ?keywords .
-                        }}
-                        ?s schema:description | schema:description/schema:value  ?abstract .
-                        ?s schema:temporalCoverage ?temporal_coverage .
-                        ?s schema:spatialCoverage ?spatial_coverage .
+                {text_query}
+                ?s a schema:Dataset  .
+                ?s schema:name ?title .
+                {{ ?s schema:keywords ?keywords . }} UNION {{
+                    ?catalog ?relationship ?s .
+                    ?catalog schema:keywords ?keywords .
+                }}
+                ?s schema:description | schema:description/schema:value  ?abstract .
+                ?s schema:temporalCoverage ?temporal_coverage .
+                ?s schema:spatialCoverage ?spatial_coverage .
 
-                        OPTIONAL {{
-                            ?s schema:sameAs ?sameAs .
-                        }}
-                        OPTIONAL {{
-                            ?s schema:license ?license .
-                        }}
-                        OPTIONAL {{
-                            ?s schema:url ?url .
-                        }}
-                        OPTIONAL {{
-                            ?s schema:identifier | schema:identifier/schema:value ?id .
-                            FILTER(ISLITERAL(?id)) .
-                        }}
-                        OPTIONAL {{
-                            ?s schema:creator/schema:name ?author .
-                        }}
-                        {filter_query}
-                        BIND(COALESCE(?id, ?s) AS ?id)
-                    }}
-                    GROUP BY ?id ?url ?title ?license ?author
+                OPTIONAL {{
+                    ?s schema:sameAs ?sameAs .
+                }}
+                OPTIONAL {{
+                    ?s schema:license ?license .
+                }}
+                OPTIONAL {{
+                    ?s schema:url ?url .
+                }}
+                OPTIONAL {{
+                    ?s schema:identifier | schema:identifier/schema:value ?identifier .
+                    FILTER(ISLITERAL(?identifier)) .
+                }}
+                OPTIONAL {{
+                    ?s schema:creator/schema:name ?author .
+                }}
+                {filter_query}
+                BIND(COALESCE(?identifier, ?s) AS ?id)
+            }}
+            GROUP BY ?s ?id ?url ?title ?license ?author
         """
 
         return f"""
