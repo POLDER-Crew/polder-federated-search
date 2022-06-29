@@ -158,5 +158,6 @@ class SolrDirectSearch(SearcherBase):
             origin=result.pop('origin', []),
             temporal_coverage=result.pop('temporal_coverage', ""),
             urls=urls,
+            geometry=result.pop('geometry',None),
             source="DataONE"
         )

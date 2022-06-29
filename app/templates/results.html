@@ -63,12 +63,21 @@
       
         <h4>Abstract:</h4>
         {{ result.abstract|safe}}
+
          {% if result.boundingbox %}
               <div class="location">
                 <h4>Location:</h4>
                   {{ result.boundingbox }}
               </div>
         {% endif %}
+
+        {% if result.geometry %}
+              <div class="geometry">
+                <h4>Geometry:</h4>
+                  {{ result.geometry }}
+              </div>
+        {% endif %}
+
         {% if result.license %}
               <div class="license">
                 <h4>License:</h4>

@@ -35,6 +35,7 @@ class SearchResult:
         self.temporal_coverage = [t.replace('/', ' to ') for t in self.temporal_coverage if t]
         self.keywords = [k for k in self.keywords if k]
         self.urls = list(set(x for x in self.urls if x))
+        self.geometry = None
         # If we have a DOI somewhere, use it as much as possible
         prefixes = ['doi:','http://dx.doi.org/',"http://data.g-e-m.dk/datasets?doi=" ]
 
@@ -50,10 +51,12 @@ class SearchResult:
 
         if self.boundingbox:
             if self.boundingbox['north']==self.boundingbox['south'] and self.boundingbox['east']==self.boundingbox['west']:
-                geometry = Point(self.boundingbox['north'],self.boundingbox['east'])
+                self.geometry = Point(coordinates=
+                    (self.boundingbox['north'],self.boundingbox['east'])
+                    )
             else:
                 # Make a polygon with points in a counter clockwise motion and close the polygon by ending with the starting point
-                geometry = Polygon(
+                self.geometry = Polygon(
             coordinates=[
                 [(self.boundingbox['east'],self.boundingbox['south']),
                 (self.boundingbox['east'],self.boundingbox['north']),
