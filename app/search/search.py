@@ -1,4 +1,4 @@
-
+from pygeojson import Point,Polygon
 
 class SearchResult:
     """ A class representing each search result, so that we can have
@@ -47,6 +47,12 @@ class SearchResult:
                 elif any((match := url).startswith(x) for url in self.urls) :
                     self.doi = 'doi:' + match.lstrip(x)
                     break
+
+        if self.boundingbox:
+            if self.boundingbox['north']==self.boundingbox['south'] and self.boundingbox['east']==self.boundingbox['west']:
+                geometry = Point(self.boundingbox['north'],self.boundingbox['east'])
+            else:
+                geometry = Polygon(None)
                 
 
     """ Methods to make these sortable """

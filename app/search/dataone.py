@@ -3,6 +3,7 @@ from urllib.parse import quote
 import json
 import logging
 import math
+from pygeojson import Point, Polygon
 import requests
 from .search import SearcherBase, SearchResultSet, SearchResult
 
@@ -133,11 +134,15 @@ class SolrDirectSearch(SearcherBase):
                 begin).isoformat() + "/" + datetime.date(end).isoformat()
 
 
+
+
+
+
         return SearchResult(
             # Because Blazegraph uses normalized query scores, we can approximate search
             # ranking by normalizing these as well. However, this does nothing for the
             # cases where the DataOne result set is more or less relevant, on average, than
-            # the one from Blazegraph / Gleaner.
+            # the one fr om Blazegraph / Gleaner.
             score=(result.pop('score') / self.max_score),
             title=result.pop('title', None),
             id=identifier,
@@ -148,7 +153,7 @@ class SolrDirectSearch(SearcherBase):
             spatial_coverage=result.pop('placeKey', None),
             author = result.pop('author',None),
             doi=doi,
-             boundingbox = {'south': result.pop('southBoundCoord',None), 'north':result.pop('northBoundCoord',None),'west': result.pop('westBoundCoord',None), 'east':result.pop('eastBoundCoord',None)},
+            boundingbox = {'south': result.pop('southBoundCoord',None), 'north':result.pop('northBoundCoord',None),'west': result.pop('westBoundCoord',None), 'east':result.pop('eastBoundCoord',None)},
             keywords=result.pop('keywords', []),
             origin=result.pop('origin', []),
             temporal_coverage=result.pop('temporal_coverage', ""),
