@@ -1,3 +1,3 @@
 #! /bin/bash
-curl --get -X DELETE -H 'Accept: application/xml' http://localhost:9999/bigdata/namespace/polder/sparql
+curl --get -X DELETE http://localhost:9999/rest/repositories/polder
 

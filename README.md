@@ -51,12 +51,11 @@ Assuming that you're starting from **this directory**:
    1. Also, For windows, click [here](https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi) to install the WSL 2 (Windows Subsystem for Linux, version 2)
 1. `cd docker`
 1. `docker-compose up -d`
-1. Go to your [local Blazegraph instance](http://localhost:9999/blazegraph/#namespaces) and add a new namespace - this is because the default one does not come with a full text index. Name it `polder` (or whatever you want, but you will need to change the GLEANER_ENDPOINT_URL environment variable if you don't name it that). Select 'quads' in the mode dropdown menu, and check the text boxes after "Full text index" and "Enable geospatial".
-1. If you want to try queries out on Blazegraph directly, be sure to click 'Use' next to your new namespace after you create it.
 1. `docker-compose --profile setup up -d` in order to start all of the necessary services and set up Gleaner for indexing.
 1. Do a crawl (these instructions assume you are in the `docker` directory):
     1. `curl -O https://schema.org/version/latest/schemaorg-current-https.jsonld`
     1. `docker-compose --profile crawl up -d`
+
     NOTE: There is a missing step here. The crawled results need to be written to the triplestore. For now, you can run `./write-to-triplestore.sh`.
          1. For windows, you need to download [Cygwin](https://www.cygwin.com/setup-x86_64.exe).
          1. Change directory to the docker in Cygwin (`cd docker`).
@@ -103,11 +102,11 @@ to deploy a cluster to a docker-desktop Kubernetes instance.
 Some notes: the `polder` can be replaced with whatever you want. For a dev or prod environment deploy, you need to first be using the correct Kubernetes context (`kubectl get-contexts` can tell you which ones are available to you). For dev, use `values-dev.yaml` instead of `values-local.yaml` and for a production deploy, use `values-prod.yaml`. Note that `values-dev` and `values-prod` are currently set up to deploy in DataONE's dev and prod Kubernetes clusters. They will not work without the correct keys and permissions from DataONE.
 
 The cluster will take a few minutes to spin up. In addition to downloading all these Docker images and starting the web app, it does the following:
-1. Starts a Blazegraph Triplestore and creates a namespace in it
+1. Starts a GraphDB Triplestore and creates a repository in it
 1. Starts a Minio / S3 storage system
 1. Initializes Gleaner
 1. Kicks off a Gleaner index of the data repositories we want to get from there
-1. Writes the resulting indexed metadata to Blazegraph so we can search it
+1. Writes the resulting indexed metadata to GraphDB so we can search it
 
 If you're using Docker desktop for all this, you can visit [http://localhost](http://localhost) and see it running!
 
@@ -128,7 +127,7 @@ To build the Docker image for the web app, run `docker image build . `.
 #### Setup
 Assuming that you're starting from **this directory**:
 
-The easiest setup for development on the web app itself is to use docker-compose for the dependencies, like Gleaner and Blazegraph (`docker-compose up -d`), and run the app itself directly in Flask. To do that, follow the steps in the Deployment -> Docker section above, but skip the last one. Instead, do:
+The easiest setup for development on the web app itself is to use docker-compose for the dependencies, like Gleaner and GraphDB (`docker-compose up -d`), and run the app itself directly in Flask. To do that, follow the steps in the Deployment -> Docker section above, but skip the last one. Instead, do:
 1. `cd ../` (to get back to **this directory**)
 1. `source venv/bin/activate`
 1. `pip install -r requirements.txt`
@@ -138,6 +137,9 @@ The easiest setup for development on the web app itself is to use docker-compose
 1.  `flask run`
 
 You should see Flask's startup message, and get an address for your locally running web app.
+
+#### Using Blazegraph instead of GraphDB
+This project originally used Blazegraph instead of GraphDB. We changed because we wanted GraphDB's GeoSPARQL support and nice development console - but GraphDB is not open source, although a free version is available. If you wish to build a project that only has open-source software in it, you can use Blazegraph instead. See https://polder-crew.github.io/Federated-Search-Documentation/blazegraph.html for detailed instructions.
 
 #### Standards and practices
 

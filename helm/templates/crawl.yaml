@@ -91,5 +91,5 @@ spec:
             - >
               mc config host add minio "http://${MINIO_SERVER_HOST}:${MINIO_SERVER_PORT_NUMBER}" "${MINIO_CLIENT_ACCESS_KEY}" "${MINIO_CLIENT_SECRET_KEY}" &&
               for i in $(mc find minio/{{ .Values.storageNamespace }}/milled); do
-                mc cat $i | curl -X POST -H 'Content-Type:text/rdf+n3' --data-binary  @- {{ include "gleaner.triplestore.endpoint" . }}namespace/{{ .Values.storageNamespace }}/sparql
+                mc cat $i | curl -X POST -H 'Content-Type:text/rdf+n3;charset=utf-8' --data-binary  @- {{ include "gleaner.triplestore.endpoint" . }}/repositories/{{ .Values.storageNamespace }}/statements
               done

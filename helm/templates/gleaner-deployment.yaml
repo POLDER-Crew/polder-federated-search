@@ -48,20 +48,16 @@ spec:
           value: "5"
       containers:
       - name: triplestore
-        image: islandora/blazegraph:1.0.0-alpha-15
+        image: nein09/graphdb:9.11.2-free
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         volumeMounts:
-        - mountPath: /var/lib/blazegraph
+        - mountPath: /data/graphdb
           name: triplestore-volume
         ports:
         - containerPort: {{ .Values.triplestore_service.port }}
         env:
-        - name: JAVA_XMS
-          value: {{ .Values.javaXMS }}
-        - name: JAVA_XMX
-          value: {{ .Values.javaXmx }}
-        - name: JAVA_OPTS
-          value: {{ .Values.javaOpts }}
+        - name: GDB_JAVA_OPTS
+          value: {{ .Values.GDB_JAVA_OPTS }}
       - name: s3system
         image: minio/minio
         imagePullPolicy: {{ .Values.image.pullPolicy }}
