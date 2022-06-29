@@ -52,7 +52,16 @@ class SearchResult:
             if self.boundingbox['north']==self.boundingbox['south'] and self.boundingbox['east']==self.boundingbox['west']:
                 geometry = Point(self.boundingbox['north'],self.boundingbox['east'])
             else:
-                geometry = Polygon(None)
+                # Make a polygon with points in a counter clockwise motion and close the polygon by ending with the starting point
+                geometry = Polygon(
+            coordinates=[
+                [(self.boundingbox['east'],self.boundingbox['south']),
+                (self.boundingbox['east'],self.boundingbox['north']),
+                (self.boundingbox['west'],self.boundingbox['north']),
+                (self.boundingbox['west'],self.boundingbox['south']),
+                (self.boundingbox['east'],self.boundingbox['south']),]
+            ]
+        )
                 
 
     """ Methods to make these sortable """
