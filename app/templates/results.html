@@ -64,17 +64,10 @@
         <h4>Abstract:</h4>
         {{ result.abstract|safe}}
 
-         {% if result.boundingbox %}
+        {% if result.geometry %}
               <div class="location">
                 <h4>Location:</h4>
-                  {{ result.boundingbox }}
-              </div>
-        {% endif %}
-
-        {% if result.geometry %}
-              <div class="geometry">
-                <h4>Geometry:</h4>
-                  {{ result.geometry }}
+                  {{ result.geometry.coordinates }}
               </div>
         {% endif %}
 

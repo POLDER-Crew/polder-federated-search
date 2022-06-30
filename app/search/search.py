@@ -50,6 +50,7 @@ class SearchResult:
                     break
 
         if self.boundingbox:
+            # Make a Point if the (north and south) and (east and west) have the same coordinates and
             if self.boundingbox['north']==self.boundingbox['south'] and self.boundingbox['east']==self.boundingbox['west']:
                 self.geometry = Point(coordinates=
                     (self.boundingbox['north'],self.boundingbox['east'])
