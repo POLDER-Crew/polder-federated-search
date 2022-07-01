@@ -283,3 +283,34 @@ class TestSolrDirectSearch(unittest.TestCase):
         self.assertEqual(result.id, 'test1')
         self.assertEqual(
             result.urls, ['https://search.dataone.org/view/test1'])
+
+    def test_Bounding_box_geometry(self):
+        self.search.max_score = 10
+        # testing for a polygon
+        test_result1 = {
+            'id': 'test1',
+            'seriesId': 'doi:test',
+            'southBoundCoord': 29.7,
+            'northBoundCoord': 90.0,
+            'westBoundCoord': -180.0,
+            'score': 4,
+            'eastBoundCoord': 180.0
+
+        }
+        test_obj_1 = self.search.convert_result(test_result1 )
+        self.assertEqual(test_obj_1.geometry.type, 'Polygon')
+        self.assertEqual(test_obj_1.geometry.coordinates,[[(180.0, 29.7), (180.0, 90.0), (-180.0, 90.0), (-180.0, 29.7), (180.0, 29.7)]])
+        test_result2 = {
+            'id': 'test1',
+            'score': 4,
+            'seriesId': 'doi:test',
+            'southBoundCoord': 76.7067,
+            'northBoundCoord': 76.7067,
+            'westBoundCoord': -105.5341,
+            'eastBoundCoord': -105.5341
+        }
+        # Testing for a point
+        test_obj_2 = self.search.convert_result(test_result2)
+        self.assertEqual(test_obj_2.geometry.type, 'Point')
+        self.assertEqual(test_obj_2.geometry.coordinates, (76.7067, -105.5341))
+

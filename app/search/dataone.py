@@ -132,10 +132,26 @@ class SolrDirectSearch(SearcherBase):
             end = datetime.fromisoformat(result.pop('endDate').rstrip('Z'))
             result['temporal_coverage'] = datetime.date(
                 begin).isoformat() + "/" + datetime.date(end).isoformat()
-
-
-
-
+        boundingbox = {'south': result.pop('southBoundCoord',None), 'north':result.pop('northBoundCoord',None),'west': result.pop('westBoundCoord',None), 'east':result.pop('eastBoundCoord',None)}
+        
+        if boundingbox:
+            # Make a Point if the (north and south) and (east and west) have the same coordinates 
+            if boundingbox['north']==boundingbox['south'] and boundingbox['east']==boundingbox['west']:
+                geometry = Point(coordinates=
+                    (boundingbox['north'],boundingbox['east'])
+                    )
+            else:
+                # Make a polygon with points in a counter clockwise motion and close the polygon by ending with the starting point
+                geometry = Polygon(
+            coordinates=[
+                [(boundingbox['east'],boundingbox['south']),
+                (boundingbox['east'],boundingbox['north']),
+                (boundingbox['west'],boundingbox['north']),
+                (boundingbox['west'],boundingbox['south']),
+                (boundingbox['east'],boundingbox['south']),]
+            ]
+        )
+       
 
 
         return SearchResult(
@@ -153,11 +169,10 @@ class SolrDirectSearch(SearcherBase):
             spatial_coverage=result.pop('placeKey', None),
             author = result.pop('author',None),
             doi=doi,
-            boundingbox = {'south': result.pop('southBoundCoord',None), 'north':result.pop('northBoundCoord',None),'west': result.pop('westBoundCoord',None), 'east':result.pop('eastBoundCoord',None)},
             keywords=result.pop('keywords', []),
             origin=result.pop('origin', []),
             temporal_coverage=result.pop('temporal_coverage', ""),
             urls=urls,
-            geometry=result.pop('geometry',None),
+            geometry=geometry,
             source="DataONE"
         )

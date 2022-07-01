@@ -104,18 +104,7 @@ class TestSearchResult(unittest.TestCase):
         self.assertEqual(test_obj.score, 10.5)
 
 
-    def test_Bounding_box_geometry(self):
-        # testing for a polygon
-        test_obj_1 = search.SearchResult(id='test test test', score=5.3, boundingbox = {'south': 29.7, 'north': 90.0, 'west': -180.0, 'east': 180.0})
-        self.assertEqual(test_obj_1.geometry.type, 'Polygon')
-        self.assertEqual(test_obj_1.geometry.coordinates,[[(180.0, 29.7), (180.0, 90.0), (-180.0, 90.0), (-180.0, 29.7), (180.0, 29.7)]])
-
-        # Testing for a point
-        test_obj_2 = search.SearchResult(id='test test2', score=5.7, boundingbox={'south': 76.7067, 'north': 76.7067, 'west': -105.5341, 'east': -105.5341})
-        self.assertEqual(test_obj_2.geometry.type, 'Point')
-        self.assertEqual(test_obj_2.geometry.coordinates, (76.7067, -105.5341))
-
-
+    
 
     def test_operators(self):
         a = search.SearchResult(id='a', score=1)

@@ -20,7 +20,7 @@ class SearchResult:
         self.keywords = kwargs.pop('keywords', [])
         self.origin = kwargs.pop('origin', [])
         self.id = kwargs.pop('id')
-        self.boundingbox = kwargs.pop('boundingbox',None)
+        self.geometry = kwargs.pop('geometry', '')
         self.author = kwargs.pop('author',None)
         self.license = kwargs.pop('license', None)
         # May or may not be the same as the ID
@@ -35,7 +35,6 @@ class SearchResult:
         self.temporal_coverage = [t.replace('/', ' to ') for t in self.temporal_coverage if t]
         self.keywords = [k for k in self.keywords if k]
         self.urls = list(set(x for x in self.urls if x))
-        self.geometry = None
         # If we have a DOI somewhere, use it as much as possible
         prefixes = ['doi:','http://dx.doi.org/',"http://data.g-e-m.dk/datasets?doi=" ]
 
@@ -49,23 +48,7 @@ class SearchResult:
                     self.doi = 'doi:' + match.lstrip(x)
                     break
 
-        if self.boundingbox:
-            # Make a Point if the (north and south) and (east and west) have the same coordinates and
-            if self.boundingbox['north']==self.boundingbox['south'] and self.boundingbox['east']==self.boundingbox['west']:
-                self.geometry = Point(coordinates=
-                    (self.boundingbox['north'],self.boundingbox['east'])
-                    )
-            else:
-                # Make a polygon with points in a counter clockwise motion and close the polygon by ending with the starting point
-                self.geometry = Polygon(
-            coordinates=[
-                [(self.boundingbox['east'],self.boundingbox['south']),
-                (self.boundingbox['east'],self.boundingbox['north']),
-                (self.boundingbox['west'],self.boundingbox['north']),
-                (self.boundingbox['west'],self.boundingbox['south']),
-                (self.boundingbox['east'],self.boundingbox['south']),]
-            ]
-        )
+       
                 
 
     """ Methods to make these sortable """
