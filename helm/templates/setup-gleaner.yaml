@@ -104,6 +104,19 @@ spec:
                   ]
               ].'
         - "{{- include "gleaner.triplestore.endpoint" . }}/rest/repositories"
+        - --next
+        - -X
+        - POST
+        - --header
+        - 'Accept: application/json'
+        # ?update parameter is literally the url-encoded contents of lucene-connector.sparql
+        - "{{- include "gleaner.triplestore.endpoint" . }}repositories/polder/statements?update=PREFIX%20%3A%3Chttp%3A%2F%2Fwww.ontotext.com%2Fconnectors%2Flucene%23%3E%20PREFIX%20inst%3A%3Chttp%3A%2F%2Fwww.ontotext.com%2Fconnectors%2Flucene%2Finstance%23%3E%20INSERT%20DATA%20%7B%20%20%20%20%20inst%3Atext_search%20%3AcreateConnector%20'''%20%7B%20%20%20%22fields%22%3A%20%5B%20%20%20%20%20%7B%20%20%20%20%20%20%20%22fieldName%22%3A%20%22all%22%2C%20%20%20%20%20%20%20%22propertyChain%22%3A%20%5B%20%20%20%20%20%20%20%20%20%22%24literal%22%20%20%20%20%20%20%20%5D%2C%20%20%20%20%20%20%20%22indexed%22%3A%20true%2C%20%20%20%20%20%20%20%22stored%22%3A%20true%2C%20%20%20%20%20%20%20%22analyzed%22%3A%20true%2C%20%20%20%20%20%20%20%22multivalued%22%3A%20true%2C%20%20%20%20%20%20%20%22ignoreInvalidValues%22%3A%20false%2C%20%20%20%20%20%20%20%22facet%22%3A%20true%20%20%20%20%20%7D%20%20%20%5D%2C%20%20%20%22languages%22%3A%20%5B%5D%2C%20%20%20%22types%22%3A%20%5B%20%20%20%20%20%22https%3A%2F%2Fschema.org%2FDataset%22%2C%20%20%20%20%20%22https%3A%2F%2Fschema.org%2FDataCatalog%22%20%20%20%5D%2C%20%20%20%22readonly%22%3A%20false%2C%20%20%20%22detectFields%22%3A%20false%2C%20%20%20%22importGraph%22%3A%20false%2C%20%20%20%22skipInitialIndexing%22%3A%20false%2C%20%20%20%22boostProperties%22%3A%20%5B%5D%2C%20%20%20%22stripMarkup%22%3A%20false%20%7D%20'''%20.%20%7D"
+        - --next
+        - -X
+        - POST
+        - --header
+        # ?update parameter is literally the url-encoded contents of geosparql.sparql
+        - "{{- include "gleaner.triplestore.endpoint" . }}/repositories/polder/statements?update=PREFIX%20geosparql%3A%20%3Chttp%3A%2F%2Fwww.ontotext.com%2Fplugins%2Fgeosparql%23%3E%20%20INSERT%20DATA%20%7B%20%20%20%5B%5D%20geosparql%3Aenabled%20%22true%22%20.%20%7D"
       # Run gleaner setup, which creates cloud storage buckets
       - name: gleaner-setup
         image: nsfearthcube/gleaner:dev-v3.0.4-development
