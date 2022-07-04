@@ -36,7 +36,22 @@ services:
     - -F
     - "config=@./polder.ttl"
     - "http://triplestore:7200/rest/repositories"
-
+    - --next
+    - -X
+    - POST
+    - --header
+    - 'Accept: application/json'
+    - --data-urlencode
+    - update@./lucene-connector.sparql
+    - "http://triplestore:7200/repositories/polder/statements"
+    - --next
+    - -X
+    - POST
+    - --header
+    - 'Accept: application/json'
+    - --data-urlencode
+    - update@./geosparql.sparql
+    - "http://triplestore:7200/repositories/polder/statements"
   gleaner:
     image: nsfearthcube/gleaner:dev-v3.0.4-development
     command: -cfg gleaner
