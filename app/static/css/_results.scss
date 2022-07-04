@@ -107,3 +107,21 @@
 
 
 
+.screenreader-text {
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+        height: 1px;
+        width: 1px;
+        text-align: left;
+        overflow: hidden;
+}
+.screenreader-text:focus {
+        left: 0;
+        top: 0;
+        width: auto;
+        height: auto;
+        overflow: visible;
+  
+}
+
