@@ -103,6 +103,9 @@ class TestSearchResult(unittest.TestCase):
         self.assertEqual(test_obj.temporal_coverage, [])
         self.assertEqual(test_obj.score, 10.5)
 
+
+    
+
     def test_operators(self):
         a = search.SearchResult(id='a', score=1)
         b = search.SearchResult(id='b', score=2)

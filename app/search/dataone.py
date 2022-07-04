@@ -3,6 +3,7 @@ from urllib.parse import quote
 import json
 import logging
 import math
+from pygeojson import Point, Polygon
 import requests
 from .search import SearcherBase, SearchResultSet, SearchResult
 
@@ -131,13 +132,33 @@ class SolrDirectSearch(SearcherBase):
             end = datetime.fromisoformat(result.pop('endDate').rstrip('Z'))
             result['temporal_coverage'] = datetime.date(
                 begin).isoformat() + "/" + datetime.date(end).isoformat()
+        boundingbox = {'south': result.pop('southBoundCoord',None), 'north':result.pop('northBoundCoord',None),'west': result.pop('westBoundCoord',None), 'east':result.pop('eastBoundCoord',None)}
+        
+        if boundingbox:
+            # Make a Point if the (north and south) and (east and west) have the same coordinates 
+            if boundingbox['north']==boundingbox['south'] and boundingbox['east']==boundingbox['west']:
+                geometry = Point(coordinates=
+                    (boundingbox['north'],boundingbox['east'])
+                    )
+            else:
+                # Make a polygon with points in a counter clockwise motion and close the polygon by ending with the starting point
+                geometry = Polygon(
+            coordinates=[
+                [(boundingbox['east'],boundingbox['south']),
+                (boundingbox['east'],boundingbox['north']),
+                (boundingbox['west'],boundingbox['north']),
+                (boundingbox['west'],boundingbox['south']),
+                (boundingbox['east'],boundingbox['south']),]
+            ]
+        )
+       
 
 
         return SearchResult(
             # Because Blazegraph uses normalized query scores, we can approximate search
             # ranking by normalizing these as well. However, this does nothing for the
             # cases where the DataOne result set is more or less relevant, on average, than
-            # the one from Blazegraph / Gleaner.
+            # the one fr om Blazegraph / Gleaner.
             score=(result.pop('score') / self.max_score),
             title=result.pop('title', None),
             id=identifier,
@@ -152,5 +173,6 @@ class SolrDirectSearch(SearcherBase):
             origin=result.pop('origin', []),
             temporal_coverage=result.pop('temporal_coverage', ""),
             urls=urls,
+            geometry=geometry,
             source="DataONE"
         )

@@ -1,4 +1,4 @@
-
+from pygeojson import Point,Polygon
 
 class SearchResult:
     """ A class representing each search result, so that we can have
@@ -20,6 +20,7 @@ class SearchResult:
         self.keywords = kwargs.pop('keywords', [])
         self.origin = kwargs.pop('origin', [])
         self.id = kwargs.pop('id')
+        self.geometry = kwargs.pop('geometry', '')
         self.author = kwargs.pop('author',None)
         self.license = kwargs.pop('license', None)
         # May or may not be the same as the ID
@@ -46,6 +47,8 @@ class SearchResult:
                 elif any((match := url).startswith(x) for url in self.urls) :
                     self.doi = 'doi:' + match.lstrip(x)
                     break
+
+       
                 
 
     """ Methods to make these sortable """
