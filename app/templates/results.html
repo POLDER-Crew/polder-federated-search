@@ -1,10 +1,14 @@
 
 {% if result_set.results %}
-  {% with pages=result_set.available_pages, current_page=result_set.page_number %}
+<a class="screenreader-text" href="#main-content">
+  skip to results
+</a>
+{% with pages=result_set.available_pages, current_page=result_set.page_number %}
     {% include 'partials/paginator.html' %}
   {% endwith %}
 
-   <ul class="results">
+
+   <ul id='main-content' class="results">
    {% for result in result_set.results %}
     <li class="result" data-score={{ result.score }} data-source="{{ result.source }} data-id= {{ result.id }}">
       {% if result.doi %}
