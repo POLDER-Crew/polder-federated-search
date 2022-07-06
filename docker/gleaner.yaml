@@ -38,10 +38,10 @@ sources:
   active: true
 - name: bas
   type: sitemap
-  headless: false
+  headless: true
   url: http://s3system:9000/sitemaps/bas-sitemap.xml
   properName: British Antarctic Survey
-  active: true
+  active: false
   domain: http://localhost
 - name : CCHDO
   url: https://cchdo.ucsd.edu/sitemap.xml
@@ -52,7 +52,7 @@ sources:
   active: true
 - name: gcmd
   type: sitemap
-  headless: false
+  headless: true
   url: http://s3system:9000/sitemaps/gcmd-sitemap.xml
   properName: Global Change Master Directory
   active: true
