@@ -42,7 +42,7 @@ spec:
         # - name: SERVER_NAME
         #   value: None
         - name: GLEANER_ENDPOINT_URL
-          value: {{ include "gleaner.triplestore.endpoint" . }}namespace/polder/sparql/
+          value: {{ include "gleaner.triplestore.endpoint" . }}/repositories/{{ .Values.storageNamespace }}
         - name: FLASK_APP
           value: {{ .Values.flaskApp }}
         - name: FLASK_RUN_HOST

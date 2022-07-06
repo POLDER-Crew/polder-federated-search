@@ -29,6 +29,7 @@ services:
     working_dir: /config
     command:
     - curl
+    - -vs
     - -X
     - POST
     - -H
@@ -123,7 +124,7 @@ services:
       - 8096:8000
     environment:
       # Overrides the environment variable so that we get the service endpoint IP from Docker.
-      - GLEANER_ENDPOINT_URL=http://triplestore:7200/polder/
+      - GLEANER_ENDPOINT_URL=http://triplestore:7200/repositories/polder
       - FLASK_APP
       - FLASK_RUN_HOST
       - SECRET_KEY

@@ -93,8 +93,6 @@ spec:
           - name: setup-triplestore
             image: curlimages/curl:7.82.0
             volumeMounts:
-            - name: triplestore-config
-              mountPath: /config
             command:
             - curl
             - -X
