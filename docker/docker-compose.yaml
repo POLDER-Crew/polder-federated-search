@@ -5,7 +5,7 @@ volumes:
 services:
 
   gleaner-setup:
-    image: fils/gleaner:v3.0.3-developement
+    image: nsfearthcube/gleaner:dev-v3.0.4-development
     command: -cfg gleaner -setup
     depends_on:
       - triplestore
@@ -50,7 +50,7 @@ services:
     - 'http://triplestore:8080/bigdata/namespace'
 
   gleaner:
-    image: fils/gleaner:v3.0.3-developement
+    image: nsfearthcube/gleaner:dev-v3.0.4-development
     command: -cfg gleaner
     depends_on:
       - triplestore
@@ -94,7 +94,7 @@ services:
      - SERVICE_PORTS=9222
 
   webapp:
-    image: nein09/polder-federated-search:1.39.0
+    image: nein09/polder-federated-search:1.41.0
     depends_on:
       - triplestore
       - s3system

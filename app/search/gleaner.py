@@ -16,8 +16,7 @@ class GleanerSearch(SearcherBase):
         page_start = max(0, page_number - 1) * GleanerSearch.PAGE_SIZE
 
         return f"""
-            PREFIX sschema: <https://schema.org/>
-            PREFIX schema: <http://schema.org/>
+            PREFIX schema: <https://schema.org/>
 
             SELECT ?total_results ?score ?id ?abstract ?url ?title ?sameAs ?keywords ?license ?temporal_coverage ?spatial_coverage ?author
 
@@ -36,37 +35,8 @@ class GleanerSearch(SearcherBase):
                 (GROUP_CONCAT(DISTINCT ?spatial_coverage ; separator=", ") as ?spatial_coverage)
 
             {{
-              VALUES ?type {{ schema:Dataset sschema:Dataset }}
-              ?s a ?type .
-              {{
-                ?s sschema:name ?title .
-                {{ ?s sschema:keywords ?keywords . }} UNION {{
-                    ?catalog ?relationship ?s .
-                    ?catalog sschema:keywords ?keywords .
-                }}
-                ?s sschema:description | sschema:description/sschema:value  ?abstract .
-                ?s sschema:temporalCoverage ?temporal_coverage .
-                ?s sschema:spatialCoverage ?spatial_coverage .
 
-                OPTIONAL {{
-                    ?s sschema:sameAs ?sameAs .
-                }}
-                OPTIONAL {{
-                    ?s sschema:license ?license .
-                }}
-                OPTIONAL {{
-                    ?s sschema:url ?url .
-                }}
-                OPTIONAL {{
-                    ?s sschema:creator/sschema:name ?author .
-                }}
-                OPTIONAL {{
-                    ?s sschema:identifier | sschema:identifier/sschema:value ?id .
-                    FILTER(ISLITERAL(?id)) .
-                }}
-              }}
-              UNION
-              {{
+                ?s a schema:Dataset  .
                 ?s schema:name ?title .
                 {{ ?s schema:keywords ?keywords . }} UNION {{
                     ?catalog ?relationship ?s .
@@ -91,8 +61,7 @@ class GleanerSearch(SearcherBase):
                 }}
                 OPTIONAL {{
                     ?s schema:creator/schema:name ?author .
-                }}  
-              }}
+                }}
               {user_query}
               BIND(COALESCE(?id, ?s) AS ?id)
             }}
@@ -250,7 +219,7 @@ class GleanerSearch(SearcherBase):
         # This is a workaround for now.
         result['score'] = result.pop('score', 1)
         result['urls'] = []
-        
+
         url = result.pop('url', None)
         sameAs = result.pop('sameAs', None)
         if url is not None:
