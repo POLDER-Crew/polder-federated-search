@@ -71,7 +71,7 @@ spec:
         - '{{- include "gleaner.triplestore.endpoint" . }}namespace'
       # Run gleaner setup, which creates cloud storage buckets
       - name: gleaner-setup
-        image: fils/gleaner:v3.0.3-developement
+        image: nsfearthcube/gleaner:dev-v3.0.4-development
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         args:
         - -cfg
@@ -129,7 +129,7 @@ spec:
         workingDir: /context
       # Finally, index our data repositories!
       - name: gleaner-initial-index
-        image: fils/gleaner:v3.0.3-developement
+        image: nsfearthcube/gleaner:dev-v3.0.4-development
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         args:
         - -cfg

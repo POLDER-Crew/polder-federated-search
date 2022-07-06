@@ -13,10 +13,6 @@ context:
 contextmaps:
 - prefix: "https://schema.org/"
   file: "./schemaorg-current-https.jsonld"
-- prefix: "http://schema.org/"
-  file: "./schemaorg-current-https.jsonld"
-- prefix: "http://schema.org/"
-  file: "./schemaorg-current-https.jsonld"
 summoner:
   after: ""      # "21 May 20 10:00 UTC"   
   mode: full  # full || diff:  If diff compare what we have currently in gleaner to sitemap, get only new, delete missing
@@ -27,10 +23,10 @@ millers:
   graph: true
 sources:
 - name: nsidc
-  url: https://nsidc.org/sitemap.xml
+  url: http://nsidc.org/sitemap.xml
   headless: false
   properName: National Snow and Ice Data Center
-  domain: https://nsidc.org
+  domain: http://nsidc.org
   type: sitemap
   active: false
 - name: gem
@@ -42,11 +38,11 @@ sources:
   active: true
 - name: bas
   type: sitemap
-  headless: false 
+  headless: false
   url: http://s3system:9000/sitemaps/bas-sitemap.xml
   properName: British Antarctic Survey
   active: true
-  domain: http://bas.ac.uk
+  domain: http://localhost
 - name : CCHDO
   url: https://cchdo.ucsd.edu/sitemap.xml
   type: sitemap

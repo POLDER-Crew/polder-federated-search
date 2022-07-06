@@ -2,6 +2,7 @@ blinker==1.4
 Flask==2.0.2
 Flask-CacheBuster==1.0.0
 gunicorn==20.1.0
+pygeojson==0.2.0
 python-dotenv==0.20.0
 requests==2.26.0
 requests-mock==1.9.3
