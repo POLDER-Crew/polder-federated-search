@@ -2,7 +2,7 @@ import logging
 import math
 import validators
 
-from SPARQLWrapper import SPARQLWrapper, JSON
+from SPARQLWrapper import SPARQLWrapper, JSON, POST
 from .search import SearcherBase, SearchResultSet, SearchResult
 
 logger = logging.getLogger('app')
@@ -156,6 +156,7 @@ class GleanerSearch(SearcherBase):
     def execute_query(self, page_number):
         logger.debug(self.query)
         self.sparql.setQuery(self.query)
+        self.sparql.setMethod(POST)
         self.sparql.setReturnFormat(JSON)
         data = self.sparql.query().convert()
 

@@ -1,33 +1,24 @@
-PREFIX :<http://www.ontotext.com/connectors/lucene#>
-PREFIX inst:<http://www.ontotext.com/connectors/lucene/instance#>
+PREFIX con: <http://www.ontotext.com/connectors/lucene#>
+PREFIX con-inst: <http://www.ontotext.com/connectors/lucene/instance#>
+
 INSERT DATA {
-    inst:text_search :createConnector '''
-{
-  "fields": [
+    con-inst:full_text_search con:createConnector '''
     {
-      "fieldName": "all",
-      "propertyChain": [
-        "$literal"
+      "fields": [
+        {
+          "fieldName": "fts",
+          "propertyChain": [
+            "$literal"
+          ],
+          "facet": false
+        }
       ],
-      "indexed": true,
-      "stored": true,
-      "analyzed": true,
-      "multivalued": true,
-      "ignoreInvalidValues": false,
-      "facet": true
+      "languages": [
+        ""
+      ],
+      "types": [
+        "$untyped"
+      ]
     }
-  ],
-  "languages": [],
-  "types": [
-    "https://schema.org/Dataset",
-    "https://schema.org/DataCatalog"
-  ],
-  "readonly": false,
-  "detectFields": false,
-  "importGraph": false,
-  "skipInitialIndexing": false,
-  "boostProperties": [],
-  "stripMarkup": false
-}
 ''' .
 }
