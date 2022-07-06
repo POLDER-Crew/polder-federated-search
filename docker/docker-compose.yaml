@@ -21,7 +21,7 @@ services:
     working_dir: /config
 
   triplestore-setup:
-    image: curlimages/curl:7.82.0
+    image: curlimages/curl:7.84.0
     depends_on:
     - triplestore
     volumes:
@@ -70,7 +70,7 @@ services:
     working_dir: /config
 
   triplestore:
-    image: nein09/graphdb:9.11.2-free
+    image: nein09/graphdb:10.0.0-free
     volumes:
       - triplestore:/data/graphdb
     environment:

@@ -34,7 +34,7 @@ spec:
       initContainers:
         # Literally wait for GraphDB to come up so we can create a repository
       - name: wait-for-triplestore-up
-        image: curlimages/curl:7.82.0
+        image: curlimages/curl:7.84.0
         command:
         - /bin/sh
         - -c
@@ -46,7 +46,7 @@ spec:
           done
       # Next, create the graphdb repository that we want to use for this app
       - name: setup-triplestore
-        image: curlimages/curl:7.82.0
+        image: curlimages/curl:7.84.0
         workingDir: /config
         volumeMounts:
         - name: polder-repo-config
@@ -105,7 +105,7 @@ spec:
           subPath: gleaner.yaml
       # We need the latest schema.org context, so fetch it
       - name: get-contextfiles
-        image: curlimages/curl:7.82.0
+        image: curlimages/curl:7.84.0
         command:
         - curl
         - -O

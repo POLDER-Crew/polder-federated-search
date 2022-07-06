@@ -32,7 +32,7 @@ spec:
               value: "5"
           initContainers:
           - name: get-contextfiles
-            image: curlimages/curl:7.82.0
+            image: curlimages/curl:7.84.0
             command:
             - curl
             - -O
