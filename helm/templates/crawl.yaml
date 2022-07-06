@@ -42,7 +42,7 @@ spec:
               mountPath: /context
             workingDir: /context
           - name: gleaner-index
-            image: nein09/gleaner:v3.2-development
+            image:nsfearthcube/gleaner:dev-v3.0.4-development
             imagePullPolicy: {{ .Values.image.pullPolicy }}
             args:
             - -cfg

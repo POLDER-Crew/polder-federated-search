@@ -5,7 +5,7 @@ volumes:
 services:
 
   gleaner-setup:
-    image: nein09/gleaner:v3.2-development
+    image:nsfearthcube/gleaner:dev-v3.0.4-development
     command: -cfg gleaner -setup
     depends_on:
       - triplestore
@@ -50,7 +50,7 @@ services:
     - 'http://triplestore:8080/bigdata/namespace'
 
   gleaner:
-    image: nein09/gleaner:v3.2-development
+    image:nsfearthcube/gleaner:dev-v3.0.4-development
     command: -cfg gleaner
     depends_on:
       - triplestore
