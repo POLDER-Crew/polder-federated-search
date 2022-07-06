@@ -236,8 +236,6 @@ class TestSolrDirectSearch(unittest.TestCase):
         dataone.PAGE_SIZE = search.SearcherBase.PAGE_SIZE
 
     def test_convert_full_result(self):
-        self.search.max_score = 10
-
         test_result = {
             'webUrl': ['url1', 'url2', 'url3'],
             'contentUrl': {'value': ['url5', 'url6', 'url7']},
@@ -255,7 +253,7 @@ class TestSolrDirectSearch(unittest.TestCase):
         result = self.search.convert_result(test_result)
         result.urls.sort()
         result.keywords.sort()
-        self.assertEqual(result.score, 0.5)
+        self.assertEqual(result.score, 5)
         self.assertEqual(
             result.urls, ['https://search.dataone.org/view/An%20id', 'url1', 'url2', 'url3', 'url5', 'url6', 'url7'])
         self.assertEqual(result.title, 'A title'),
@@ -269,15 +267,13 @@ class TestSolrDirectSearch(unittest.TestCase):
                          '2016-01-01 to 2016-12-31'])
 
     def test_convert_sparse_result(self):
-        self.search.max_score = 10
-
         test_result = {
             'score': 4,
             'seriesId': 'test',
             'id': 'test1'
         }
         result = self.search.convert_result(test_result)
-        self.assertEqual(result.score, 0.4)
+        self.assertEqual(result.score, 4)
         self.assertEqual(result.doi, None)
         self.assertEqual(result.source, 'DataONE')
         self.assertEqual(result.id, 'test1')

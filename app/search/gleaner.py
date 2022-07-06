@@ -156,10 +156,6 @@ class GleanerSearch(SearcherBase):
     def execute_query(self, page_number):
         logger.debug(self.query)
         self.sparql.setQuery(self.query)
-
-
-        # a note: BlazeGraph relevance scores go from 0.0 to 1.0; all results are normalized.
-        # TODO: this is not necessarily true for GraphDB. How can our search scores be more comparable to those of DataONE?
         self.sparql.setReturnFormat(JSON)
         data = self.sparql.query().convert()
 
