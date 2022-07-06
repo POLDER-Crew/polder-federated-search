@@ -165,7 +165,11 @@ gleaner.db
 
 # things we generate
 bas-sitemap.xml
+<<<<<<< Updated upstream
 docker/gcmd-sitemap.xml
+=======
+gcmd-sitemap.xml
+>>>>>>> Stashed changes
 
 
 # Ignore my bat file
