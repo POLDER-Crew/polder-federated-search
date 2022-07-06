@@ -165,7 +165,7 @@ gleaner.db
 
 # things we generate
 bas-sitemap.xml
-docker/gcmd-sitemap.xml
+gcmd-sitemap.xml
 
 
 # Ignore my bat file
