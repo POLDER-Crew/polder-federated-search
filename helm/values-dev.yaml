@@ -42,7 +42,7 @@ service:
 
 triplestore_service:
   type: ClusterIP
-  port: 8080
+  port: 7200
 
 headless_service:
   type: ClusterIP
