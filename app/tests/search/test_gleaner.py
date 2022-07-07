@@ -42,7 +42,7 @@ class TestGleanerSearch(unittest.TestCase):
     def test_text_search_none(self, query):
         query.return_value = self.mock_query
         results = self.search.text_search()
-        self.assertNotIn('?lit bds:search', self.search.query)
+        self.assertNotIn('luc:query', self.search.query)
 
     @patch('SPARQLWrapper.SPARQLWrapper.query')
     def test_text_search(self, query):
@@ -61,7 +61,7 @@ class TestGleanerSearch(unittest.TestCase):
         )
         results = self.search.text_search(text='test', page_number=5)
         self.assertEqual(results, expected)
-        self.assertIn("?lit bds:search '''test'''", self.search.query)
+        self.assertIn("luc:query '''test'''", self.search.query)
 
     @patch('SPARQLWrapper.SPARQLWrapper.query')
     def test_date_filter_none(self, query):
@@ -154,7 +154,7 @@ class TestGleanerSearch(unittest.TestCase):
         )
         self.assertEqual(results, expected)
 
-        self.assertIn("?lit bds:search '''test'''", self.search.query)
+        self.assertIn("luc:query '''test'''", self.search.query)
         self.assertIn(
             "FILTER(?start_date >= '1999-01-01'^^xsd:date)", self.search.query)
         self.assertIn(
@@ -191,15 +191,15 @@ class TestGleanerSearch(unittest.TestCase):
             results = self.search.text_search(text='test')
 
     def test_page_size(self):
-        result = gleaner.GleanerSearch.build_query("", 0)
+        result = gleaner.GleanerSearch.build_query(None, None, 0)
         self.assertIn("OFFSET 0", result)
-        result = gleaner.GleanerSearch.build_query("", -99)
+        result = gleaner.GleanerSearch.build_query(None, None, -99)
         self.assertIn("OFFSET 0", result)
-        result = gleaner.GleanerSearch.build_query("", 25)
+        result = gleaner.GleanerSearch.build_query(None, None, 25)
         self.assertIn(f"OFFSET {gleaner.GleanerSearch.PAGE_SIZE * 24}", result)
 
         gleaner.GleanerSearch.PAGE_SIZE = 32
-        result = gleaner.GleanerSearch.build_query("", 3)
+        result = gleaner.GleanerSearch.build_query(None, None, 3)
         self.assertIn(f"OFFSET {gleaner.GleanerSearch.PAGE_SIZE * 2}", result)
 
         # Set it back to the default so we do not get random test failures

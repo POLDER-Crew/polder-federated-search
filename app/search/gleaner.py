@@ -2,40 +2,37 @@ import logging
 import math
 import validators
 
-from SPARQLWrapper import SPARQLWrapper, JSON
+from SPARQLWrapper import SPARQLWrapper, JSON, POST
 from .search import SearcherBase, SearchResultSet, SearchResult
 
 logger = logging.getLogger('app')
 
 class GleanerSearch(SearcherBase):
     @staticmethod
-    def build_query(user_query="", page_number=1):
+    def build_query(text_query="", filter_query="", page_number=1):
         # NOTE: Page numbers start counting from 1, because this number gets exposed
         # to the user, and people who are not programmers are weirded out by 0-indexed things.
         # The max is there in case a negative url parameter gets in here and causes havoc.
         page_start = max(0, page_number - 1) * GleanerSearch.PAGE_SIZE
 
-        return f"""
-            PREFIX schema: <https://schema.org/>
-
-            SELECT ?total_results ?score ?id ?abstract ?url ?title ?sameAs ?keywords ?license ?temporal_coverage ?spatial_coverage ?author
-
-            WITH {{
+        # GraphDB doesn't allow named subqueries. So we write our query out twice - once to get the total
+        # result count, in order to do paging, and once to get the actual results and page through them.
+        base_query = f"""
             SELECT
-                (MAX(?relevance) AS ?score)
-                ?id
-                ?url
-                ?title
-                ?author
-                ?license
-                (GROUP_CONCAT(DISTINCT ?abstract ; separator=", ") as ?abstract)
-                (GROUP_CONCAT(DISTINCT ?sameAs ; separator=", ") as ?sameAs)
-                (GROUP_CONCAT(DISTINCT ?keywords ; separator=", ") as ?keywords)
-                (GROUP_CONCAT(DISTINCT ?temporal_coverage ; separator=", ") as ?temporal_coverage)
-                (GROUP_CONCAT(DISTINCT ?spatial_coverage ; separator=", ") as ?spatial_coverage)
-
+            (MAX(?relevance) AS ?score)
+            ?s
+            ?id
+            ?url
+            ?title
+            ?author
+            ?license
+            (GROUP_CONCAT(DISTINCT ?abstract ; separator=", ") as ?abstract)
+            (GROUP_CONCAT(DISTINCT ?sameAs ; separator=", ") as ?sameAs)
+            (GROUP_CONCAT(DISTINCT ?keywords ; separator=", ") as ?keywords)
+            (GROUP_CONCAT(DISTINCT ?temporal_coverage ; separator=", ") as ?temporal_coverage)
             {{
 
+                {text_query}
                 ?s a schema:Dataset  .
                 ?s schema:name ?title .
                 {{ ?s schema:keywords ?keywords . }} UNION {{
@@ -56,45 +53,52 @@ class GleanerSearch(SearcherBase):
                     ?s schema:url ?url .
                 }}
                 OPTIONAL {{
-                    ?s schema:identifier | schema:identifier/schema:value ?id .
-                    FILTER(ISLITERAL(?id)) .
+                    ?s schema:identifier | schema:identifier/schema:value ?identifier .
+                    FILTER(ISLITERAL(?identifier)) .
                 }}
                 OPTIONAL {{
                     ?s schema:creator/schema:name ?author .
                 }}
-              {user_query}
-              BIND(COALESCE(?id, ?s) AS ?id)
+                {filter_query}
+                BIND(COALESCE(?identifier, ?s) AS ?id)
             }}
-            GROUP BY ?id ?url ?title ?license ?author
-        }} AS %search
-        {{
+            GROUP BY ?s ?id ?url ?title ?license ?author
+        """
+
+        return f"""
+            PREFIX luc: <http://www.ontotext.com/connectors/lucene#>
+            PREFIX luc-index: <http://www.ontotext.com/connectors/lucene/instance#>
+            PREFIX onto: <http://www.ontotext.com/>
+            PREFIX schema: <https://schema.org/>
+            PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+            SELECT ?total_results ?score ?id ?abstract ?url ?title ?sameAs ?keywords ?license ?temporal_coverage ?spatial_coverage ?author
             {{
-                SELECT (COUNT(*) as ?total_results)
-                {{ INCLUDE %search . }}
+                {{
+                    SELECT (COUNT(*) as ?total_results) {{
+                        {base_query}
+                    }}
+                }}
+                UNION
+                {{
+                    {base_query}
+                }}
             }}
-            UNION
-            {{
-                SELECT ?score ?s ?id ?abstract ?url ?title ?sameAs ?keywords ?license ?temporal_coverage ?spatial_coverage ?author
-                {{ INCLUDE %search . }}
-                OFFSET {page_start}
-                LIMIT {GleanerSearch.PAGE_SIZE}
-            }}
-        }}
             ORDER BY DESC(?total_results) DESC(?score)
+            OFFSET {page_start}
+            LIMIT {GleanerSearch.PAGE_SIZE}
         """
 
     @staticmethod
     def _build_text_search_query(text=None):
         if text:
             return f"""
-                ?lit bds:search '''{text}''' .
-                ?lit bds:matchAllTerms "false" .
-                ?lit bds:relevance ?relevance .
-                ?s ?p ?lit .
+                ?search a luc-index:full_text_search ;
+                luc:query '''{text}''' ;
+                luc:entities ?s .
+                ?s luc:score ?relevance .
             """
         else:
-            # A blank search in this will give NO results, which seems like
-            # the opposite of what we want.
+            # A blank search in this doesn't filter results, it just takes longer.
             return ""
 
     @staticmethod
@@ -152,9 +156,7 @@ class GleanerSearch(SearcherBase):
     def execute_query(self, page_number):
         logger.debug(self.query)
         self.sparql.setQuery(self.query)
-
-
-        # a note: BlazeGraph relevance scores go from 0.0 to 1.0; all results are normalized.
+        self.sparql.setMethod(POST)
         self.sparql.setReturnFormat(JSON)
         data = self.sparql.query().convert()
 
@@ -179,7 +181,7 @@ class GleanerSearch(SearcherBase):
         user_query = GleanerSearch._build_text_search_query(text)
 
         # Assigning this to a class member makes it easier to test
-        self.query = GleanerSearch.build_query(user_query, page_number)
+        self.query = GleanerSearch.build_query(user_query, None, page_number)
         return self.execute_query(page_number)
 
     def date_filter_search(self, **kwargs):
@@ -192,7 +194,7 @@ class GleanerSearch(SearcherBase):
         user_query = GleanerSearch._build_date_filter_query(
             start_min, start_max, end_min, end_max)
         # Assigning this to a class member makes it easier to test
-        self.query = GleanerSearch.build_query(user_query, page_number)
+        self.query = GleanerSearch.build_query(None, user_query, page_number)
         return self.execute_query(page_number)
 
     def combined_search(self, **kwargs):
@@ -203,12 +205,12 @@ class GleanerSearch(SearcherBase):
         end_max = kwargs.pop('end_max', None)
         page_number = kwargs.pop('page_number', 0)
 
-        user_query = GleanerSearch._build_date_filter_query(
+        date_query = GleanerSearch._build_date_filter_query(
             start_min, start_max, end_min, end_max)
-        user_query += GleanerSearch._build_text_search_query(text)
+        text_query = GleanerSearch._build_text_search_query(text)
 
         # Assigning this to a class member makes it easier to test
-        self.query = GleanerSearch.build_query(user_query, page_number)
+        self.query = GleanerSearch.build_query(text_query, date_query, page_number)
         return self.execute_query(page_number)
 
     def convert_result(self, sparql_result_dict):

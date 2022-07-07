@@ -42,7 +42,7 @@ service:
 
 triplestore_service:
   type: ClusterIP
-  port: 8080
+  port: 7200
 
 headless_service:
   type: ClusterIP
@@ -104,9 +104,16 @@ tolerations: []
 
 affinity: {}
 
-javaXMS: 2g
-javaXmx: 8g
-javaOpts: -Xmx6g -Xms2g --XX:+UseG1GC
+GDB_JAVA_OPTS: >-
+  -Xmx2g -Xms2g
+  -Dgraphdb.home=/opt/graphdb/home
+  -Dgraphdb.workbench.importDirectory=/opt/graphdb/home/graphdb-import
+  -Dgraphdb.workbench.cors.enable=true
+  -Denable-context-index=true
+  -Dentity-pool-implementation=transactional
+  -Dhealth.max.query.time.seconds=60
+  -Dgraphdb.append.request.id.headers=true
+  -Dreuse.vars.in.subselects=true
 
 sentryEnvironment: production
 
