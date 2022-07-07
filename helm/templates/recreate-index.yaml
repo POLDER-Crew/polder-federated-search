@@ -21,6 +21,9 @@ spec:
               name: gleaner-config
           - name: gleaner-context
             emptyDir: {}
+          - name: polder-repo-config
+            configMap:
+              name: polder-repo-config
           initContainers:
           - name: remove-minio-files
             image: bitnami/minio-client:2022
@@ -84,8 +87,18 @@ spec:
           # The easiest way is just to remove the repository and recreate it
           - name: clear-triplestore
             image: curlimages/curl:7.84.0
+            workingDir: /config
+            volumeMounts:
+            - name: polder-repo-config
+              mountPath: /config
             command:
             - curl
+            - -vs
+            - --get
+            - -X
+            - DELETE
+            - "{{- include "gleaner.triplestore.endpoint" . }}/repositories/{{ .Values.storageNamespace }}"
+            - --next
             - -vs
             - -X
             - POST
