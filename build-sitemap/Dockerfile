@@ -21,11 +21,11 @@ COPY --from=builder /go/mc/LICENSE /licenses/LICENSE
 
 RUN  \
      apk update && \
-     apk add ca-certificates curl jq bash && \
+     apk add ca-certificates curl jq bash python3 && \
      rm -rf /var/cache/apk/*
 
-COPY build-bas-sitemap.sh /usr/local/bin/build-bas-sitemap.sh
+COPY build-sitemaps.sh /usr/local/bin/build-sitemaps.sh
 
-RUN chmod +x /usr/local/bin/build-bas-sitemap.sh
+RUN chmod +x /usr/local/bin/build-sitemaps.sh
 
-ENTRYPOINT ["build-bas-sitemap.sh"]
+ENTRYPOINT ["build-sitemaps.sh"]
