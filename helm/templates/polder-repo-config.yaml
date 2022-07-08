@@ -1,0 +1,80 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: polder-repo-config
+  labels:
+    app: triplestore
+data:
+  geosparql.sparql: |-
+      PREFIX geosparql: <http://www.ontotext.com/plugins/geosparql#>
+
+      INSERT DATA {
+        [] geosparql:enabled "true" .
+      }
+  lucene-connector.sparql: |-
+      PREFIX con: <http://www.ontotext.com/connectors/lucene#>
+      PREFIX con-inst: <http://www.ontotext.com/connectors/lucene/instance#>
+
+      INSERT DATA {
+          con-inst:full_text_search con:createConnector '''
+          {
+            "fields": [
+              {
+                "fieldName": "fts",
+                "propertyChain": [
+                  "$literal"
+                ],
+                "facet": false
+              }
+            ],
+            "languages": [
+              ""
+            ],
+            "types": [
+              "$untyped"
+            ]
+          }
+      ''' .
+      }
+  polder.ttl: |-
+      #
+      # RDF4J configuration template for a GraphDB repository
+      #
+      @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+      @prefix rep: <http://www.openrdf.org/config/repository#>.
+      @prefix sr: <http://www.openrdf.org/config/repository/sail#>.
+      @prefix sail: <http://www.openrdf.org/config/sail#>.
+      @prefix graphdb: <http://www.ontotext.com/config/graphdb#>.
+
+      [] a rep:Repository ;
+          rep:repositoryID "polder" ;
+          rdfs:label "Polder Federated Search App Repo" ;
+          rep:repositoryImpl [
+              rep:repositoryType "graphdb:SailRepository" ;
+              sr:sailImpl [
+                  sail:sailType "graphdb:Sail" ;
+
+                  graphdb:base-URL "http://example.org/owlim#" ;
+                  graphdb:defaultNS "" ;
+                  graphdb:entity-index-size "10000000" ;
+                  graphdb:entity-id-size  "40" ;
+                  graphdb:imports "" ;
+                  graphdb:repository-type "file-repository" ;
+                  graphdb:ruleset "rdfsplus-optimized" ;
+                  graphdb:storage-folder "storage" ;
+
+                  graphdb:enable-context-index "false" ;
+
+                  graphdb:enablePredicateList "true" ;
+
+                  graphdb:in-memory-literal-properties "true" ;
+                  graphdb:enable-literal-index "true" ;
+
+                  graphdb:check-for-inconsistencies "false" ;
+                  graphdb:disable-sameAs  "true" ;
+                  graphdb:query-timeout  "0" ;
+                  graphdb:query-limit-results  "0" ;
+                  graphdb:throw-QueryEvaluationException-on-timeout "false" ;
+                  graphdb:read-only "false" ;
+              ]
+          ].

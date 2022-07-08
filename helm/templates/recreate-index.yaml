@@ -21,6 +21,9 @@ spec:
               name: gleaner-config
           - name: gleaner-context
             emptyDir: {}
+          - name: polder-repo-config
+            configMap:
+              name: polder-repo-config
           initContainers:
           - name: remove-minio-files
             image: bitnami/minio-client:2022
@@ -48,7 +51,7 @@ spec:
               mc config host add minio "http://${MINIO_SERVER_HOST}:${MINIO_SERVER_PORT_NUMBER}" "${MINIO_CLIENT_ACCESS_KEY}" "${MINIO_CLIENT_SECRET_KEY}" &&
               mc rm -r --force minio/{{ .Values.storageNamespace }}
           - name: get-contextfiles
-            image: curlimages/curl:7.82.0
+            image: curlimages/curl:7.84.0
             command:
             - curl
             - -O
@@ -81,16 +84,47 @@ spec:
               subPath: gleaner.yaml
             - name: gleaner-context
               mountPath: /config
+          # The easiest way is just to remove the repository and recreate it
           - name: clear-triplestore
-            image: curlimages/curl:7.82.0
+            image: curlimages/curl:7.84.0
+            workingDir: /config
+            volumeMounts:
+            - name: polder-repo-config
+              mountPath: /config
             command:
             - curl
+            - -vs
             - --get
             - -X
             - DELETE
+            - "{{- include "gleaner.triplestore.endpoint" . }}/repositories/{{ .Values.storageNamespace }}"
+            - --next
+            - -vs
+            - -X
+            - POST
             - -H
-            - 'Accept: application/xml'
-            - {{ include "gleaner.triplestore.endpoint" . }}namespace/{{ .Values.storageNamespace }}/sparql
+            - 'Content-Type:multipart/form-data'
+            - -F
+            - "config=@./polder.ttl"
+            - "{{- include "gleaner.triplestore.endpoint" . }}/rest/repositories/"
+            - --next
+            - -vs
+            - -X
+            - POST
+            - --header
+            - 'Accept: application/json'
+            - --data-urlencode
+            - update@./lucene-connector.sparql
+            - "{{- include "gleaner.triplestore.endpoint" . }}/repositories/{{ .Values.storageNamespace }}/statements"
+            - --next
+            - -vs
+            - -X
+            - POST
+            - --header
+            - 'Accept: application/json'
+            - --data-urlencode
+            - update@./geosparql.sparql
+            - "{{- include "gleaner.triplestore.endpoint" . }}/repositories/{{ .Values.storageNamespace }}/statements"
           containers:
           - name: write-to-triplestore
             image: bitnami/minio-client:2022
@@ -117,5 +151,5 @@ spec:
             - >
               mc config host add minio "http://${MINIO_SERVER_HOST}:${MINIO_SERVER_PORT_NUMBER}" "${MINIO_CLIENT_ACCESS_KEY}" "${MINIO_CLIENT_SECRET_KEY}" &&
               for i in $(mc find minio/{{ .Values.storageNamespace }}/milled); do
-                mc cat $i | curl -X POST -H 'Content-Type:text/rdf+n3' --data-binary  @- {{ include "gleaner.triplestore.endpoint" . }}namespace/{{ .Values.storageNamespace }}/sparql
+                mc cat $i | curl -X POST -H 'Content-Type:text/rdf+n3;charset=utf-8' --data-binary  @- {{ include "gleaner.triplestore.endpoint" . }}/repositories/{{ .Values.storageNamespace }}/statements
               done

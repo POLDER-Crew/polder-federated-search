@@ -1,0 +1,24 @@
+PREFIX con: <http://www.ontotext.com/connectors/lucene#>
+PREFIX con-inst: <http://www.ontotext.com/connectors/lucene/instance#>
+
+INSERT DATA {
+    con-inst:full_text_search con:createConnector '''
+    {
+      "fields": [
+        {
+          "fieldName": "fts",
+          "propertyChain": [
+            "$literal"
+          ],
+          "facet": false
+        }
+      ],
+      "languages": [
+        ""
+      ],
+      "types": [
+        "$untyped"
+      ]
+    }
+''' .
+}

@@ -53,10 +53,6 @@ class SolrDirectSearch(SearcherBase):
         response = requests.get(query)
         response.raise_for_status()
         body = response.json()['response']
-        self.max_score = body['maxScore']
-
-        if self.max_score == 0:
-            self.max_score = 0.00001
 
         result_set = SearchResultSet(
             total_results=body['numFound'],
@@ -132,42 +128,34 @@ class SolrDirectSearch(SearcherBase):
             end = datetime.fromisoformat(result.pop('endDate').rstrip('Z'))
             result['temporal_coverage'] = datetime.date(
                 begin).isoformat() + "/" + datetime.date(end).isoformat()
-        boundingbox = {'south': result.pop('southBoundCoord',None), 'north':result.pop('northBoundCoord',None),'west': result.pop('westBoundCoord',None), 'east':result.pop('eastBoundCoord',None)}
-        
+        boundingbox = {'south': result.pop('southBoundCoord', None), 'north': result.pop(
+            'northBoundCoord', None), 'west': result.pop('westBoundCoord', None), 'east': result.pop('eastBoundCoord', None)}
+
         if boundingbox:
-            # Make a Point if the (north and south) and (east and west) have the same coordinates 
-            if boundingbox['north']==boundingbox['south'] and boundingbox['east']==boundingbox['west']:
-                geometry = Point(coordinates=
-                    (boundingbox['north'],boundingbox['east'])
-                    )
+            # Make a Point if the (north and south) and (east and west) have the same coordinates
+            if boundingbox['north'] == boundingbox['south'] and boundingbox['east'] == boundingbox['west']:
+                geometry = Point(coordinates=(boundingbox['north'], boundingbox['east'])
+                                 )
             else:
                 # Make a polygon with points in a counter clockwise motion and close the polygon by ending with the starting point
                 geometry = Polygon(
-            coordinates=[
-                [(boundingbox['east'],boundingbox['south']),
-                (boundingbox['east'],boundingbox['north']),
-                (boundingbox['west'],boundingbox['north']),
-                (boundingbox['west'],boundingbox['south']),
-                (boundingbox['east'],boundingbox['south']),]
-            ]
-        )
-       
-
+                    coordinates=[
+                        [(boundingbox['east'], boundingbox['south']),
+                         (boundingbox['east'], boundingbox['north']),
+                            (boundingbox['west'], boundingbox['north']),
+                            (boundingbox['west'], boundingbox['south']),
+                            (boundingbox['east'], boundingbox['south']), ]
+                    ]
+                )
 
         return SearchResult(
-            # Because Blazegraph uses normalized query scores, we can approximate search
-            # ranking by normalizing these as well. However, this does nothing for the
-            # cases where the DataOne result set is more or less relevant, on average, than
-            # the one fr om Blazegraph / Gleaner.
-            score=(result.pop('score') / self.max_score),
+            score=result.pop('score'),
             title=result.pop('title', None),
             id=identifier,
             abstract=result.pop('abstract', ""),
-            # todo: we can make a bounding box with eastBoundCoord, northBoundCoord,
-            # westBoundCoord and southBoundCoord in this data source
-            # But there is also a named place available, which is what is being used here
+            # But there is a named place available, in addition to the bounding box, which is what is being used here
             spatial_coverage=result.pop('placeKey', None),
-            author = result.pop('author',None),
+            author=result.pop('author', None),
             doi=doi,
             keywords=result.pop('keywords', []),
             origin=result.pop('origin', []),

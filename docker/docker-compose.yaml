@@ -19,36 +19,40 @@ services:
     volumes:
       - ./:/config
     working_dir: /config
+
   triplestore-setup:
-    image: curlimages/curl:7.82.0
+    image: curlimages/curl:7.84.0
     depends_on:
     - triplestore
+    volumes:
+      - ./:/config
+    working_dir: /config
     command:
     - curl
+    - -vs
     - -X
     - POST
     - -H
-    - 'Content-type: application/xml'
-    - --data
-    - >
-      <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-        <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
-        <properties>
-          <entry key="com.bigdata.rdf.store.AbstractTripleStore.textIndex">true</entry>
-          <entry key="com.bigdata.rdf.store.AbstractTripleStore.axiomsClass">com.bigdata.rdf.axioms.NoAxioms</entry>
-          <entry key="com.bigdata.rdf.sail.isolatableIndices">false</entry>
-          <entry key="com.bigdata.rdf.sail.truthMaintenance">false</entry>
-          <entry key="com.bigdata.rdf.store.AbstractTripleStore.justify">false</entry>
-          <entry key="com.bigdata.rdf.sail.namespace">polder</entry>
-          <entry key="com.bigdata.rdf.store.AbstractTripleStore.quads">true</entry>
-          <entry key="com.bigdata.namespace.polder.spo.com.bigdata.btree.BTree.branchingFactor">1024</entry>
-          <entry key="com.bigdata.journal.Journal.groupCommit">false</entry>
-          <entry key="com.bigdata.namespace.polder.lex.com.bigdata.btree.BTree.branchingFactor">400</entry>
-          <entry key="com.bigdata.rdf.store.AbstractTripleStore.geoSpatial">true</entry>
-          <entry key="com.bigdata.rdf.store.AbstractTripleStore.statementIdentifiers">false</entry>
-        </properties>
-    - 'http://triplestore:8080/bigdata/namespace'
-
+    - 'Content-Type:multipart/form-data'
+    - -F
+    - "config=@./polder.ttl"
+    - "http://triplestore:7200/rest/repositories"
+    - --next
+    - -X
+    - POST
+    - --header
+    - 'Accept: application/json'
+    - --data-urlencode
+    - update@./lucene-connector.sparql
+    - "http://triplestore:7200/repositories/polder/statements"
+    - --next
+    - -X
+    - POST
+    - --header
+    - 'Accept: application/json'
+    - --data-urlencode
+    - update@./geosparql.sparql
+    - "http://triplestore:7200/repositories/polder/statements"
   gleaner:
     image: nsfearthcube/gleaner:dev-v3.0.4-development
     command: -cfg gleaner
@@ -66,11 +70,22 @@ services:
     working_dir: /config
 
   triplestore:
-    image: islandora/blazegraph:1.0.0-alpha-15
-    ports:
-      - 9999:8080
+    image: nein09/graphdb:10.0.0-free
     volumes:
-      - triplestore:/var/lib/blazegraph
+      - triplestore:/data/graphdb
+    environment:
+      GDB_JAVA_OPTS: >-
+        -Xmx2g -Xms2g
+        -Dgraphdb.home=/opt/graphdb/home
+        -Dgraphdb.workbench.importDirectory=/opt/graphdb/home/graphdb-import
+        -Dgraphdb.workbench.cors.enable=true
+        -Denable-context-index=true
+        -Dentity-pool-implementation=transactional
+        -Dhealth.max.query.time.seconds=60
+        -Dgraphdb.append.request.id.headers=true
+        -Dreuse.vars.in.subselects=true
+    ports:
+      - 9999:7200
 
   s3system:
     image: minio/minio
@@ -94,7 +109,7 @@ services:
      - SERVICE_PORTS=9222
 
   webapp:
-    image: nein09/polder-federated-search:1.41.0
+    image: nein09/polder-federated-search:1.41.0-graphdb
     depends_on:
       - triplestore
       - s3system
@@ -105,7 +120,7 @@ services:
       - 8096:8000
     environment:
       # Overrides the environment variable so that we get the service endpoint IP from Docker.
-      - GLEANER_ENDPOINT_URL=http://triplestore:8080/bigdata/namespace/polder/sparql
+      - GLEANER_ENDPOINT_URL=http://triplestore:7200/repositories/polder
       - FLASK_APP
       - FLASK_RUN_HOST
       - SECRET_KEY
