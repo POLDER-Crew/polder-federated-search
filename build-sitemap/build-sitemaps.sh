@@ -44,6 +44,6 @@ mc cp bas-sitemap.xml minio/sitemaps/bas-sitemap.xml
 
 # Build the GCMD sitemap next
 
-python index-gcmd.py
+python3 /usr/local/bin/index-gcmd.py
 
 mc cp gcmd-sitemap.xml minio/sitemaps/gcmd-sitemap.xml

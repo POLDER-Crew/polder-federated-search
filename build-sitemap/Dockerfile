@@ -25,7 +25,9 @@ RUN  \
      rm -rf /var/cache/apk/*
 
 COPY build-sitemaps.sh /usr/local/bin/build-sitemaps.sh
+COPY index-gcmd.py /usr/local/bin/index-gcmd.py
 
 RUN chmod +x /usr/local/bin/build-sitemaps.sh
+RUN chmod +x /usr/local/bin/index-gcmd.py
 
 ENTRYPOINT ["build-sitemaps.sh"]
