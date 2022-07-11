@@ -81,11 +81,11 @@ class GleanerSearch(SearcherBase):
                 UNION
                 {{
                     {base_query}
+                    OFFSET {page_start}
+                    LIMIT {GleanerSearch.PAGE_SIZE}
                 }}
             }}
             ORDER BY DESC(?total_results) DESC(?score)
-            OFFSET {page_start}
-            LIMIT {GleanerSearch.PAGE_SIZE}
         """
 
     @staticmethod
