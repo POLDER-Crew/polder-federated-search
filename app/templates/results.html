@@ -83,6 +83,17 @@
 
               </div>
         {% endif %}
+        {% if result.original_dict %}
+              <div class="data_source">
+                <h4>Original Source:</h4>
+                  {{ result.original_dict['name'] }}
+                  <a  href={{ result.original_dict['url'] }} rel="noopener" target="_blank">
+                    {% if result.original_dict['logo'] %}
+                        <img class={{ result.original_dict['key'] }} src='{{ result.original_dict['logo'] }}' alt= {{ result.original_dict['name'] }}>
+                     {% endif %}
+                  </a>
+              </div>
+        {% endif %}
         
       </div>
       <button class="show_more_button" >Show more</button>

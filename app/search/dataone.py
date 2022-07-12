@@ -6,6 +6,8 @@ import math
 from pygeojson import Point, Polygon
 import requests
 from .search import SearcherBase, SearchResultSet, SearchResult
+from app import app
+
 
 logger = logging.getLogger('app')
 
@@ -147,11 +149,19 @@ class SolrDirectSearch(SearcherBase):
                             (boundingbox['east'], boundingbox['south']), ]
                     ]
                 )
+        # passing the dictionary with the original data sources
+        self.data_source_key =  result.pop('datasource', '').lstrip("urn:node:")
+        if self.data_source_key in app.datasources:
+            original_dict = app.datasources[self.data_source_key]
+            
+
+
 
         return SearchResult(
             score=result.pop('score'),
             title=result.pop('title', None),
             id=identifier,
+            original_dict = original_dict,
             abstract=result.pop('abstract', ""),
             # But there is a named place available, in addition to the bounding box, which is what is being used here
             spatial_coverage=result.pop('placeKey', None),

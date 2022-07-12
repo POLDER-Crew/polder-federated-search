@@ -4,6 +4,15 @@ import sentry_sdk
 from flask import Flask
 from flask_cachebuster import CacheBuster
 from sentry_sdk.integrations.flask import FlaskIntegration
+from flask_caching import Cache
+from urllib.request import urlopen
+from xml.dom import minidom
+import xml.etree.ElementTree as ET
+
+cache = Cache()
+
+
+
 
 sentry_sdk.init(
     # Set traces_sample_rate to 1.0 to capture 100%
@@ -16,6 +25,8 @@ sentry_sdk.init(
 app = Flask(__name__)
 
 app.config.from_pyfile('app_config.cfg')
+app.config['CACHE_TYPE'] = 'simple'
+cache.init_app(app)
 
 # Set up cache busting
 cache_buster = CacheBuster(config=app.config['CACHE_BUSTER_CONFIG'])
@@ -28,8 +39,44 @@ except OSError:
     pass
 
 from app import routes, template_helpers
+#caching all the dataone original sources in memory (only update the datasources after 120 secs)
+@cache.cached(timeout=120, key_prefix='cache_original sources for dataone')
+def get_original_dataone_sources():
+    datasources = dict()
+    # XML SCRAPING
+    mydoc = minidom.parse(urlopen("https://cn.dataone.org/cn/v2/node/"))
+    tree = ET.parse(urlopen("https://cn.dataone.org/cn/v2/node/"))
+
+
+    #node = mydoc.getElementsByTagName('node')
+    root = tree.getroot()
+    print(len(root))
+    for node in root:
+        y = {'key': None, 'name': None, 'url': None, 'logo': None}
+        for child in node:
+            if child.tag == 'name':
+                y['name'] = child.text
+            if child.tag =='identifier':
+                nodekey = child.text.lstrip("urn:node:")
+                y['key'] = nodekey
+
+        for x in node.iter('property'):
+            if x.attrib['key'] == 'CN_info_url':
+                y['url'] = x.text
+            if x.attrib['key'] == 'CN_logo_url':
+                y['logo'] = x.text
+
+
+        datasources[nodekey] = y
+
+
+    return datasources
+app.datasources = get_original_dataone_sources()
 
 if __name__ == "__main__":
     # Only for debugging while developing
     app.logger.setLevel(logging.DEBUG)
     app.run(host='0.0.0.0', debug=True, port=5000)
+
+    
+
