@@ -1,8 +1,5 @@
 import logging
-from flask import redirect, render_template, request, url_for, Flask
-from flask_caching import Cache
-from urllib.request import urlopen
-from xml.dom import minidom
+from flask import redirect, render_template, request, url_for
 from datetime import date
 from sentry_sdk import capture_exception
 from werkzeug.exceptions import HTTPException, NotFound
@@ -16,9 +13,6 @@ BAD_REQUEST_STATUS = 400
 
 logger = logging.getLogger('app')
 
-cache = Cache()
-app.config['CACHE_TYPE'] = 'simple'
-cache.init_app(app)
 
 @app.route('/')
 def home():
@@ -105,30 +99,6 @@ def handle_exception(e):
     # now you're handling non-HTTP exceptions only
     return render_template("500_generic.html", e=e), 500
 
-#caching all the dataone original sources in memory (only update the datasources after 120 secs)
-@cache.cached(timeout=120, key_prefix='cache_original sources for dataone')
-def get_original_dataone_sources():
-    datasources = dict()
-    # XML SCRAPING
-    mydoc = minidom.parse(urlopen("https://cn.dataone.org/cn/v2/node/"))
 
-    key = mydoc.getElementsByTagName('identifier')
-    name = mydoc.getElementsByTagName('name')
-    url = mydoc.getElementsByTagName('property')
-
-
-    for i in range(0, len(key)):
-        x = {'key': None, 'name': None, 'url': None, 'logo': None}
-        key_code = key[i].firstChild.data.lstrip("urn:node:")
-        x['key'] = key_code
-        x['name'] = name[i].firstChild.data
-
-        if url[i].getAttribute('key') == "CN_info_url":
-            x['url'] = url[i].firstChild.data
-        if url[i].getAttribute('key') == 'CN_logo_url':
-            x['logo'] = url[i].firstChild.data
-
-        datasources[key_code] = x
-    return datasources
 
     

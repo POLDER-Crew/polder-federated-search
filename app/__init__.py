@@ -39,6 +39,7 @@ except OSError:
     pass
 
 from app import routes, template_helpers
+
 #caching all the dataone original sources in memory (only update the datasources after 120 secs)
 @cache.cached(timeout=120, key_prefix='cache_original sources for dataone')
 def get_original_dataone_sources():
@@ -71,6 +72,19 @@ def get_original_dataone_sources():
 
 
     return datasources
+
+#caching all the gleaner original sources in memory (only update the datasources after 120 secs)
+@cache.cached(timeout=120, key_prefix='cache_original sources for gleaner')
+def get_original_gleaner_sources():
+    gleaner_datasources = {
+        'GEM' : {'key':'GEM','name': 'Greenland Ecosystem Monitoring', 'url':'https://g-e-m.dk/','logo':'img/gem.jpg'},
+        'BAS' : {'key':'BAS','name': 'British Antarctic Survey', 'url':'https://www.bas.ac.uk/','logo':'img/bas.png'},
+        'CCHDO': {'key':'CCHDO','name': 'CLIVAR and Carbon Hydrographic Data Office', 'url':'https://cchdo.ucsd.edu/','logo':'img/logo_cchdo.svg'}
+    }
+    return gleaner_datasources
+
+
+app.gleaner_datasources = get_original_gleaner_sources()
 app.datasources = get_original_dataone_sources()
 
 if __name__ == "__main__":
