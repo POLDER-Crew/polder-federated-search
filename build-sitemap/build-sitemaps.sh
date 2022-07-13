@@ -8,6 +8,7 @@ mc config host add minio "http://${MINIO_SERVER_HOST}:${MINIO_SERVER_PORT_NUMBER
 mc stat minio/sitemaps || mc mb minio/sitemaps
 mc policy set public minio/sitemaps
 
+# Build the BAS sitemap first
 next="true"
 cursor="null"
 
@@ -40,3 +41,9 @@ done
 printf "</urlset>" >> bas-sitemap.xml
 
 mc cp bas-sitemap.xml minio/sitemaps/bas-sitemap.xml
+
+# Build the GCMD sitemap next
+
+python3 /usr/local/bin/index-gcmd.py
+
+mc cp gcmd-sitemap.xml minio/sitemaps/gcmd-sitemap.xml

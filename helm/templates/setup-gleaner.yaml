@@ -114,10 +114,10 @@ spec:
         - name: gleaner-context
           mountPath: /context
         workingDir: /context
-      # Dynamically create the sitemap for BAS and put it somewhere
-      # that Gleaner can use to crawl
-      - name: build-bas-sitemap
-        image: nein09/build-bas-sitemap:1.2
+      # Dynamically create the sitemaps for BAS and GCMD, and put
+      # them somewherethat Gleaner can use to crawl
+      - name: build-sitemap
+        image: nein09/build-sitemap:1.3
         env:
         - name: MINIO_CLIENT_ACCESS_KEY
           valueFrom:
