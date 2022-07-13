@@ -84,15 +84,19 @@
         {% endif %}
         
       </div>
-      <button class="show_more_button" >Show more</button>
-      <button class="show_less_button" >Show less</button>
+      <!-- only show the buttons if javascript is enabled (nojs not defined) -->
+      {% if nojs is not defined %}
+        <button class="show_more_button" >Show more</button>
+        <button class="show_less_button" >Show less</button>
+      {% endif %}
+      
 
-      //if javascript is not enabled, remove the buttons and default in showing the result in full
+
+      <!--if javascript is not enabled,default in showing the result in full-->
        <noscript>
         <style type="text/css">
         .result--full { display:inline-block; }
-        .show_more_button { display:none; }
-        .show_less_button { display:none; }
+        
         </style>
       </noscript>
      
