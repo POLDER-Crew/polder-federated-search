@@ -2,3 +2,4 @@
 
 import './search.js';
 import './date-picker.js';
+import './map.js';
