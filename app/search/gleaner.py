@@ -24,8 +24,8 @@ class GleanerSearch(SearcherBase):
             ?id
             ?url
             ?title
-            ?author
             ?license
+            (GROUP_CONCAT(DISTINCT ?author ; separator=", ") as ?author)
             (GROUP_CONCAT(DISTINCT ?abstract ; separator=", ") as ?abstract)
             (GROUP_CONCAT(DISTINCT ?sameAs ; separator=", ") as ?sameAs)
             (GROUP_CONCAT(DISTINCT ?keywords ; separator=", ") as ?keywords)
@@ -57,12 +57,16 @@ class GleanerSearch(SearcherBase):
                     FILTER(ISLITERAL(?identifier)) .
                 }}
                 OPTIONAL {{
-                    ?s schema:creator/schema:name ?author .
+                    
+                    {{ ?s schema:creator/schema:name ?author . }} UNION {{
+                    ?catalog ?relationship ?s .
+                    ?catalog schema:creator/schema:name ?author .
+                }}
                 }}
                 {filter_query}
                 BIND(COALESCE(?identifier, ?s) AS ?id)
             }}
-            GROUP BY ?s ?id ?url ?title ?license ?author
+            GROUP BY ?s ?id ?url ?title ?license 
         """
 
         return f"""
@@ -233,5 +237,7 @@ class GleanerSearch(SearcherBase):
 
         keywords = result.pop('keywords', '')
         result['keywords'] = keywords.split(',')
+        authors = result.pop('author', '')
+        result['author'] = authors.split(',')
         result['source'] = "Gleaner"
         return SearchResult(**result)
