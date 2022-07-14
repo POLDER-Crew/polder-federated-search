@@ -212,6 +212,7 @@ class TestGleanerSearch(unittest.TestCase):
             'title': {'type': 'literal', 'value': 'Iceflux trawl (SUIT & RMT) and ice stations'},
             'url': {'type': 'literal', 'value': 'url1'},
             'sameAs': {'type': 'literal', 'value': 'url2'},
+            'author': {'type':'literal', 'value': 'author1,author2,author3' },
             'spatial_coverage': {'type': 'literal', 'value': '-70.5397 -10.4515 -57.4443 0.018'},
             'temporal_coverage': {'type': 'literal', 'value': '2015-05-27/2015-06-20'},
             'id': {'type': 'literal', 'value': 'urn:uuid:696f9141-4e1a-5270-8c94-b0aabe0bbee7'},
@@ -221,6 +222,7 @@ class TestGleanerSearch(unittest.TestCase):
         result.urls.sort()
         self.assertIsInstance(result, search.SearchResult)
         self.assertEqual(result.urls, ['url1', 'url2'])
+        self.assertEqual(result.author, ['author1','author2','author3'])
         self.assertEqual(result.keywords, ['keyword1', 'keyword2', 'keyword3'])
         self.assertEqual(result.source, "Gleaner")
 
