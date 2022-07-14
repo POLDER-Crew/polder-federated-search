@@ -237,7 +237,7 @@ class GleanerSearch(SearcherBase):
 
         keywords = result.pop('keywords', '')
         result['keywords'] = keywords.split(',')
-        authors = result.pop('author', '')
-        result['author'] = authors.split(',')
+        author = result.pop('author', '')
+        result['author'] = author.split(',')
         result['source'] = "Gleaner"
         return SearchResult(**result)
