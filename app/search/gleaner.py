@@ -24,6 +24,7 @@ class GleanerSearch(SearcherBase):
             ?id
             ?url
             ?title
+            ?g
             ?license
             (GROUP_CONCAT(DISTINCT ?author ; separator=", ") as ?author)
             (GROUP_CONCAT(DISTINCT ?abstract ; separator=", ") as ?abstract)
@@ -57,6 +58,9 @@ class GleanerSearch(SearcherBase):
                     FILTER(ISLITERAL(?identifier)) .
                 }}
                 OPTIONAL {{
+                    ?sp prov:generated ?g  .
+                }}
+                OPTIONAL {{
                     
                     {{ ?s schema:creator/schema:name ?author . }} UNION {{
                     ?catalog ?relationship ?s .
@@ -66,7 +70,7 @@ class GleanerSearch(SearcherBase):
                 {filter_query}
                 BIND(COALESCE(?identifier, ?s) AS ?id)
             }}
-            GROUP BY ?s ?id ?url ?title ?license 
+            GROUP BY ?s ?id ?url ?title ?license ?g
         """
 
         return f"""
@@ -74,6 +78,7 @@ class GleanerSearch(SearcherBase):
             PREFIX luc-index: <http://www.ontotext.com/connectors/lucene/instance#>
             PREFIX onto: <http://www.ontotext.com/>
             PREFIX schema: <https://schema.org/>
+            prefix prov: <http://www.w3.org/ns/prov#>
             PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
             SELECT ?total_results ?score ?id ?abstract ?url ?title ?sameAs ?keywords ?license ?temporal_coverage ?spatial_coverage ?author
             {{

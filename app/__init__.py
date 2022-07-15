@@ -49,9 +49,8 @@ def get_original_dataone_sources():
     tree = ET.parse(urlopen("https://cn.dataone.org/cn/v2/node/"))
 
 
-    #node = mydoc.getElementsByTagName('node')
+    
     root = tree.getroot()
-    print(len(root))
     for node in root:
         y = {'key': None, 'name': None, 'url': None, 'logo': None}
         for child in node:

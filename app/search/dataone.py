@@ -105,7 +105,7 @@ class SolrDirectSearch(SearcherBase):
         return self.execute_query(query, page_number)
 
     def convert_result(self, result):
-        global original_dict 
+        datasource = dict() 
         urls = []
         identifier = result.pop('id', None)
         # The landing page for DataONE datasets is always here
@@ -153,9 +153,8 @@ class SolrDirectSearch(SearcherBase):
         # passing the dictionary with the original data sources
         self.data_source_key =  result.pop('datasource', '').lstrip("urn:node:")
         if self.data_source_key in app.datasources:
-            original_dict = app.datasources[self.data_source_key]
-        else:
-            original_dict = None
+            datasource = app.datasources[self.data_source_key]
+        
             
 
 
@@ -164,7 +163,7 @@ class SolrDirectSearch(SearcherBase):
             score=result.pop('score'),
             title=result.pop('title', None),
             id=identifier,
-            original_dict = original_dict,
+            datasource = datasource,
             abstract=result.pop('abstract', ""),
             # But there is a named place available, in addition to the bounding box, which is what is being used here
             spatial_coverage=result.pop('placeKey', None),

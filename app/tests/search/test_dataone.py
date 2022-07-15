@@ -314,7 +314,7 @@ class TestSolrDirectSearch(unittest.TestCase):
 
     def test_original_datasource(self):
 
-        self.search.max_score = 10
+        
         # Testing a dataset with an original source
         test_result = {
             'id': 'test1',
@@ -325,10 +325,10 @@ class TestSolrDirectSearch(unittest.TestCase):
 
         }
         test_obj = self.search.convert_result(test_result)
-        self.assertEqual(test_obj.original_dict['key'], 'ARCTIC')
-        self.assertEqual(test_obj.original_dict['name'],'Arctic Data Center')
-        self.assertEqual(test_obj.original_dict['url'],'https://arcticdata.io/')
-        self.assertEqual(test_obj.original_dict['logo'],'https://raw.githubusercontent.com/DataONEorg/member-node-info/master/production/graphics/web/ARCTIC.png')
+        self.assertEqual(test_obj.datasource['key'], 'ARCTIC')
+        self.assertEqual(test_obj.datasource['name'],'Arctic Data Center')
+        self.assertEqual(test_obj.datasource['url'],'https://arcticdata.io/')
+        self.assertEqual(test_obj.datasource['logo'],'https://raw.githubusercontent.com/DataONEorg/member-node-info/master/production/graphics/web/ARCTIC.png')
         
 
         #Testing a dataset with no original source
@@ -339,5 +339,5 @@ class TestSolrDirectSearch(unittest.TestCase):
         
         }
         test_obj1 = self.search.convert_result(test_result1)
-        self.assertEqual(test_obj1.original_dict, None)
+        self.assertEqual(test_obj1.datasource, {})
         
