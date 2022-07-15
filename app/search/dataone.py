@@ -105,6 +105,7 @@ class SolrDirectSearch(SearcherBase):
         return self.execute_query(query, page_number)
 
     def convert_result(self, result):
+        global original_dict 
         urls = []
         identifier = result.pop('id', None)
         # The landing page for DataONE datasets is always here
@@ -153,6 +154,8 @@ class SolrDirectSearch(SearcherBase):
         self.data_source_key =  result.pop('datasource', '').lstrip("urn:node:")
         if self.data_source_key in app.datasources:
             original_dict = app.datasources[self.data_source_key]
+        else:
+            original_dict = None
             
 
 

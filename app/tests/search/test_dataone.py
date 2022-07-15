@@ -305,8 +305,39 @@ class TestSolrDirectSearch(unittest.TestCase):
             'westBoundCoord': -105.5341,
             'eastBoundCoord': -105.5341
         }
+
         # Testing for a point
         test_obj_2 = self.search.convert_result(test_result2)
         self.assertEqual(test_obj_2.geometry.type, 'Point')
         self.assertEqual(test_obj_2.geometry.coordinates, (76.7067, -105.5341))
 
+
+    def test_original_datasource(self):
+
+        self.search.max_score = 10
+        # Testing a dataset with an original source
+        test_result = {
+            'id': 'test1',
+            'score': 4,
+            'seriesId': 'doi:test',
+            'datasource': 'urn:node:ARCTIC',
+          
+
+        }
+        test_obj = self.search.convert_result(test_result)
+        self.assertEqual(test_obj.original_dict['key'], 'ARCTIC')
+        self.assertEqual(test_obj.original_dict['name'],'Arctic Data Center')
+        self.assertEqual(test_obj.original_dict['url'],'https://arcticdata.io/')
+        self.assertEqual(test_obj.original_dict['logo'],'https://raw.githubusercontent.com/DataONEorg/member-node-info/master/production/graphics/web/ARCTIC.png')
+        
+
+        #Testing a dataset with no original source
+        test_result1 = {
+            'id': 'test1',
+            'score': 4,
+            'seriesId': 'doi:test',
+        
+        }
+        test_obj1 = self.search.convert_result(test_result1)
+        self.assertEqual(test_obj1.original_dict, None)
+        

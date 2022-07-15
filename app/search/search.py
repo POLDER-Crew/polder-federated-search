@@ -50,8 +50,7 @@ class SearchResult:
                     self.doi = 'doi:' + match.lstrip(x)
                     break
 
-        if self.original_dict:
-            print(self.original_dict)
+        
                 
 
     """ Methods to make these sortable """

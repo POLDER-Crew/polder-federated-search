@@ -49,7 +49,9 @@
          {% if result.author %}
             <div class="author">
                 <h4>Author:</h4>
-                  {{ result.author }}
+                  {% for author in result.author %}
+                    {{ author }}
+                  {% endfor %}
             </div>
         {% endif %}
 
