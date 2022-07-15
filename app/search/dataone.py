@@ -165,7 +165,7 @@ class SolrDirectSearch(SearcherBase):
             abstract=result.pop('abstract', ""),
             # But there is a named place available, in addition to the bounding box, which is what is being used here
             spatial_coverage=result.pop('placeKey', None),
-            author=result.pop('author', None),
+            author=result.pop('author', []),
             doi=doi,
             keywords=result.pop('keywords', []),
             origin=result.pop('origin', []),

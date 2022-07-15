@@ -34,18 +34,17 @@
         </p>
       {% endif %}
 
-        
-        
+
      
+       
       {% if nojs is not defined %}
         <div class="result_field result--truncated" role="region" aria-expanded="false">
           <h4>Abstract:</h4>
           {{ result.abstract|safe|truncate(500) }}
            
         </div>
-
-
       {% endif %}
+
       <div class="result_field result--full" role="region" {% if nojs is not defined %}aria-hidden="true"{% endif %}>
          {% if result.author %}
             <div class="author">
@@ -96,8 +95,15 @@
         {% endif %}
         
       </div>
-      <button class="show_more_button" >Show more</button>
-      <button class="show_less_button" >Show less</button>
+      <!-- only show the buttons if javascript is enabled (nojs not defined) -->
+      {% if nojs is not defined %}
+        <button class="show_more_button" >Show more</button>
+        <button class="show_less_button" >Show less</button>
+      {% endif %}
+      
+
+
+     
      
       {% for url in result.urls[1:] %}
         {% if loop.first %}Alternate sources for this data:{% endif %}

@@ -22,7 +22,7 @@ class SearchResult:
         self.id = kwargs.pop('id')
         self.original_dict = kwargs.pop('original_dict', None)
         self.geometry = kwargs.pop('geometry', '')
-        self.author = kwargs.pop('author',None)
+        self.author = kwargs.pop('author',[])
         self.license = kwargs.pop('license', None)
         # May or may not be the same as the ID
         self.doi = kwargs.pop('doi', None)
@@ -35,6 +35,7 @@ class SearchResult:
         # Format and remove blank terms and duplicates
         self.temporal_coverage = [t.replace('/', ' to ') for t in self.temporal_coverage if t]
         self.keywords = [k for k in self.keywords if k]
+        self.author = [a for a in self.author if a]
         self.urls = list(set(x for x in self.urls if x))
         # If we have a DOI somewhere, use it as much as possible
         prefixes = ['doi:','http://dx.doi.org/',"http://data.g-e-m.dk/datasets?doi=" ]
