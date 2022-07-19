@@ -60,7 +60,7 @@ data:
     - name: gcmd
       type: sitemap
       headless: false
-      url: http://s3system:9000/sitemaps/gcmd-sitemap.xml
+      url: http://s3system-svc:{{ .Values.s3system_service.api_port }}/sitemaps/gcmd-sitemap.xml
       properName: Global Change Master Directory
       active: true
       domain: http://localhost
