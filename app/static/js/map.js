@@ -29,21 +29,15 @@ $(document).ready(function () {
                 "EPSG:3573",
                 "+proj=laea +lat_0=90 +lon_0=-100 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs",
                 {
-                    minZoom: 0,
-                    maxZoom: 18,
-                    tms: false,
                     origin: [-extent, extent],
                     resolutions: resolutions,
                     bounds: L.bounds(
                         L.point(-extent, extent),
                         L.point(extent, -extent)
                     ),
-                    // default centre when this map is loaded
                     center: [90, 0],
-                    // default zoom level
                     zoom: 4,
-                    continuousWorld: false,
- }
+                }
             ),
         })
     ).setView([90, 0], 4);
@@ -69,6 +63,8 @@ $(document).ready(function () {
     );
 
     L.tileLayer("//{s}.tiles.arcticconnect.ca/osm_3573/{z}/{x}/{y}.png", {
+        minZoom: 0,
+        maxZoom: 18,
         noWrap: true,
         // map attribution text for tiles and/or data
         attribution:
