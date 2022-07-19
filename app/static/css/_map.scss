@@ -1,3 +1,10 @@
+@import 'npm:leaflet/dist/leaflet.css';
+
+.map__container {
+    display: flex;
+    flex-flow: row wrap;
+}
 .map {
-    height: 200px;
+    flex: 1;
+    height: 400px;
 }

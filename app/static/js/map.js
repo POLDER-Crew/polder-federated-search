@@ -17,7 +17,11 @@ proj4.defs([
 const baseOptions = {};
 
 $(document).ready(function () {
-    var extent = L.Projection.Mercator.R_MAJOR * Math.PI;
+    var extent = L.Projection.Mercator.R * Math.PI;
+    var resolutions = [];
+    for (var zoom = 0; zoom <= 18; zoom++) {
+      resolutions.push((extent - -extent) / 256 / Math.pow(2, zoom));
+    }
     var arcticMap = L.map(
         "map--arctic",
         $.extend(baseOptions, {
@@ -27,12 +31,9 @@ $(document).ready(function () {
                 {
                     minZoom: 0,
                     maxZoom: 18,
-                    // use inverse coordinates if the provider is a TMS. Mapnik is not a TMS.
                     tms: false,
-                    // origin of the map in projected coordinates
                     origin: [-extent, extent],
-                    // resolution of smallest zoom level tile. calculation depends on projection
-                    maxResolution: (extent - -extent) / 256,
+                    resolutions: resolutions,
                     bounds: L.bounds(
                         L.point(-extent, extent),
                         L.point(extent, -extent)
@@ -42,14 +43,11 @@ $(document).ready(function () {
                     // default zoom level
                     zoom: 4,
                     continuousWorld: false,
-                    noWrap: true,
-                    // map attribution text for tiles and/or data
-                    attribution:
-                        'Map &copy; <a href="http://arcticconnect.ca">ArcticConnect</a>. Data &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-                }
+ }
             ),
         })
-    );
+    ).setView([90, 0], 4);
+
     var antarcticMap = L.map(
         "map--antarctic",
         $.extend(baseOptions, {
@@ -70,7 +68,13 @@ $(document).ready(function () {
         })
     );
 
-    L.tileLayer("//{s}.tiles.arcticconnect.ca/osm_3573/{z}/{x}/{y}.png").addTo(
+    L.tileLayer("//{s}.tiles.arcticconnect.ca/osm_3573/{z}/{x}/{y}.png", {
+        noWrap: true,
+        // map attribution text for tiles and/or data
+        attribution:
+                        'Map &copy; <a href="http://arcticconnect.ca">ArcticConnect</a>. Data &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+
+    }).addTo(
         arcticMap
     );
     L.tileLayer(
