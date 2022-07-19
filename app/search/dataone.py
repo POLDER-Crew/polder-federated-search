@@ -7,6 +7,7 @@ from pygeojson import Point, Polygon
 import requests
 from .search import SearcherBase, SearchResultSet, SearchResult
 from app import app
+from app import helper
 
 
 logger = logging.getLogger('app')
@@ -152,8 +153,8 @@ class SolrDirectSearch(SearcherBase):
                 )
         # passing the dictionary with the original data sources
         self.data_source_key =  result.pop('datasource', '').lstrip("urn:node:")
-        if self.data_source_key in app.datasources:
-            datasource = app.datasources[self.data_source_key]
+        if self.data_source_key in helper.get_original_dataone_sources():
+            datasource = helper.get_original_dataone_sources()[self.data_source_key]
         
             
 
