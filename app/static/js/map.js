@@ -15,13 +15,19 @@ proj4.defs([
 ]);
 
 const baseOptions = {};
+const pixel_ratio = parseInt(window.devicePixelRatio) || 1;
+const arcticExtent = L.Projection.Mercator.R * Math.PI;
+const antarcticExtent = 12367396.2185; // To the Equator
+
+function getResolutions(extent, maxZoom, tileSize) {
+    var resolutions = [];
+    for (var zoom = 0; zoom <= maxZoom; zoom++) {
+        resolutions.push((extent - -extent) / tileSize / Math.pow(2, zoom));
+    }
+    return resolutions;
+}
 
 $(document).ready(function () {
-    var extent = L.Projection.Mercator.R * Math.PI;
-    var resolutions = [];
-    for (var zoom = 0; zoom <= 18; zoom++) {
-      resolutions.push((extent - -extent) / 256 / Math.pow(2, zoom));
-    }
     var arcticMap = L.map(
         "map--arctic",
         $.extend(baseOptions, {
@@ -29,11 +35,11 @@ $(document).ready(function () {
                 "EPSG:3573",
                 "+proj=laea +lat_0=90 +lon_0=-100 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs",
                 {
-                    origin: [-extent, extent],
-                    resolutions: resolutions,
+                    origin: [-arcticExtent, arcticExtent],
+                    resolutions: getResolutions(arcticExtent, 18, 256),
                     bounds: L.bounds(
-                        L.point(-extent, extent),
-                        L.point(extent, -extent)
+                        L.point(-arcticExtent, arcticExtent),
+                        L.point(arcticExtent, -arcticExtent)
                     ),
                     center: [90, 0],
                     zoom: 4,
@@ -49,14 +55,12 @@ $(document).ready(function () {
                 "EPSG:3031",
                 "+proj=stere +lat_0=-90 +lat_ts=-71 +lon_0=0 +k=1 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
                 {
-                    origin: [-4194304, 4194304],
+                    origin: [-antarcticExtent, antarcticExtent],
                     bounds: L.bounds(
-                        L.point([-4194304, -4194304]),
-                        L.point([4194304, 4194304])
+                        L.point([-antarcticExtent, -antarcticExtent]),
+                        L.point([antarcticExtent, antarcticExtent])
                     ),
-                    resolutions: [
-                        16384.0, 8192.0, 4096.0, 2048.0, 1024.0, 512.0, 256.0,
-                    ],
+                    resolutions: getResolutions(antarcticExtent, 16, 512),
                     center: [-90, 0],
                     zoom: 4,
                 }
@@ -70,12 +74,14 @@ $(document).ready(function () {
         noWrap: true,
         // map attribution text for tiles and/or data
         attribution:
-                        'Map &copy; <a href="http://arcticconnect.ca">ArcticConnect</a>. Data &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+            'Map &copy; <a href="http://arcticconnect.ca">ArcticConnect</a>. Data &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(arcticMap);
 
-    }).addTo(
-        arcticMap
-    );
     L.tileLayer(
-        "//gibs-{s}.earthdata.nasa.gov/wmts/epsg3031/best/BlueMarble_ShadedRelief_Bathymetry/default/2020-12-01/EPSG3031_500m/{z}/{y}/{x}.jpg"
+        "https://tile.gbif.org/3031/omt/{z}/{x}/{y}@{r}x.png?style=gbif-classic".replace(
+            "{r}",
+            pixel_ratio
+        ),
+        { tileSize: 512 }
     ).addTo(antarcticMap);
 });
