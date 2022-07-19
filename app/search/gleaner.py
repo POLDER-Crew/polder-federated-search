@@ -25,7 +25,7 @@ class GleanerSearch(SearcherBase):
             ?url
             ?title
             ?g
-            ?license
+            (GROUP_CONCAT(DISTINCT ?license ; separator=", ") as ?license)
             (GROUP_CONCAT(DISTINCT ?author ; separator=", ") as ?author)
             (GROUP_CONCAT(DISTINCT ?abstract ; separator=", ") as ?abstract)
             (GROUP_CONCAT(DISTINCT ?sameAs ; separator=", ") as ?sameAs)
@@ -47,8 +47,12 @@ class GleanerSearch(SearcherBase):
                 OPTIONAL {{
                     ?s schema:sameAs ?sameAs .
                 }}
-                OPTIONAL {{
-                    ?s schema:license ?license .
+               OPTIONAL {{
+
+                    {{ ?s schema:license ?license . }} UNION {{
+                    ?catalog ?relationship ?s .
+                    ?catalog schema:license ?license .
+                }}
                 }}
                 OPTIONAL {{
                     ?s schema:url ?url .
@@ -70,7 +74,7 @@ class GleanerSearch(SearcherBase):
                 {filter_query}
                 BIND(COALESCE(?identifier, ?s) AS ?id)
             }}
-            GROUP BY ?s ?id ?url ?title ?license ?g
+            GROUP BY ?s ?id ?url ?title  ?g
         """
 
         return f"""
