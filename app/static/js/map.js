@@ -27,7 +27,8 @@ function getResolutions(extent, maxZoom, tileSize) {
     return resolutions;
 }
 
-$(document).ready(function () {
+export function initializeMaps() {
+    $(".map__container").removeClass("hidden");
     var arcticMap = L.map(
         "map--arctic",
         $.extend(baseOptions, {
@@ -84,4 +85,4 @@ $(document).ready(function () {
         ),
         { tileSize: 512 }
     ).addTo(antarcticMap);
-});
+}

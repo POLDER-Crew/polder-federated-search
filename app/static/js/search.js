@@ -1,4 +1,5 @@
 import $ from "jquery";
+import { initializeMaps } from "./map.js";
 
 const $resultsContainer = $(".results__container");
 const $searchButton = $(".search__button");
@@ -35,6 +36,7 @@ function handleSearchResults($ajaxPromise) {
       $searchButton.prop("disabled", false);
       $resultsContainer.focus();
       load.style.display = "none";
+      initializeMaps();
     });
 }
 
