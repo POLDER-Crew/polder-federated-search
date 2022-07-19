@@ -57,10 +57,12 @@ $(document).ready(function () {
                     resolutions: [
                         16384.0, 8192.0, 4096.0, 2048.0, 1024.0, 512.0, 256.0,
                     ],
+                    center: [-90, 0],
+                    zoom: 4,
                 }
             ),
         })
-    );
+    ).setView([-90, 0], 4);
 
     L.tileLayer("//{s}.tiles.arcticconnect.ca/osm_3573/{z}/{x}/{y}.png", {
         minZoom: 0,
