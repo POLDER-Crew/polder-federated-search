@@ -42,11 +42,11 @@ $(document).ready(function () {
                         L.point(arcticExtent, -arcticExtent)
                     ),
                     center: [90, 0],
-                    zoom: 4,
+                    zoom: 3,
                 }
             ),
         })
-    ).setView([90, 0], 4);
+    ).setView([90, 0], 3);
 
     var antarcticMap = L.map(
         "map--antarctic",
@@ -62,11 +62,11 @@ $(document).ready(function () {
                     ),
                     resolutions: getResolutions(antarcticExtent, 16, 512),
                     center: [-90, 0],
-                    zoom: 4,
+                    zoom: 2,
                 }
             ),
         })
-    ).setView([-90, 0], 4);
+    ).setView([-90, 0], 2);
 
     L.tileLayer("//{s}.tiles.arcticconnect.ca/osm_3573/{z}/{x}/{y}.png", {
         minZoom: 0,
@@ -78,7 +78,7 @@ $(document).ready(function () {
     }).addTo(arcticMap);
 
     L.tileLayer(
-        "https://tile.gbif.org/3031/omt/{z}/{x}/{y}@{r}x.png?style=gbif-classic".replace(
+        "https://tile.gbif.org/3031/omt/{z}/{x}/{y}@{r}x.png?style=gbif-geyser".replace(
             "{r}",
             pixel_ratio
         ),
