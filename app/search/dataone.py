@@ -6,6 +6,9 @@ import math
 from pygeojson import Point, Polygon
 import requests
 from .search import SearcherBase, SearchResultSet, SearchResult
+from app import app
+from app import helper
+
 
 logger = logging.getLogger('app')
 
@@ -103,6 +106,7 @@ class SolrDirectSearch(SearcherBase):
         return self.execute_query(query, page_number)
 
     def convert_result(self, result):
+        datasource = dict() 
         urls = []
         identifier = result.pop('id', None)
         # The landing page for DataONE datasets is always here
@@ -147,11 +151,20 @@ class SolrDirectSearch(SearcherBase):
                             (boundingbox['east'], boundingbox['south']), ]
                     ]
                 )
+        # passing the dictionary with the original data sources
+        self.data_source_key =  result.pop('datasource', '').lstrip("urn:node:")
+        if self.data_source_key in helper.get_original_dataone_sources():
+            datasource = helper.get_original_dataone_sources()[self.data_source_key]
+        
+            
+
+
 
         return SearchResult(
             score=result.pop('score'),
             title=result.pop('title', None),
             id=identifier,
+            datasource = datasource,
             abstract=result.pop('abstract', ""),
             # But there is a named place available, in addition to the bounding box, which is what is being used here
             spatial_coverage=result.pop('placeKey', None),

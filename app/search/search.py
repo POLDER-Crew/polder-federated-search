@@ -20,6 +20,7 @@ class SearchResult:
         self.keywords = kwargs.pop('keywords', [])
         self.origin = kwargs.pop('origin', [])
         self.id = kwargs.pop('id')
+        self.datasource = kwargs.pop('datasource', None)
         self.geometry = kwargs.pop('geometry', '')
         self.author = kwargs.pop('author',[])
         self.license = kwargs.pop('license', None)
@@ -49,7 +50,7 @@ class SearchResult:
                     self.doi = 'doi:' + match.lstrip(x)
                     break
 
-       
+        
                 
 
     """ Methods to make these sortable """

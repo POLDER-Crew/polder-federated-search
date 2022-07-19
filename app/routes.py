@@ -98,3 +98,7 @@ def handle_exception(e):
 
     # now you're handling non-HTTP exceptions only
     return render_template("500_generic.html", e=e), 500
+
+
+
+    

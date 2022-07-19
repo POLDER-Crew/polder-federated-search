@@ -24,7 +24,8 @@ class GleanerSearch(SearcherBase):
             ?id
             ?url
             ?title
-            ?license
+            ?g
+            (GROUP_CONCAT(DISTINCT ?license ; separator=", ") as ?license)
             (GROUP_CONCAT(DISTINCT ?author ; separator=", ") as ?author)
             (GROUP_CONCAT(DISTINCT ?abstract ; separator=", ") as ?abstract)
             (GROUP_CONCAT(DISTINCT ?sameAs ; separator=", ") as ?sameAs)
@@ -46,8 +47,12 @@ class GleanerSearch(SearcherBase):
                 OPTIONAL {{
                     ?s schema:sameAs ?sameAs .
                 }}
-                OPTIONAL {{
-                    ?s schema:license ?license .
+               OPTIONAL {{
+
+                    {{ ?s schema:license ?license . }} UNION {{
+                    ?catalog ?relationship ?s .
+                    ?catalog schema:license ?license .
+                }}
                 }}
                 OPTIONAL {{
                     ?s schema:url ?url .
@@ -55,6 +60,9 @@ class GleanerSearch(SearcherBase):
                 OPTIONAL {{
                     ?s schema:identifier | schema:identifier/schema:value ?identifier .
                     FILTER(ISLITERAL(?identifier)) .
+                }}
+                OPTIONAL {{
+                    ?sp prov:generated ?g  .
                 }}
                 OPTIONAL {{
                     
@@ -66,7 +74,7 @@ class GleanerSearch(SearcherBase):
                 {filter_query}
                 BIND(COALESCE(?identifier, ?s) AS ?id)
             }}
-            GROUP BY ?s ?id ?url ?title ?license 
+            GROUP BY ?s ?id ?url ?title  ?g
         """
 
         return f"""
@@ -74,6 +82,7 @@ class GleanerSearch(SearcherBase):
             PREFIX luc-index: <http://www.ontotext.com/connectors/lucene/instance#>
             PREFIX onto: <http://www.ontotext.com/>
             PREFIX schema: <https://schema.org/>
+            prefix prov: <http://www.w3.org/ns/prov#>
             PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
             SELECT ?total_results ?score ?id ?abstract ?url ?title ?sameAs ?keywords ?license ?temporal_coverage ?spatial_coverage ?author
             {{

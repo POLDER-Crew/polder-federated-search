@@ -49,7 +49,9 @@
          {% if result.author %}
             <div class="author">
                 <h4>Author:</h4>
-                  {{ result.author }}
+                  {% for author in result.author %}
+                    {{ author }}
+                  {% endfor %}
             </div>
         {% endif %}
 
@@ -80,6 +82,17 @@
                   {{ result.license }}
 
 
+              </div>
+        {% endif %}
+        {% if result.datasource %}
+              <div class="data_source">
+                <h4>Original Source:</h4>
+                  {{ result.datasource['name'] }}
+                  <a  href={{ result.datasource['url'] }} rel="noopener" target="_blank">
+                    {% if result.datasource['logo'] %}
+                        <img class={{ result.datasource['key'] }} src='{{ result.datasource['logo'] }}' alt= {{ result.datasource['name'] }}>
+                     {% endif %}
+                  </a>
               </div>
         {% endif %}
         

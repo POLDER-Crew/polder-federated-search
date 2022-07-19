@@ -4,6 +4,13 @@ import sentry_sdk
 from flask import Flask
 from flask_cachebuster import CacheBuster
 from sentry_sdk.integrations.flask import FlaskIntegration
+from flask_caching import Cache
+
+
+
+
+
+cache = Cache()
 
 sentry_sdk.init(
     # Set traces_sample_rate to 1.0 to capture 100%
@@ -16,6 +23,8 @@ sentry_sdk.init(
 app = Flask(__name__)
 
 app.config.from_pyfile('app_config.cfg')
+app.config['CACHE_TYPE'] = 'simple'
+cache.init_app(app)
 
 # Set up cache busting
 cache_buster = CacheBuster(config=app.config['CACHE_BUSTER_CONFIG'])
@@ -29,7 +38,11 @@ except OSError:
 
 from app import routes, template_helpers
 
+
 if __name__ == "__main__":
     # Only for debugging while developing
     app.logger.setLevel(logging.DEBUG)
     app.run(host='0.0.0.0', debug=True, port=5000)
+
+    
+
