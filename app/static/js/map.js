@@ -5,10 +5,9 @@ import OSM, { ATTRIBUTION } from "ol/source/OSM";
 import TileLayer from "ol/layer/Tile";
 import View from "ol/View";
 import Attribution from "ol/control/Attribution";
-import { Projection, fromLonLat } from "ol/proj";
+import { get as getProjection, Projection, fromLonLat } from "ol/proj";
 import { register } from "ol/proj/proj4";
 
-const arcticExtent = 6378137 * Math.PI;
 const pixel_ratio = parseInt(window.devicePixelRatio) || 1;
 const antarcticExtent = 12367396.2185; // To the Equator
 
@@ -21,14 +20,17 @@ proj4.defs([
     ],
     [
         "EPSG:3031",
-        "+proj=laea +lat_0=-90 +lat_ts=-71 +lon_0=0 +k=1 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+        "+proj=stere +lat_0=-90 +lat_ts=-71 +lon_0=0 +k=1 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
     ],
 ]);
 register(proj4);
 
 const arcticProjection = new Projection({
     code: "EPSG:3573",
-    extent: [-arcticExtent, arcticExtent, arcticExtent, -arcticExtent],
+    extent: [-948.75, -543592.47, 5817.41, -3333128.95],
+    units: "m",
+    minZoom: 0,
+    maxZoom: 18,
 });
 
 const antarcticProjection = new Projection({
@@ -49,33 +51,33 @@ function getResolutions(extent, maxZoom, tileSize) {
     return resolutions;
 }
 
+const arcticView = new View({
+    projection: arcticProjection,
+    center: fromLonLat([0, 90], arcticProjection),
+    zoom: 3,
+    maxResolution: (6378137 * Math.PI) / 512 / Math.pow(2, 18),
+    minResolution: (6378137 * Math.PI) / 512 / 2,
+});
+
+const arcticLayer = new TileLayer({
+    source: new OSM({
+        url: "//tiles.arcticconnect.ca/osm_3573/{z}/{x}/{y}.png",
+        attributions: [
+            'Map &copy; <a href="http://arcticconnect.ca">ArcticConnect</a>. Data &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+            ATTRIBUTION,
+        ],
+    }),
+    // minZoom: 0,
+    // maxZoom: 18,
+});
+
 export function initializeMaps() {
     $(".map__container").removeClass("hidden");
     const arcticMap = new Map(
         $.extend(baseOptions, {
             target: "map--arctic",
-            view: new View({
-                projection: arcticProjection,
-                center: fromLonLat([90, 0], arcticProjection),
-                extent: [
-                    -arcticExtent,
-                    arcticExtent,
-                    arcticExtent,
-                    -arcticExtent,
-                ],
-                zoom: 3,
-            }),
-            layers: [
-                new TileLayer({
-                    source: new OSM({
-                        url: "//{s}.tiles.arcticconnect.ca/osm_3573/{z}/{x}/{y}.png",
-                        attribution:
-                            'Map &copy; <a href="http://arcticconnect.ca">ArcticConnect</a>. Data &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-                    }),
-                    minZoom: 0,
-                    maxZoom: 18,
-                }),
-            ],
+            view: arcticView,
+            layers: [arcticLayer],
         })
     );
 
