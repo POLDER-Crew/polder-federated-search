@@ -28,8 +28,7 @@
   },
   "dependencies": {
     "jquery": "^3.6.0",
-    "leaflet": "~1.8.0",
     "proj4": "^2.0.0",
-    "proj4leaflet": "^1.0.2"
+    "ol": "^6.15.1"
   }
 }
