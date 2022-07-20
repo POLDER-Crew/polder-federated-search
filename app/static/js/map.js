@@ -1,13 +1,19 @@
 import $ from "jquery";
 import proj4 from "proj4";
+import {applyStyle} from 'ol-mapbox-style';
 import Map from "ol/Map";
 import OSM, { ATTRIBUTION } from "ol/source/OSM";
+import TileArcGISRest from "ol/source"
 import TileLayer from "ol/layer/Tile";
+import VectorTileLayer from 'ol/layer/VectorTile';
+import VectorTileSource from 'ol/source/VectorTile';
 import View from "ol/View";
+import MVT from 'ol/format/MVT';
 import Attribution from "ol/control/Attribution";
-import { get as getProjection, Projection, fromLonLat } from "ol/proj";
+import { get as getProjection, fromLonLat } from "ol/proj";
 import { register } from "ol/proj/proj4";
 
+const arcticExtent = 6378137 * Math.PI; // Extent is half of the WGS84 Ellipsoid equatorial circumference.
 const pixel_ratio = parseInt(window.devicePixelRatio) || 1;
 const antarcticExtent = 12367396.2185; // To the Equator
 
@@ -25,51 +31,60 @@ proj4.defs([
 ]);
 register(proj4);
 
-const arcticProjection = new Projection({
-    code: "EPSG:3573",
-    extent: [-948.75, -543592.47, 5817.41, -3333128.95],
-    units: "m",
-    minZoom: 0,
-    maxZoom: 18,
-});
+let arcticProjection = getProjection("EPSG:3573");
+arcticProjection.setExtent([-arcticExtent, -arcticExtent, arcticExtent, arcticExtent])
 
-const antarcticProjection = new Projection({
-    code: "EPSG:3031",
-    extent: [
-        -antarcticExtent,
-        -antarcticExtent,
-        antarcticExtent,
-        antarcticExtent,
-    ],
-});
+let antarcticProjection = getProjection("EPSG:3031");
+antarcticProjection.setExtent([-antarcticExtent, -antarcticExtent, antarcticExtent, antarcticExtent]);
 
-function getResolutions(extent, maxZoom, tileSize) {
-    var resolutions = [];
-    for (var zoom = 0; zoom <= maxZoom; zoom++) {
-        resolutions.push((extent - -extent) / tileSize / Math.pow(2, zoom));
-    }
-    return resolutions;
-}
 
 const arcticView = new View({
-    projection: arcticProjection,
-    center: fromLonLat([0, 90], arcticProjection),
-    zoom: 3,
-    maxResolution: (6378137 * Math.PI) / 512 / Math.pow(2, 18),
-    minResolution: (6378137 * Math.PI) / 512 / 2,
+   // projection: arcticProjection,
+    center: fromLonLat([0, 0]),
+    zoom: 2,
+    minResolution: arcticExtent / 256 / Math.pow(2, 17),
+    maxResolution: arcticExtent / 256,
 });
 
+const antarcticView = new View({
+    projection: antarcticProjection,
+    center: fromLonLat([0, -90], antarcticProjection),
+    zoom: 2,
+    minResolution: antarcticExtent / 128 / Math.pow(2, 15),
+    maxResolution: antarcticExtent / 128
+});
+
+
 const arcticLayer = new TileLayer({
+    extent: [-arcticExtent, -arcticExtent, arcticExtent, arcticExtent],
     source: new OSM({
         url: "//tiles.arcticconnect.ca/osm_3573/{z}/{x}/{y}.png",
         attributions: [
-            'Map &copy; <a href="http://arcticconnect.ca">ArcticConnect</a>. Data &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-            ATTRIBUTION,
+            'Map &copy; <a href="http://arcticconnect.ca">ArcticConnect</a>.',
+            'Data ' + ATTRIBUTION,
         ],
+       // projection: arcticProjection,
+        maxZoom: 18,
+        wrapX: false,
     }),
-    // minZoom: 0,
-    // maxZoom: 18,
 });
+
+
+const antarcticLayer = new VectorTileLayer({
+    extent: [-antarcticExtent, -antarcticExtent, antarcticExtent, antarcticExtent],
+    source: new VectorTileSource({
+        projection: antarcticProjection,
+        format: new MVT(),
+        url: 'https://tile.gbif.org/3031/omt/{z}/{x}/{y}.pbf',
+        tilePixelRatio: 8,
+        attributions: [
+            '© <a href="https://www.openmaptiles.org/copyright">OpenMapTiles</a>.',
+            ATTRIBUTION,
+        ]
+    }),
+});
+
+applyStyle(antarcticLayer, '/maps/style.json');
 
 export function initializeMaps() {
     $(".map__container").removeClass("hidden");
@@ -81,31 +96,11 @@ export function initializeMaps() {
         })
     );
 
-    // var antarcticMap = L.map(
-    //     "map--antarctic",
-    //     $.extend(baseOptions, {
-    //         crs: new L.Proj.CRS(
-    //             "EPSG:3031",
-    //             "+proj=stere +lat_0=-90 +lat_ts=-71 +lon_0=0 +k=1 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
-    //             {
-    //                 origin: [-antarcticExtent, antarcticExtent],
-    //                 bounds: L.bounds(
-    //                     L.point([-antarcticExtent, -antarcticExtent]),
-    //                     L.point([antarcticExtent, antarcticExtent])
-    //                 ),
-    //                 resolutions: getResolutions(antarcticExtent, 16, 512),
-    //                 center: [-90, 0],
-    //                 zoom: 2,
-    //             }
-    //         ),
-    //     })
-    // ).setView([-90, 0], 2);
-
-    // L.tileLayer(
-    //     "https://tile.gbif.org/3031/omt/{z}/{x}/{y}@{r}x.png?style=gbif-geyser".replace(
-    //         "{r}",
-    //         pixel_ratio
-    //     ),
-    //     { tileSize: 512 }
-    // ).addTo(antarcticMap);
+    const antarcticMap = new Map(
+        $.extend(baseOptions, {
+            target: "map--antarctic",
+            view: antarcticView,
+            layers: [antarcticLayer]
+        })
+    )
 }
