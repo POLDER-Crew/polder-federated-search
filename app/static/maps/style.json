@@ -246,7 +246,7 @@
             "type": "vector"
         }
     },
-    "sprite": "mapbox://sprites/ito-webdev1/cl5u5bfdp000516mv00i1hjq5/7a97wd1wok54fnurgfsjdp363",
+    "sprite": "/static/maps/sprite",
     "glyphs": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
     "projection": {"name": "globe"},
     "layers": [
