@@ -19,11 +19,20 @@ There are many DataONE repositories, but of particular interest to the polar res
 - [Greenland Ecosystem Monitoring](https://g-e-m.dk/)
 - [British Antarctic Survey](https://www.bas.ac.uk/), via DataCite's GraphQL API (see `docker/build-bas-sitemap.sh` for how that works)
 - [CLIVAR and Carbon Hydrographic Data Office (CCHDO)](https://cchdo.ucsd.edu/)
+- Selected polar repositories in Nasa's [Global Change Master Directory (GCMD)](https://earthdata.nasa.gov)
+    - [Australian Antarctic Data Centre](https://data.aad.gov.au/))
+    - [World Glacier Monitoring Service (WGMS)](https://wgms.ch/)
+    - [NOAA National Centers for Environmental Information (NCEI)](https://www.ncei.noaa.gov/)
+    - [NASA Distributed Active Archive Center at the National Snow and Ice Data Center (NSIDC DAAC)](https://nsidc.org/daac/)
+    - [Alaska Satellite Facility](https://asf.alaska.edu/)
+    - [Norwegian Marine Data Centre (NMDC)](https://nmdc.no/nmdc)
+    - [Permanent Service for Mean Sea Level (PSMSL)](https://psmsl.org/)
+    - [World Data Centre for Geomagnetism, Edinburgh](http://www.wdc.bgs.ac.uk/)
+    - [World Data Center for Solid Earth Physics](http://www.wdcb.ru/)
+
 
 #### Future work
-- [Australian Antarctic Data Centre](https://data.aad.gov.au/)
 - [National Snow and Ice Data Center](https://nsidc.org])
-- [NASA / GCMD](https://earthdata.nasa.gov/earth-observation-data/find-data/idn/gcmd-keywords)
 - CRITTERBASE
 - Repositories in the [Canadian Consortium for Arctic Data Interoperability (CCADI)](https://ccadi.ca/) network:
   - [Polar Data Catalogue](http://polardata.ca)

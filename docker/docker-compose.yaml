@@ -109,7 +109,7 @@ services:
      - SERVICE_PORTS=9222
 
   webapp:
-    image: nein09/polder-federated-search:1.41.0-graphdb
+    image: nein09/polder-federated-search:1.42.5
     depends_on:
       - triplestore
       - s3system
