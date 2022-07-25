@@ -2,9 +2,11 @@
 
 Since the POLDER Federated Search App is meant to cover all polar research - that is, Arctic and Antarctic data, polar projections of both areas of interest seemed to be the way to go.
 
-For the Arctic map, we wanted to use the [tileset](http://webmap.arcticconnect.ca/tiles.html) from [ArcticConnect](http://arcticconnect.ca), who have been working with us in order to make this app happen. There was no corresponding Antarctic map, so we took the [ArcticConnect styles](https://github.com/GeoSensorWebLab/awm-styles/tree/stable/1.0), applied selected features to a Mapbox-GL style, and exported that to this directory in order to replicate the look and feel of the ArcticConnect map.
+For the Arctic map, we wanted to use the [tileset](http://webmap.arcticconnect.ca/tiles.html) from [ArcticConnect](http://arcticconnect.ca), who have been working with us in order to make this app happen. There was no corresponding Antarctic map, so we took the [ArcticConnect styles](https://github.com/GeoSensorWebLab/awm-styles/tree/stable/1.0), applied selected features to a Mapbox-GL style, and exported that to this directory in order to replicate the look and feel of the ArcticConnect map. That's `style.json`.
 
 If you want to make your own map styles, you can do it in [Mapbox Studio](https://www.mapbox.com/mapbox-studio/), download the ZIP file that Mapbox provides as an export, and put it in this directory.
+
+We also found some places and geographic features in Antarctica to put on the map, since the tileset we're using from GBIF doesn't have them; that's `places.geojson`.
 
 ### Other helpful resources:
 - [MapTiler](https://www.maptiler.com/)
