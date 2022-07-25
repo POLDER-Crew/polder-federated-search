@@ -1,6 +1,6 @@
 import $ from "jquery";
 import proj4 from "proj4";
-import { applyStyle } from "ol-mapbox-style";
+import { applyStyle, stylefunction } from "ol-mapbox-style";
 import Map from "ol/Map";
 import OSM, { ATTRIBUTION } from "ol/source/OSM";
 import TileArcGISRest from "ol/source";
@@ -18,9 +18,6 @@ const pixel_ratio = parseInt(window.devicePixelRatio) || 1;
 const antarcticExtent = 12367396.2185; // To the Equator
 
 const baseOptions = {};
-
-const mapboxToken =
-    "pk.eyJ1IjoiaXRvLXdlYmRldjEiLCJhIjoiY2w1dTUyNWp2MGcwZzNibnV5aHVjNmp5OSJ9.C-BfdSRK_Vo8QRc8v4KMmw";
 
 proj4.defs([
     [
@@ -99,12 +96,11 @@ const antarcticLayer = new VectorTileLayer({
     }),
 });
 
-
-applyStyle(
-    antarcticLayer,
-    "mapbox://styles/ito-webdev1/cl5u5bfdp000516mv00i1hjq5",
-    { accessToken: mapboxToken }
-);
+fetch('/static/maps/style.json').then(function(response) {
+    response.json().then(function(glStyle) {
+        stylefunction(antarcticLayer, glStyle, 'openmaptiles');
+    })
+});
 
 export function initializeMaps() {
     $(".map__container").removeClass("hidden");
