@@ -6,6 +6,12 @@ For the Arctic map, we wanted to use the [tileset](http://webmap.arcticconnect.c
 
 If you want to make your own map styles, you can do it in [Mapbox Studio](https://www.mapbox.com/mapbox-studio/), download the ZIP file that Mapbox provides as an export, and put it in this directory.
 
+### Other helpful resources:
+- [MapTiler](https://www.maptiler.com/)
+- [OpenMapTiles](https://openmaptiles.org/docs/)
+- [GBIF Map Tiles](https://tile.gbif.org/ui/)
+- [OpenLayers](https://openlayers.org/)
+
 ## Original Mapbox license:
 
 This document sets forth the licenses for the items in this archive.
