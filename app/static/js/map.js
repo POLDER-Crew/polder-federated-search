@@ -1,16 +1,19 @@
 import $ from "jquery";
 import proj4 from "proj4";
 import { applyStyle, stylefunction } from "ol-mapbox-style";
+import GeoJSON from "ol/format/GeoJSON";
 import Map from "ol/Map";
 import OSM, { ATTRIBUTION } from "ol/source/OSM";
-import TileArcGISRest from "ol/source";
 import TileLayer from "ol/layer/Tile";
+import VectorLayer from "ol/layer/Vector";
+import VectorSource from "ol/source/Vector";
 import VectorTileLayer from "ol/layer/VectorTile";
 import VectorTileSource from "ol/source/VectorTile";
 import View from "ol/View";
 import MVT from "ol/format/MVT";
 import Attribution from "ol/control/Attribution";
 import { get as getProjection, fromLonLat } from "ol/proj";
+import { Text, Fill, Stroke, Style } from "ol/style";
 import { register } from "ol/proj/proj4";
 
 const arcticExtent = 6378137 * Math.PI; // Extent is half of the WGS84 Ellipsoid equatorial circumference.
@@ -48,7 +51,6 @@ antarcticProjection.setExtent([
 ]);
 
 const arcticView = new View({
-    // projection: arcticProjection,
     center: fromLonLat([0, 0]),
     zoom: 2,
     minResolution: arcticExtent / 256 / Math.pow(2, 17),
@@ -71,7 +73,6 @@ const arcticLayer = new TileLayer({
             'Map &copy; <a href="http://arcticconnect.ca">ArcticConnect</a>.',
             "Data " + ATTRIBUTION,
         ],
-        // projection: arcticProjection,
         maxZoom: 18,
         wrapX: false,
     }),
@@ -96,10 +97,75 @@ const antarcticLayer = new VectorTileLayer({
     }),
 });
 
-fetch('/static/maps/style.json').then(function(response) {
-    response.json().then(function(glStyle) {
-        stylefunction(antarcticLayer, glStyle, 'openmaptiles');
-    })
+fetch("/static/maps/style.json").then(function (response) {
+    response.json().then(function (glStyle) {
+        stylefunction(antarcticLayer, glStyle, "openmaptiles");
+    });
+});
+
+// these two layers are just to put some labels on Antarctica to make
+// the map more usable
+let antarcticPlacesLayer;
+let antarcticCountriesLayer;
+
+fetch("/static/maps/places.geojson").then(function (response) {
+    response.json().then(function (places) {
+        const vectorSource = new VectorSource({
+            features: new GeoJSON().readFeatures(places),
+        });
+        antarcticPlacesLayer = new VectorLayer({
+            declutter: true,
+            source: vectorSource,
+            maxResolution: 20000,
+            style: function (feature) {
+                return new Style({
+                    text: new Text({
+                        text: feature.get("name"),
+                        fill: new Fill({ color: "#222" }),
+                        stroke: new Stroke({
+                            color: "rgba(255,255,255,0.6)",
+                            width: 1,
+                        }),
+                    }),
+                });
+            },
+        });
+    });
+});
+
+fetch("/static/maps/countries.geojson").then(function (response) {
+    response.json().then(function (places) {
+        const vectorSource = new VectorSource({
+            features: new GeoJSON().readFeatures(places, {
+                dataProjection: getProjection("ESPG:4326"),
+                featureProjection: antarcticProjection,
+            }),
+        });
+        antarcticCountriesLayer = new VectorLayer({
+            declutter: true,
+            source: vectorSource,
+            minResolution: 10000,
+            style: function (feature) {
+                return new Style({
+                    text: new Text({
+                        text: feature.get("name"),
+                        fill: new Fill({ color: "#ac46ac" }),
+                        stroke: new Stroke({
+                            color: "rgba(255,255,255,0.6)",
+                            width: 3,
+                        }),
+                    }),
+                });
+            },
+        });
+    });
+});
+
+// A layer for the search results, on each map
+let resultsSource = new VectorSource({});
+let resultsLayer = new VectorLayer({
+    declutter: true,
+    source: resultsSource,
 });
 
 export function initializeMaps() {
@@ -108,7 +174,7 @@ export function initializeMaps() {
         $.extend(baseOptions, {
             target: "map--arctic",
             view: arcticView,
-            layers: [arcticLayer],
+            layers: [arcticLayer, resultsLayer],
         })
     );
 
@@ -116,7 +182,14 @@ export function initializeMaps() {
         $.extend(baseOptions, {
             target: "map--antarctic",
             view: antarcticView,
-            layers: [antarcticLayer],
+            layers: [
+                antarcticLayer,
+                antarcticCountriesLayer,
+                antarcticPlacesLayer,
+                resultsLayer,
+            ],
         })
     );
 }
+
+export function addSearchResults(results) {}
