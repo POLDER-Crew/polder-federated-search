@@ -192,4 +192,8 @@ export function initializeMaps() {
     );
 }
 
-export function addSearchResults(results) {}
+export function addSearchResults(results) {
+    results.forEach(function(result) {
+        resultsSource.addFeature(new GeoJSON().readFeatures(result.geometry.coordinates))
+    })
+}

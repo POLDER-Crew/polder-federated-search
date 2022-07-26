@@ -10,7 +10,7 @@
 
    <ul id='main-content' class="results">
    {% for result in result_set.results %}
-    <li class="result" data-score={{ result.score }} data-source="{{ result.source }} data-id= {{ result.id }}">
+    <li class="result" data-score={{ result.score }} data-source="{{ result.source }}" data-id="{{ result.id }}" data-location="{{ result.geometry.coordinates }}">
       {% if result.doi %}
         <div class="result__doi">
           <a href="http://doi.org/{{ result.doi }}" class="doi__link" target="_blank" rel="noopener">
@@ -70,7 +70,7 @@
         {% if result.geometry %}
               <div class="location">
                 <h4>Location:</h4>
-                  {{ result.geometry.coordinates }}
+                  <span class="result__location">{{ result.geometry.coordinates }}</span>
               </div>
         {% endif %}
 
