@@ -1,5 +1,5 @@
 import $ from "jquery";
-import { initializeMaps } from "./map.js";
+import { initializeMaps, addSearchResult } from "./map.js";
 
 const $resultsContainer = $(".results__container");
 const $searchButton = $(".search__button");
@@ -37,6 +37,9 @@ function handleSearchResults($ajaxPromise) {
       $resultsContainer.focus();
       load.style.display = "none";
       initializeMaps();
+      for (const [id, geometry] of Object.entries(resultGeometries)) {
+        addSearchResult(geometry, id);
+      }
     });
 }
 

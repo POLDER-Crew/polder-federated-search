@@ -13,7 +13,7 @@ import View from "ol/View";
 import MVT from "ol/format/MVT";
 import Attribution from "ol/control/Attribution";
 import { get as getProjection, fromLonLat } from "ol/proj";
-import { Text, Fill, Stroke, Style } from "ol/style";
+import { Circle, Text, Fill, Stroke, Style } from "ol/style";
 import { register } from "ol/proj/proj4";
 
 const arcticExtent = 6378137 * Math.PI; // Extent is half of the WGS84 Ellipsoid equatorial circumference.
@@ -161,11 +161,68 @@ fetch("/static/maps/countries.geojson").then(function (response) {
     });
 });
 
+// Search results styles
+const accentWarm = "#e66b3d"; // see _constants.scss
+const strokeWidth = 2;
+const resultStroke = new Stroke({ color: accentWarm, width: strokeWidth });
+const resultFill = new Fill({
+    color: "rgba(230, 107, 61, 0.1)",
+});
+const image = new Circle({
+    radius: 5,
+    fill: resultFill,
+    stroke: resultStroke,
+});
+
+const styles = {
+    Point: new Style({
+        image: image,
+    }),
+    LineString: new Style({
+        stroke: resultStroke,
+    }),
+    MultiLineString: new Style({
+        stroke: resultStroke,
+    }),
+    MultiPoint: new Style({
+        image: image,
+    }),
+    MultiPolygon: new Style({
+        stroke: resultStroke,
+        fill: resultFill,
+    }),
+    Polygon: new Style({
+        stroke: resultStroke,
+        fill: resultFill
+    }),
+    GeometryCollection: new Style({
+        stroke: resultStroke,
+        fill: resultFill,
+        image: image,
+    }),
+    Circle: new Style({
+        stroke: resultStroke,
+        fill: resultFill,
+    }),
+};
+
+const resultStyle = function (feature) {
+    return styles[feature.getGeometry().getType()];
+};
+
 // A layer for the search results, on each map
-let resultsSource = new VectorSource({});
-let resultsLayer = new VectorLayer({
+let arcticResultsSource = new VectorSource({});
+let arcticResultsLayer = new VectorLayer({
     declutter: true,
-    source: resultsSource,
+    source: arcticResultsSource,
+    style: resultStyle,
+});
+
+let antarcticResultsSource = new VectorSource({});
+let antarcticResultsLayer = new VectorLayer({
+    declutter: true,
+    source: antarcticResultsSource,
+    style: resultStyle,
 });
 
 export function initializeMaps() {
@@ -174,7 +231,7 @@ export function initializeMaps() {
         $.extend(baseOptions, {
             target: "map--arctic",
             view: arcticView,
-            layers: [arcticLayer, resultsLayer],
+            layers: [arcticLayer, arcticResultsLayer],
         })
     );
 
@@ -186,14 +243,23 @@ export function initializeMaps() {
                 antarcticLayer,
                 antarcticCountriesLayer,
                 antarcticPlacesLayer,
-                resultsLayer,
+                antarcticResultsLayer,
             ],
         })
     );
 }
 
-export function addSearchResults(results) {
-    results.forEach(function(result) {
-        resultsSource.addFeature(new GeoJSON().readFeatures(result.geometry.coordinates))
-    })
+export function addSearchResult(geometry, id) {
+    arcticResultsSource.addFeature(
+        new GeoJSON().readFeature(geometry, {
+            dataProjection: getProjection("ESPG:4326"),
+            featureProjection: arcticProjection,
+        })
+    );
+    antarcticResultsSource.addFeature(
+        new GeoJSON().readFeature(geometry, {
+            dataProjection: getProjection("ESPG:4326"),
+            featureProjection: antarcticProjection,
+        })
+    );
 }
