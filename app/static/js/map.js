@@ -14,6 +14,7 @@ import MVT from "ol/format/MVT";
 import Attribution from "ol/control/Attribution";
 import { get as getProjection, fromLonLat } from "ol/proj";
 import { Circle, Text, Fill, Stroke, Style } from "ol/style";
+import { containsExtent } from "ol/extent";
 import { register } from "ol/proj/proj4";
 
 const arcticExtent = 6378137 * Math.PI; // Extent is half of the WGS84 Ellipsoid equatorial circumference.
@@ -193,7 +194,7 @@ const styles = {
     }),
     Polygon: new Style({
         stroke: resultStroke,
-        fill: resultFill
+        fill: resultFill,
     }),
     GeometryCollection: new Style({
         stroke: resultStroke,
@@ -225,41 +226,91 @@ let antarcticResultsLayer = new VectorLayer({
     style: resultStyle,
 });
 
-export function initializeMaps() {
-    $(".map__container").removeClass("hidden");
-    const arcticMap = new Map(
-        $.extend(baseOptions, {
-            target: "map--arctic",
-            view: arcticView,
-            layers: [arcticLayer, arcticResultsLayer],
-        })
-    );
+let arcticMap;
+let antarcticMap;
 
-    const antarcticMap = new Map(
-        $.extend(baseOptions, {
-            target: "map--antarctic",
-            view: antarcticView,
-            layers: [
-                antarcticLayer,
-                antarcticCountriesLayer,
-                antarcticPlacesLayer,
-                antarcticResultsLayer,
-            ],
-        })
-    );
+const displayResult = function (map, pixel) {
+    const feature = map.forEachFeatureAtPixel(pixel, function (feature) {
+        return feature;
+    });
+    if (feature) {
+        const anchor = $("#" + feature.getId());
+        $("html,body").animate({ scrollTop: anchor.offset().top }, "slow");
+    }
+};
+
+export function initializeMaps() {
+    arcticResultsSource.clear(true);
+    antarcticResultsSource.clear(true);
+
+    $(".map__container").removeClass("hidden");
+
+    if (!arcticMap) {
+        arcticMap = new Map(
+            $.extend(baseOptions, {
+                target: "map--arctic",
+                view: arcticView,
+                layers: [arcticLayer, arcticResultsLayer],
+            })
+        );
+
+        arcticMap.on("click", function (evt) {
+            displayResult(arcticMap, evt.pixel);
+        });
+    }
+
+    if (!antarcticMap) {
+        antarcticMap = new Map(
+            $.extend(baseOptions, {
+                target: "map--antarctic",
+                view: antarcticView,
+                layers: [
+                    antarcticLayer,
+                    antarcticCountriesLayer,
+                    antarcticPlacesLayer,
+                    antarcticResultsLayer,
+                ],
+            })
+        );
+        antarcticMap.on("click", function (evt) {
+            displayResult(antarcticMap, evt.pixel);
+        });
+    }
 }
 
 export function addSearchResult(geometry, id) {
-    arcticResultsSource.addFeature(
-        new GeoJSON().readFeature(geometry, {
-            dataProjection: getProjection("ESPG:4326"),
-            featureProjection: arcticProjection,
-        })
-    );
-    antarcticResultsSource.addFeature(
-        new GeoJSON().readFeature(geometry, {
-            dataProjection: getProjection("ESPG:4326"),
-            featureProjection: antarcticProjection,
-        })
-    );
+    const arcticFeature = new GeoJSON().readFeature(geometry, {
+        dataProjection: getProjection("ESPG:4326"),
+        featureProjection: arcticProjection,
+    });
+
+    arcticFeature.setId(id);
+    if (
+        containsExtent(
+            [-arcticExtent, -arcticExtent, arcticExtent, arcticExtent],
+            arcticFeature.getGeometry().getExtent()
+        )
+    ) {
+        arcticResultsSource.addFeature(arcticFeature);
+    }
+
+    const antarcticFeature = new GeoJSON().readFeature(geometry, {
+        dataProjection: getProjection("ESPG:4326"),
+        featureProjection: antarcticProjection,
+    });
+
+    antarcticFeature.setId(id);
+    if (
+        containsExtent(
+            [
+                -antarcticExtent,
+                -antarcticExtent,
+                antarcticExtent,
+                antarcticExtent,
+            ],
+            antarcticFeature.getGeometry().getExtent()
+        )
+    ) {
+        antarcticResultsSource.addFeature(antarcticFeature);
+    }
 }
