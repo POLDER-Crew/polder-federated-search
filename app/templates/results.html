@@ -17,7 +17,7 @@
       <!-- todo: separate out the result locations and template rendering
        so that we aren't calling these from each result object directly. This feels kind of gross. -->
       <script type="text/javascript">
-        resultGeometries[{{ loop.index }}] = {{ result.geometry | tojson | safe }};
+        resultGeometries["{{ result.title }}"] = {{ result.geometry | tojson | safe }};
       </script>
       {% if result.doi %}
         <div class="result__doi">
