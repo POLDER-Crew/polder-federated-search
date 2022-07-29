@@ -17,6 +17,7 @@ import VectorTileSource from "ol/source/VectorTile";
 import { Circle, Text, Fill, Stroke, Style } from "ol/style";
 import View from "ol/View";
 
+// PROJECTIONS: If you are using default map projections, you don't need any of this stuff.
 const arcticExtent = 6378137 * Math.PI; // Extent is half of the WGS84 Ellipsoid equatorial circumference.
 const arcticExtentBoundary = [
     -arcticExtent,
@@ -58,6 +59,8 @@ arcticProjection.setExtent(arcticExtentBoundary);
 let antarcticProjection = getProjection("EPSG:3031");
 antarcticProjection.setExtent(antarcticExtentBoundary);
 
+
+// EXTRA PLACES: if your map tiles include all the place names you want already, you don't need any of this stuff.
 // Places and countries styles for the antarctic map
 const placesTextFill = new Fill({ color: "#222" });
 const countriesTextFill = new Fill({ color: "#ac46ac" });
@@ -90,7 +93,7 @@ const countriesTextStyle = function (feature) {
     });
 };
 
-// Search results styles
+// SEARCH RESULTS: customize these styles to match your colors
 const accentWarm = "#e66b3d"; // see _constants.scss
 const resultStroke = new Stroke({ color: accentWarm, width: 2 });
 const resultFill = new Fill({
@@ -114,13 +117,15 @@ const resultStyle = function (feature) {
     });
 };
 
+// You only need this function if you are using a non-standard projection.
 // The extent, tileSize, and maximum zoom level are pieces of information that
 // should be documented with a tilesource.
 function getMinResolution(extent, tileSize, maxZoom) {
     return extent / (tileSize / 2) / Math.pow(2, maxZoom);
 }
 
-// This tileset does not work correctly when you specify a projection for some reason.
+// This tileset does not work correctly when you specify a projection for some reason,
+// even though it uses a non-standard projection.
 const arcticView = new View({
     center: fromLonLat([0, 0]), // top of the globe
     zoom: 2,
@@ -174,13 +179,15 @@ const antarcticLayer = new VectorTileLayer({
 });
 
 // Styles for the antarctic map. See the README in the static/maps directory for more information.
+// If your map alrady looks how you want it to, you don't need this block.
 fetch("/static/maps/style.json").then(function (response) {
     response.json().then(function (glStyle) {
         stylefunction(antarcticLayer, glStyle, "openmaptiles");
     });
 });
 
-// these two layers are just to put some labels on Antarctica to make
+// If your map already has all the place names you want on it, you don't need this part.
+// These two layers are just to put some labels on Antarctica to make
 // the map more usable.
 let antarcticPlacesLayer;
 let antarcticCountriesLayer;
@@ -217,7 +224,8 @@ fetch("/static/maps/countries.geojson").then(function (response) {
     });
 });
 
-// A layer for the search results, on each map
+// A layer for the search results, on each map. You definitely need this
+// part (although if you only have one map, you only need one of them)
 let arcticResultsSource = new VectorSource({});
 let arcticResultsLayer = new VectorLayer({
     source: arcticResultsSource,
@@ -233,6 +241,7 @@ let antarcticResultsLayer = new VectorLayer({
 let arcticMap;
 let antarcticMap;
 
+// the handler for clicking on the map.
 const displayResult = function (map, pixel) {
     const feature = map.forEachFeatureAtPixel(pixel, function (feature) {
         return feature;
@@ -291,6 +300,7 @@ export function initializeMaps() {
 
 export function addSearchResult(name, geometry) {
     const arcticFeature = new GeoJSON().readFeature(geometry, {
+        // If your tileset is using the default projection, don't need the next two lines.
         dataProjection: getProjection("ESPG:4326"),
         featureProjection: arcticProjection,
     });
@@ -302,11 +312,13 @@ export function addSearchResult(name, geometry) {
         )
     ) {
         // todo: let's set these in the geojson on the server side.
+        // Can we reproject it in GeoSPARQL or something?
         arcticFeature.set("name", name);
         arcticResultsSource.addFeature(arcticFeature);
     }
 
     const antarcticFeature = new GeoJSON().readFeature(geometry, {
+        // If your tileset is using the default projection, don't need the next two lines.
         dataProjection: getProjection("ESPG:4326"),
         featureProjection: antarcticProjection,
     });
