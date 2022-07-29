@@ -34,6 +34,7 @@ There are many DataONE repositories, but of particular interest to the polar res
 #### Future work
 - [National Snow and Ice Data Center](https://nsidc.org])
 - CRITTERBASE
+- Polar data from [DataStream](https://gordonfoundation.ca/initiatives/datastream/)
 - Repositories in the [Canadian Consortium for Arctic Data Interoperability (CCADI)](https://ccadi.ca/) network:
   - [Polar Data Catalogue](http://polardata.ca)
   - [Nordicana D](https://www.cen.ulaval.ca/nordicanad/en_BDDescription.aspx)
@@ -48,7 +49,7 @@ There are many DataONE repositories, but of particular interest to the polar res
 ### Architecture
 This tool uses Docker images to manage the different services that it depends on. One of those is [Gleaner](https://gleaner.io).
 
-The web app itself that hosts the UI and does the searches is built using [Flask](https://flask.palletsprojects.com), which is a Python web framework. I chose Python because Python has good support for RDF and SPARQL operations with [RDFLib](https://rdflib.dev/). The frontend dependencies are HTML, JavaScript and SCSS, built using [Parcel](https://parceljs.org/).
+The web app itself that hosts the UI and does the searches is built using [Flask](https://flask.palletsprojects.com), which is a Python web framework. I chose Python because Python has good support for RDF and SPARQL operations with [RDFLib](https://rdflib.dev/). The frontend dependencies are HTML, JavaScript and SCSS, built using [Parcel](https://parceljs.org/). The maps in the user interface are built using [OpenLayers](https://openlayers.org/).
 
 ### Deployment
 A pre-built image for the web app is on Docker Hub as [nein09/polder-federated-search](https://hub.docker.com/repository/docker/nein09/polder-federated-search), and that is what all of the Helm/Kubernetes and Docker files in this repository are referencing. If you want to modify this project and build your own ones, you're welcome to.
@@ -169,6 +170,8 @@ The SCSS styles are built assuming a mobile-first philosophy. Here are the break
 - Medium: 480 - 767px wide
 - Large: 768 - 1199px wide
 - XLarge: 1200px and wider
+
+There are also some special map styles, in `app/static/maps`; you can read more about how they work in that directory.
 
 #### Taking Performance Measurements
 
