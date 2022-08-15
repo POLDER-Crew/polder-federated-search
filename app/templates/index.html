@@ -29,9 +29,14 @@
                     {% include 'partials/date-picker.html' %}
                 {% endwith %}
             </div>
-
-
+            
         </fieldset>
+        <div class="search__field">
+           <label class="search__label author" for="author">Search for Author Name </label>
+        <input name="author" id="author"> 
+
+        </div>
+        
         <button class="search__button" type="submit">Search</button>
         <button class="clear__button" id="clear" type="reset" >Clear</button>
     </form>

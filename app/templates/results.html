@@ -125,8 +125,8 @@
   {% endwith %}
 
 {% else %} {# No search results were returned. #}
-<div class="results results--empty">
-  <h3>No results were returned for your search.</h3>
+<div onclick="ga('send', 'event', 'Link', 'ZeroResults', 'example.com')" class="results results--empty">
+  <h3 id='zeroSearchResultsContainer'>No results were returned for your search.</h3>
   {% if nojs %}
     <a class="result__url" href="{{ url_for('home') }}">Please try again.</a>
   {% endif %}

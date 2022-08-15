@@ -135,3 +135,16 @@ $(document).ready(function () {
   $("form.search").submit(searchFormSubmit);
   $(".pagination").click(paginate);
 });
+
+
+///trigger if there were zero search results
+
+
+function getQuery() {
+ return document.getElementById('text').text;
+  } 
+  window.onload = function() { 
+    if(document.getElementById('zeroSearchResultsContainer')
+     { 
+      console.log('zero_results');
+      ga('send', 'event', 'Search', 'ZeroResults', getQuery()) } }
