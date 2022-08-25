@@ -18,4 +18,5 @@ jobs:
       - name: Run Test
         env: 
           SECRET_KEY: hellohello
+          GLEANER_ENPOINT_URL: http://localhost:9999/repositories/polder
         run: python -m unittest
