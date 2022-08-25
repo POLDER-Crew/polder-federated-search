@@ -17,6 +17,6 @@ jobs:
         run: pip install -r requirements.txt 
       - name: Run Test
         env: 
-            GLEANER_ENPOINT_URL: http://localhost:9999/repositories/polder
+            GLEANER_ENDPOINT_URL: hellohello
             SECRET_KEY: hellohello    
         run: python -m unittest
