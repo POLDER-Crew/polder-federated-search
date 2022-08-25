@@ -16,4 +16,6 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt 
       - name: Run Test
+        env: 
+          SECRET_KEY: hellohello
         run: python -m unittest
