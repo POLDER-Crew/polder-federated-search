@@ -71,6 +71,7 @@ class GleanerSearch(SearcherBase):
                     ?catalog schema:creator/schema:name ?author .
                 }}
                 }}
+                
                 {filter_query}
                 BIND(COALESCE(?identifier, ?s) AS ?id)
             }}
@@ -118,10 +119,7 @@ class GleanerSearch(SearcherBase):
     def _build_author_search_query(author=None):
         if author:
             return f"""
-                ?search a luc-index:full_text_search ;
-                luc:query '''{author}''' ;
-                luc:entities ?s .
-                ?s luc:score ?relevance .
+                CONTAINS(?author, '''{author}''') 
             """
         else:
             # A blank search in this doesn't filter results, it just takes longer.
@@ -241,7 +239,7 @@ class GleanerSearch(SearcherBase):
         author_query = GleanerSearch._build_author_search_query(author)
 
         # Assigning this to a class member makes it easier to test
-        self.query = GleanerSearch.build_query(text_query, date_query, page_number)
+        self.query = GleanerSearch.build_query(text_query, date_query+author_query, page_number)
         return self.execute_query(page_number)
 
     def convert_result(self, sparql_result_dict):
