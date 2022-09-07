@@ -7,7 +7,7 @@ from urllib.parse import unquote
 from app.search import dataone, search
 
 test_response = json.loads(
-    '{"response": {"numFound": 100, "start": 1, "maxScore": 0.0, "docs": [{"some": "result", "score": 0, "id": "test1"}, {"another": "result", "score": 0, "id": "test2"}]}}')
+    '{"response": {"numFound": 100, "start": 1, "maxScore": 0.0, "docs": [{"some": "result", "score": 0, "id": "test1","author": "anonymous1"}, {"another": "result", "score": 0, "id": "test2","author": "anonymous2"}]}}')
 
 
 class TestSolrDirectSearch(unittest.TestCase):
@@ -219,6 +219,13 @@ class TestSolrDirectSearch(unittest.TestCase):
             f'&fq={dataone.SolrDirectSearch.LATITUDE_FILTER}',
             unquote(m.request_history[0].url)
         )
+
+    
+    def test_search_author_name(self):
+        arguments = {'text': 'ice', 'author': 'anonyous', 'page_number': 1, 'start_min': None, 'start_max': None, 'end_min': None, 'end_max': None}
+
+        result = dataone.SolrDirectSearch.build_query("&q=originText:", 0)
+        self.assertIn("&q=originText:", result)
 
     def test_page_size(self):
         result = dataone.SolrDirectSearch.build_query("", 0)
