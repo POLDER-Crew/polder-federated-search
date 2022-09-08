@@ -38,6 +38,8 @@ except OSError:
 def inject_google_analytics_id():
     return dict(google_analytics_id=app.config['GOOGLE_ANALYTICS_ID'])
 
+from app import routes, template_helpers
+
 
 if __name__ == "__main__":
     # Only for debugging while developing
