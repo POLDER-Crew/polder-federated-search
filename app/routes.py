@@ -82,6 +82,7 @@ def combined_search():
 def handle_404(e):
     return render_template("404.html", e=e), 404
 
+
 @app.errorhandler(MethodNotAllowed)
 # There are a lot of bots on the internet that try to post garbage
 # to get-only routes, and other such shenanigans, and they are
@@ -111,7 +112,3 @@ def handle_exception(e):
 
     # now you're handling non-HTTP exceptions only
     return render_template("500_generic.html", e=e), 500
-
-
-
-    

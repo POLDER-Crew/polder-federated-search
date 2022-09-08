@@ -7,13 +7,13 @@
       <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/style.css') }}" />
       <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
      <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-234464538-2"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{google_analytics_id}}></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
-      gtag('config', 'UA-234464538-2');
+      gtag('config', '{{ google_analytics_id} }');
     </script>
 
       <title>
