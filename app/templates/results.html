@@ -7,10 +7,20 @@
     {% include 'partials/paginator.html' %}
   {% endwith %}
 
+<script type="text/javascript">
+  resultGeometries = {};
+</script>
 
    <ul id='main-content' class="results">
    {% for result in result_set.results %}
-    <li class="result" data-score={{ result.score }} data-source="{{ result.source }} data-id= {{ result.id }}">
+    <li class="result" data-score={{ result.score }} data-source="{{ result.source }}" data-id="{{ result.id }}" id="{{ loop.index }}">
+      {% if result.geometry %}
+        <!-- todo: separate out the result locations and template rendering
+         so that we aren't calling these from each result object directly. This feels kind of gross. -->
+        <script type="text/javascript">
+          resultGeometries["{{ result.title }}"] = {{ result.geometry | tojson | safe }};
+        </script>
+      {% endif %}
       {% if result.doi %}
         <div class="result__doi">
           <a href="http://doi.org/{{ result.doi }}" class="doi__link" target="_blank" rel="noopener">
@@ -72,7 +82,7 @@
         {% if result.geometry %}
               <div class="location">
                 <h4>Location:</h4>
-                  {{ result.geometry.coordinates }}
+                  <span class="result__location">{{ result.geometry.coordinates }}</span>
               </div>
         {% endif %}
 

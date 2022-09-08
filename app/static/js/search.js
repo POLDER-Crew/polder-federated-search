@@ -1,11 +1,10 @@
 import $ from "jquery";
+import { initializeMaps, addSearchResult } from "./map.js";
 
 const $resultsContainer = $(".results__container");
 const $searchButton = $(".search__button");
 
 var load = document.getElementById("load");
-
-
 
 // A helper method to clear away existing search
 // results and disable the
@@ -13,7 +12,7 @@ var load = document.getElementById("load");
 function showSearchPending() {
   $resultsContainer.empty();
   $searchButton.prop("disabled", true);
-  load.style.display ="block";
+  load.style.display = "block";
 }
 
 // A helper method to handle the chain of events that
@@ -29,7 +28,6 @@ function handleSearchResults($ajaxPromise) {
       $(".show_less_button").hide();
       $(".show_more_button").click(showFullResult);
       $(".show_less_button").click(hideFullResult);
-
     })
     .fail(function (error) {
       $resultsContainer.append(error.responseText);
@@ -38,7 +36,10 @@ function handleSearchResults($ajaxPromise) {
       $searchButton.prop("disabled", false);
       $resultsContainer.focus();
       load.style.display = "none";
-       
+      initializeMaps();
+      for (const [name, geometry] of Object.entries(resultGeometries)) {
+        addSearchResult(name, geometry);
+      }
     });
 }
 
@@ -66,30 +67,16 @@ function showFullResult(event) {
     .removeAttr("aria-expanded")
     .attr("aria-hidden", true)
     .hide();
-    
+
   $(event.delegateTarget)
     .siblings(".result--full")
     .removeAttr("aria-hidden")
     .attr("aria-expanded", true)
     .show();
-  $(event.delegateTarget)
-    .siblings('.show_less_button')
-    .show();
- 
+  $(event.delegateTarget).siblings(".show_less_button").show();
 
-    
-  $(event.delegateTarget)
-    .hide();
-
-
-   
-
-   
-
-    
+  $(event.delegateTarget).hide();
 }
-
-
 
 function hideFullResult(event) {
   $(event.delegateTarget)
@@ -103,14 +90,8 @@ function hideFullResult(event) {
     .attr("aria-expanded", false)
     .show();
 
-  $(event.delegateTarget)
-    .hide();
-  $(event.delegateTarget)
-    .siblings('.show_more_button')
-    .show();
-
- 
-    
+  $(event.delegateTarget).hide();
+  $(event.delegateTarget).siblings(".show_more_button").show();
 }
 
 // When js is enabled, paginate and show results in the
@@ -130,21 +111,7 @@ function paginate(event) {
 }
 
 $(document).ready(function () {
-
- 
   $("form.search").submit(searchFormSubmit);
   $(".pagination").click(paginate);
 });
 
-
-///trigger if there were zero search results
-
-
-function getQuery() {
- return document.getElementById('text').text;
-  } 
-  window.onload = function() { 
-    if(document.getElementById('zeroSearchResultsContainer')
-     { 
-      console.log('zero_results');
-      ga('send', 'event', 'Search', 'ZeroResults', getQuery()) } }

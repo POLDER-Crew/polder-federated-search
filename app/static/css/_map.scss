@@ -1,0 +1,11 @@
+@import 'npm:ol/ol.css';
+
+.map__container {
+    display: flex;
+    flex-flow: row wrap;
+}
+.map {
+    flex: 1;
+    height: 400px;
+    margin: 0.5rem;
+}

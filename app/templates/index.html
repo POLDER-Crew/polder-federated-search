@@ -38,13 +38,24 @@
         </div>
         
         <button class="search__button" type="submit">Search</button>
-        <button class="clear__button" id="clear" type="reset" >Clear</button>
+        <button class="clear__button" id="clear" type="reset">Clear</button>
     </form>
 </div>
+
  <div class="loading" id="load" aria-label="Page Loading">
-                <div class="loader-wheel"></div>
-                <div class="loader-text"></div>
-              
+    <div class="loader-wheel"></div>
+    <div class="loader-text"></div>
 </div>
+
+<div class="map__container hidden">
+    <div class="map map--arctic" id="map--arctic"></div>
+    <div class="map map--antarctic" id="map--antarctic"></div>
+</div>
+
+<!-- for the search results showing up on the maps. Temporary until
+    these geometries are returned with an API. -->
+<script type="text/javascript">
+  let resultGeometries = {};
+</script>
 <div class="results__container" tabindex="-1"></div>
 {% endblock %}
