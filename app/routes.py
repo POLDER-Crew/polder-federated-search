@@ -2,7 +2,7 @@ import logging
 from flask import redirect, render_template, request, url_for
 from datetime import date
 from sentry_sdk import capture_exception
-from werkzeug.exceptions import HTTPException, NotFound
+from werkzeug.exceptions import HTTPException, NotFound, MethodNotAllowed
 
 from app import app
 from app.search.dataone import SolrDirectSearch
@@ -83,6 +83,20 @@ def handle_404(e):
     return render_template("404.html", e=e), 404
 
 
+@app.errorhandler(MethodNotAllowed)
+# There are a lot of bots on the internet that try to post garbage
+# to get-only routes, and other such shenanigans, and they are
+# making lots of noise in Sentry.
+# If we're running a dev server, it's good to see this error
+# message because maybe we're trying to write a REST endpoint.
+# But if we're in production, it's better to bypass it.
+def handle_405(e):
+    if app.debug == False:
+        return render_template("500_generic.html", e=e)
+    else:
+        return handle_exception(e)
+
+
 @app.errorhandler(Exception)
 def handle_exception(e):
     # Record it in Sentry if we're in production
@@ -98,7 +112,3 @@ def handle_exception(e):
 
     # now you're handling non-HTTP exceptions only
     return render_template("500_generic.html", e=e), 500
-
-
-
-    
