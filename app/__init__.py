@@ -7,9 +7,6 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 from flask_caching import Cache
 
 
-
-
-
 cache = Cache()
 
 sentry_sdk.init(
@@ -36,6 +33,11 @@ try:
 except OSError:
     pass
 
+
+@app.context_processor
+def inject_google_analytics_id():
+    return dict(google_analytics_id=app.config['GOOGLE_ANALYTICS_ID'])
+
 from app import routes, template_helpers
 
 
@@ -43,6 +45,3 @@ if __name__ == "__main__":
     # Only for debugging while developing
     app.logger.setLevel(logging.DEBUG)
     app.run(host='0.0.0.0', debug=True, port=5000)
-
-    
-

@@ -61,6 +61,8 @@ spec:
               name: {{ .Release.Name }}-secrets
         - name: SENTRY_ENVIRONMENT
           value: {{ .Values.sentryEnvironment }}
+        - name: GOOGLE_ANALYTICS_ID
+          value: {{ .Values.googleAnalyticsId }}
         ports:
         - name: http
           containerPort: {{ .Values.service.port }}
