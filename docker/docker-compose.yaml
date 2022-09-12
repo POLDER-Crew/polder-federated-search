@@ -5,7 +5,7 @@ volumes:
 services:
 
   gleaner-setup:
-    image: nsfearthcube/gleaner:dev-v3.0.4-development
+    image: nsfearthcube/gleaner:dev-v3.0.5-development
     command: -cfg gleaner -setup
     depends_on:
       - triplestore
@@ -21,7 +21,7 @@ services:
     working_dir: /config
 
   triplestore-setup:
-    image: curlimages/curl:7.84.0
+    image: curlimages/curl:7.85.0
     depends_on:
     - triplestore
     volumes:
@@ -54,7 +54,7 @@ services:
     - update@./geosparql.sparql
     - "http://triplestore:7200/repositories/polder/statements"
   gleaner:
-    image: nsfearthcube/gleaner:dev-v3.0.4-development
+    image: nsfearthcube/gleaner:dev-v3.0.5-development
     command: -cfg gleaner
     depends_on:
       - triplestore
@@ -72,7 +72,7 @@ services:
   triplestore:
     image: nein09/graphdb:10.0.0-free
     volumes:
-      - triplestore:/data/graphdb
+      - triplestore:/opt
     environment:
       GDB_JAVA_OPTS: >-
         -Xmx2g -Xms2g
