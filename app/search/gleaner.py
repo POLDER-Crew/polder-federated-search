@@ -202,7 +202,6 @@ class GleanerSearch(SearcherBase):
         text = kwargs.pop('text', None)
         author = kwargs.pop('author',None)
         page_number = kwargs.pop('page_number', 0)
-        print('author gleaner')
 
         user_query = GleanerSearch._build_text_search_query(text)
 
