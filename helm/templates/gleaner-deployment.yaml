@@ -51,7 +51,7 @@ spec:
         image: nein09/graphdb:10.0.0-free
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         volumeMounts:
-        - mountPath: /opt
+        - mountPath: /data/graphdb
           name: triplestore-volume
         ports:
         - containerPort: {{ .Values.triplestore_service.port }}
