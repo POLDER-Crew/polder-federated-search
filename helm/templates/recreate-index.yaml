@@ -51,7 +51,7 @@ spec:
               mc config host add minio "http://${MINIO_SERVER_HOST}:${MINIO_SERVER_PORT_NUMBER}" "${MINIO_CLIENT_ACCESS_KEY}" "${MINIO_CLIENT_SECRET_KEY}" &&
               mc rm -r --force minio/{{ .Values.storageNamespace }}
           - name: get-contextfiles
-            image: curlimages/curl:7.84.0
+            image: curlimages/curl:7.85.0
             command:
             - curl
             - -O
@@ -86,7 +86,7 @@ spec:
               mountPath: /config
           # The easiest way is just to remove the repository and recreate it
           - name: clear-triplestore
-            image: curlimages/curl:7.84.0
+            image: curlimages/curl:7.85.0
             workingDir: /config
             volumeMounts:
             - name: polder-repo-config
