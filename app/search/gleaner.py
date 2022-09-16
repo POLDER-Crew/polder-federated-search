@@ -119,7 +119,7 @@ class GleanerSearch(SearcherBase):
     def _build_author_search_query(author=None):
         if author:
             return f"""
-                CONTAINS(?author, '''{author}''') . 
+                FILTER CONTAINS(?author, '''{author}''') . 
             """
         else:
             # A blank search in this doesn't filter results, it just takes longer.
@@ -265,3 +265,4 @@ class GleanerSearch(SearcherBase):
         result['author'] = authors.split(',')
         result['source'] = "Gleaner"
         return SearchResult(**result)
+ 
