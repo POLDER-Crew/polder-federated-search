@@ -31,18 +31,51 @@ class GleanerSearch(SearcherBase):
             (GROUP_CONCAT(DISTINCT ?sameAs ; separator=", ") as ?sameAs)
             (GROUP_CONCAT(DISTINCT ?keywords ; separator=", ") as ?keywords)
             (GROUP_CONCAT(DISTINCT ?temporal_coverage ; separator=", ") as ?temporal_coverage)
+            (GROUP_CONCAT(DISTINCT ?spatial_coverage ; separator=", ") as ?spatial_coverage)
             {{
 
                 {text_query}
                 ?s a schema:Dataset  .
                 ?s schema:name ?title .
+                ?s schema:temporalCoverage ?temporal_coverage .
+
                 {{ ?s schema:keywords ?keywords . }} UNION {{
                     ?catalog ?relationship ?s .
                     ?catalog schema:keywords ?keywords .
                 }}
-                ?s schema:description | schema:description/schema:value  ?abstract .
-                ?s schema:temporalCoverage ?temporal_coverage .
-                ?s schema:spatialCoverage ?spatial_coverage .
+
+                {{
+                    ?s schema:description ?abstract .
+                }} UNION {{
+                    ?s schema:description/schema:value  ?abstract .
+                }}
+
+                {{
+                    ?s schema:spatialCoverage ?spatial_coverage .
+                    FILTER(ISLITERAL(?spatial_coverage)) .
+                }} UNION {{
+                    ?s schema:spatialCoverage/schema:geo ?geo .
+                    ?geo a schema:GeoShape .
+                    {{
+                        ?geo schema:polygon ?polygon .
+                        BIND(concat("polygon:", ?polygon) as ?spatial_coverage) .
+                    }} UNION {{
+                        ?geo schema:line ?line .
+                        BIND(concat("line:", ?line) as ?spatial_coverage) .
+                    }} UNION {{
+                        ?geo schema:box ?box .
+                        BIND(concat("box:", ?box) as ?spatial_coverage) .
+                    }} UNION {{
+                        ?geo schema:circle ?circle .
+                        BIND(concat("circle:", ?circle) as ?spatial_coverage) .
+                    }}
+                }} UNION {{
+                    ?s schema:spatialCoverage/schema:geo ?geo .
+                    ?geo a schema:GeoCoordinates .
+                    ?geo schema:longitude ?lon.
+                    ?geo schema:latitude ?lat .
+                    BIND(concat("longitude:", str(?lon), ", latitude:", str(?lat) ) as ?spatial_coverage )  .
+                }}
 
                 OPTIONAL {{
                     ?s schema:sameAs ?sameAs .
@@ -70,6 +103,7 @@ class GleanerSearch(SearcherBase):
                     ?catalog ?relationship ?s .
                     ?catalog schema:creator/schema:name ?author .
                 }}
+                    FILTER(ISLITERAL(?author)) .
                 }}
                 {filter_query}
                 BIND(COALESCE(?identifier, ?s) AS ?id)
