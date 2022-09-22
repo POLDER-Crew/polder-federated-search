@@ -91,7 +91,7 @@ class SearchResult:
                  (boundingbox['east'], boundingbox['north']),
                     (boundingbox['west'], boundingbox['north']),
                     (boundingbox['west'], boundingbox['south']),
-                    (boundingbox['east'], boundingbox['south']), ]
+                    (boundingbox['east'], boundingbox['south']) ]
             ]
         )
 

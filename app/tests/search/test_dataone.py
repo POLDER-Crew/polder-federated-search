@@ -44,7 +44,8 @@ class TestSolrDirectSearch(unittest.TestCase):
         )
 
         # Did we include the filter for duplicates?
-        self.assertIn(dataone.SolrDirectSearch.DUPLICATE_FILTER, unquote(solr_url))
+        self.assertIn(dataone.SolrDirectSearch.DUPLICATE_FILTER,
+                      unquote(solr_url))
 
         # Did we get the paging right?
         self.assertIn('?start=50', unquote(solr_url))
@@ -259,7 +260,7 @@ class TestSolrDirectSearch(unittest.TestCase):
         self.assertEqual(result.title, 'A title'),
         self.assertEqual(result.id, 'An id')
         self.assertEqual(result.abstract, 'An abstract')
-        self.assertEqual(result.spatial_coverage, 'a location')
+        self.assertEqual(result.geometry['text'], 'a location')
         self.assertEqual(result.keywords, ['keyword1', 'keyword2', 'keyword3'])
         self.assertEqual(result.doi, 'doi:test')
         self.assertEqual(result.origin, 'an origin')
@@ -290,12 +291,15 @@ class TestSolrDirectSearch(unittest.TestCase):
             'northBoundCoord': 90.0,
             'westBoundCoord': -180.0,
             'score': 4,
-            'eastBoundCoord': 180.0
-
+            'eastBoundCoord': 180.0,
+            'placeKey': 'test place'
         }
-        test_obj_1 = self.search.convert_result(test_result1 )
-        self.assertEqual(test_obj_1.geometry.type, 'Polygon')
-        self.assertEqual(test_obj_1.geometry.coordinates,[[(180.0, 29.7), (180.0, 90.0), (-180.0, 90.0), (-180.0, 29.7), (180.0, 29.7)]])
+        test_obj_1 = self.search.convert_result(test_result1)
+        self.assertEqual(test_obj_1.geometry['text'], 'test place')
+        self.assertEqual(
+            test_obj_1.geometry['geometry_collection'].type, 'Polygon')
+        self.assertEqual(test_obj_1.geometry['geometry_collection'].coordinates, [
+                         [(180.0, 29.7), (180.0, 90.0), (-180.0, 90.0), (-180.0, 29.7), (180.0, 29.7)]])
         test_result2 = {
             'id': 'test1',
             'score': 4,
@@ -303,41 +307,44 @@ class TestSolrDirectSearch(unittest.TestCase):
             'southBoundCoord': 76.7067,
             'northBoundCoord': 76.7067,
             'westBoundCoord': -105.5341,
-            'eastBoundCoord': -105.5341
+            'eastBoundCoord': -105.5341,
+            'placeKey': 'test place two'
+
         }
 
         # Testing for a point
         test_obj_2 = self.search.convert_result(test_result2)
-        self.assertEqual(test_obj_2.geometry.type, 'Point')
-        self.assertEqual(test_obj_2.geometry.coordinates, (76.7067, -105.5341))
+        self.assertEqual(test_obj_2.geometry['text'], 'test place two')
 
+        self.assertEqual(
+            test_obj_2.geometry['geometry_collection'].type, 'Point')
+        self.assertEqual(
+            test_obj_2.geometry['geometry_collection'].coordinates, (76.7067, -105.5341))
 
     def test_original_datasource(self):
 
-        
         # Testing a dataset with an original source
         test_result = {
             'id': 'test1',
             'score': 4,
             'seriesId': 'doi:test',
             'datasource': 'urn:node:ARCTIC',
-          
+
 
         }
         test_obj = self.search.convert_result(test_result)
         self.assertEqual(test_obj.datasource['key'], 'ARCTIC')
-        self.assertEqual(test_obj.datasource['name'],'Arctic Data Center')
-        self.assertEqual(test_obj.datasource['url'],'https://arcticdata.io/')
-        self.assertEqual(test_obj.datasource['logo'],'https://raw.githubusercontent.com/DataONEorg/member-node-info/master/production/graphics/web/ARCTIC.png')
-        
+        self.assertEqual(test_obj.datasource['name'], 'Arctic Data Center')
+        self.assertEqual(test_obj.datasource['url'], 'https://arcticdata.io/')
+        self.assertEqual(
+            test_obj.datasource['logo'], 'https://raw.githubusercontent.com/DataONEorg/member-node-info/master/production/graphics/web/ARCTIC.png')
 
-        #Testing a dataset with no original source
+        # Testing a dataset with no original source
         test_result1 = {
             'id': 'test1',
             'score': 4,
             'seriesId': 'doi:test',
-        
+
         }
         test_obj1 = self.search.convert_result(test_result1)
         self.assertEqual(test_obj1.datasource, {})
-        

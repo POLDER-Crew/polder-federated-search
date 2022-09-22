@@ -3,7 +3,7 @@ import logging
 import math
 import validators
 
-from pygeojson import Point, LineString, GeometryCollection
+from pygeojson import Point, Polygon, LineString, GeometryCollection
 from SPARQLWrapper import SPARQLWrapper, JSON, POST
 from .search import SearcherBase, SearchResultSet, SearchResult
 
@@ -328,7 +328,10 @@ class GleanerSearch(SearcherBase):
             geometry['text'] = []
 
         if len(geometry['point']):
-            geometry['point'] = list(map(lambda coords: Point(coords.split(' ').reverse()), geometry['point'].split(',')))
+            geometry['point'] = list(map(
+                lambda coords: Point(coordinates=tuple(reversed(coords.split(' ')))),
+                geometry['point'].split(',')
+            ))
         else:
             geometry['point'] = []
 
@@ -336,6 +339,7 @@ class GleanerSearch(SearcherBase):
             def _build_line_from_points(plist):
                 pairs = self._build_coords_from_list(plist)
                 return LineString(coordinates=pairs)
+
             geometry['line'] = list(
                 map(_build_line_from_points, geometry['line'].split(',')))
         else:
@@ -344,9 +348,10 @@ class GleanerSearch(SearcherBase):
         if len(geometry['polygon']):
             def _build_polygon_from_points(plist):
                 pairs = self._build_coords_from_list(plist)
-                return Polygon(coordinates=pairs)
+                return Polygon(coordinates=[pairs])
+
             geometry['polygon'] = list(
-                map(_build_line_from_points, geometry['polygon'].split(',')))
+                map(_build_polygon_from_points, geometry['polygon'].split(',')))
         else:
             geometry['polygon'] = []
 
@@ -354,10 +359,10 @@ class GleanerSearch(SearcherBase):
             def _build_bbox_from_list(blist):
                 coords = blist.split(' ')
                 return SearchResult.polygon_from_box({
-                    'south': coords[1],
-                    'west': coords[0],
-                    'north': coords[3],
-                    'east': coords[2]
+                    'south': coords[0],
+                    'west': coords[1],
+                    'north': coords[2],
+                    'east': coords[3]
                 })
             geometry['box'] = list(
                 map(_build_bbox_from_list, geometry['box'].split(',')))
