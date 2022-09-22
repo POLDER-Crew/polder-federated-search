@@ -1,6 +1,7 @@
 from datetime import date
 import unittest
 from unittest.mock import patch, mock_open, Mock
+from pygeojson import Point, LineString, Polygon, GeometryCollection
 from SPARQLWrapper import SPARQLExceptions
 from urllib.error import HTTPError
 from urllib.response import addinfourl
@@ -212,8 +213,8 @@ class TestGleanerSearch(unittest.TestCase):
             'title': {'type': 'literal', 'value': 'Iceflux trawl (SUIT & RMT) and ice stations'},
             'url': {'type': 'literal', 'value': 'url1'},
             'sameAs': {'type': 'literal', 'value': 'url2'},
-            'author': {'type':'literal', 'value': 'author1,author2,author3' },
-            'spatial_coverage': {'type': 'literal', 'value': '-70.5397 -10.4515 -57.4443 0.018'},
+            'author': {'type': 'literal', 'value': 'author1,author2,author3'},
+            'spatial_coverage_box': {'type': 'literal', 'value': '-70.5397 -10.4515 -57.4443 0.018'},
             'temporal_coverage': {'type': 'literal', 'value': '2015-05-27/2015-06-20'},
             'id': {'type': 'literal', 'value': 'urn:uuid:696f9141-4e1a-5270-8c94-b0aabe0bbee7'},
             'keywords': {'type': 'literal', 'value': 'keyword1,keyword2,keyword3'}
@@ -222,8 +223,15 @@ class TestGleanerSearch(unittest.TestCase):
         result.urls.sort()
         self.assertIsInstance(result, search.SearchResult)
         self.assertEqual(result.urls, ['url1', 'url2'])
-        self.assertEqual(result.author, ['author1','author2','author3'])
+        self.assertEqual(result.author, ['author1', 'author2', 'author3'])
         self.assertEqual(result.keywords, ['keyword1', 'keyword2', 'keyword3'])
+        self.assertEqual(len(result.geometry['geometry_collection'].geometries), 1)
+        self.assertEqual(len(result.geometry['text']), 0)
+        self.assertEqual(
+            result.geometry['geometry_collection'].geometries[0].type, 'Polygon')
+        self.assertEqual(
+            result.geometry['geometry_collection'].geometries[0].coordinates,
+            [[('-57.4443', '-10.4515'), ('-57.4443', '0.018'), ('-70.5397', '0.018'), ('-70.5397', '-10.4515'), ('-57.4443', '-10.4515')]])
         self.assertEqual(result.source, "Gleaner")
 
     def test_convert_result_with_url_in_id(self):
@@ -233,7 +241,6 @@ class TestGleanerSearch(unittest.TestCase):
             'title': {'type': 'literal', 'value': 'Iceflux trawl (SUIT & RMT) and ice stations'},
             'url': {'type': 'literal', 'value': 'url1'},
             'sameAs': {'type': 'literal', 'value': 'url2'},
-            'spatial_coverage': {'type': 'literal', 'value': '-70.5397 -10.4515 -57.4443 0.018'},
             'temporal_coverage': {'type': 'literal', 'value': '2015-05-27/2015-06-20'},
             'id': {'type': 'literal', 'value': 'http://www.mycooldataset.com'},
             'keywords': {'type': 'literal', 'value': 'keyword1,keyword2,keyword3'}
@@ -244,4 +251,40 @@ class TestGleanerSearch(unittest.TestCase):
         self.assertEqual(
             result.urls, ['http://www.mycooldataset.com', 'url1', 'url2'])
         self.assertEqual(result.keywords, ['keyword1', 'keyword2', 'keyword3'])
+
+        self.assertEqual(result.source, "Gleaner")
+
+    def test_convert_result_multi_spatial(self):
+        test_result = {
+            'score': {'datatype': 'http://www.w3.org/2001/XMLSchema#double', 'type': 'literal', 'value': '0.375'},
+            'abstract': {'type': 'literal', 'value': 'This data file contains information'},
+            'title': {'type': 'literal', 'value': 'Iceflux trawl (SUIT & RMT) and ice stations'},
+            'url': {'type': 'literal', 'value': 'url1'},
+            'sameAs': {'type': 'literal', 'value': 'url2'},
+            'author': {'type': 'literal', 'value': 'author1,author2,author3'},
+            'spatial_coverage_text': {'type': 'literal', 'value': 'Antarctica,Greenland'},
+            'spatial_coverage_box': {'type': 'literal', 'value': '-70.5397 -10.4515 -57.4443 0.018'},
+            'spatial_coverage_point': {'type': 'literal', 'value': '42.2 55.7, 66 180, 50 50'},
+            'spatial_coverage_line': {'type': 'literal', 'value': '39.3280 120.1633 40.445 123.7878'},
+            'spatial_coverage_polygon': {'type': 'literal', 'value': '39.3280 120.1633 40.445 123.7878 41 121 39.77 122.42 39.3280 120.1633'},
+            'temporal_coverage': {'type': 'literal', 'value': '2015-05-27/2015-06-20'},
+            'id': {'type': 'literal', 'value': 'urn:uuid:696f9141-4e1a-5270-8c94-b0aabe0bbee7'},
+            'keywords': {'type': 'literal', 'value': 'keyword1,keyword2,keyword3'}
+        }
+        result = self.search.convert_result(test_result)
+        result.urls.sort()
+        self.assertIsInstance(result, search.SearchResult)
+        self.assertEqual(len(result.geometry['geometry_collection'].geometries), 6)
+        self.assertEqual(len(result.geometry['text']), 2)
+        self.assertEqual(result.geometry['text'], ['Antarctica', 'Greenland'])
+        self.assertEqual(
+            result.geometry['geometry_collection'].geometries,
+            GeometryCollection([
+                Point(42, 55.7),
+                Point(66, 180),
+                Point(50, 50),
+                LineString([(39.3280, 120.1633), (40.445, 123.7878)]),
+                Polygon([(39.3280, 120.1633), (40.445, 123.7878), (41, 121), (39.77, 122.42), (39.3280, 120.1633)]),
+                Polygon([(-57.4443, -10.4515), (-57.4443, 0.018), (-70.5397, 0.018), (-70.5397, -10.4515)])
+            ]).geometries)
         self.assertEqual(result.source, "Gleaner")
