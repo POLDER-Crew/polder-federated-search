@@ -155,13 +155,17 @@ class SolrDirectSearch(SearcherBase):
             datasource = helper.get_original_dataone_sources()[
                 self.data_source_key]
 
+        # Assure that author is a list
+        author = []
+        author.append(result.pop('author', []))
+
         return SearchResult(
             score=result.pop('score'),
             title=result.pop('title', None),
             id=identifier,
             datasource=datasource,
             abstract=result.pop('abstract', ""),
-            author=result.pop('author', []),
+            author=author,
             doi=doi,
             keywords=result.pop('keywords', []),
             origin=result.pop('origin', []),
