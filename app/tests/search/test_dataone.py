@@ -319,7 +319,7 @@ class TestSolrDirectSearch(unittest.TestCase):
         self.assertEqual(
             test_obj_2.geometry['geometry_collection'].type, 'Point')
         self.assertEqual(
-            test_obj_2.geometry['geometry_collection'].coordinates, (76.7067, -105.5341))
+            test_obj_2.geometry['geometry_collection'].coordinates, (-105.5341, 76.7067))
 
     def test_original_datasource(self):
 

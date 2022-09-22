@@ -139,7 +139,7 @@ class SolrDirectSearch(SearcherBase):
         if boundingbox:
             # Make a Point if the (north and south) and (east and west) have the same coordinates
             if boundingbox['north'] == boundingbox['south'] and boundingbox['east'] == boundingbox['west']:
-                bbox = Point(coordinates=(boundingbox['north'], boundingbox['east'])
+                bbox = Point(coordinates=(boundingbox['east'], boundingbox['north'])
                                  )
             else:
                 bbox = SearchResult.polygon_from_box(boundingbox)
