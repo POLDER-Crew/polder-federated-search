@@ -103,9 +103,9 @@ class GleanerSearch(SearcherBase):
                 OPTIONAL {{
                     
                     {{ ?s schema:creator/schema:name ?author . }} UNION {{
-                    ?catalog ?relationship ?s .
-                    ?catalog schema:creator/schema:name ?author .
-                }}
+                        ?catalog ?relationship ?s .
+                        ?catalog schema:creator/schema:name ?author .
+                    }}
                     FILTER(ISLITERAL(?author)) .
                 }}
                 {filter_query}
@@ -132,11 +132,11 @@ class GleanerSearch(SearcherBase):
                 ?keywords 
                 ?license 
                 ?spatial_coverage_text
-                 ?spatial_coverage_polygon
-                 ?spatial_coverage_line
-                 ?spatial_coverage_box
-                 ?spatial_coverage_circle
-                 ?spatial_coverage_point
+                ?spatial_coverage_polygon
+                ?spatial_coverage_line
+                ?spatial_coverage_box
+                ?spatial_coverage_circle
+                ?spatial_coverage_point
                 ?author
             {{
                 {{
@@ -282,8 +282,8 @@ class GleanerSearch(SearcherBase):
 
     # schema:GeoShape lines and polygons are represented as lists of
     # points represented by lat/lon pairs. This converts such a list
-    # into a list of tuples in the format that PyGeoJSON exoects:
-    # (lat, lon)
+    # into a list of tuples in the format that PyGeoJSON expects:
+    # (lon, lat)
     def _build_coords_from_list(self, plist):
         points = plist.split(' ')
         return [(points[i+1], points[i])
@@ -356,8 +356,8 @@ class GleanerSearch(SearcherBase):
             geometry['polygon'] = []
 
         if len(geometry['box']):
-            def _build_bbox_from_list(blist):
-                coords = blist.split(' ')
+            def _build_bbox_polygon_from_points(plist):
+                coords = plist.split(' ')
                 return SearchResult.polygon_from_box({
                     'south': coords[0],
                     'west': coords[1],
@@ -365,7 +365,7 @@ class GleanerSearch(SearcherBase):
                     'east': coords[3]
                 })
             geometry['box'] = list(
-                map(_build_bbox_from_list, geometry['box'].split(',')))
+                map(_build_bbox_polygon_from_points, geometry['box'].split(',')))
         else:
             geometry['box'] = []
 
@@ -382,7 +382,13 @@ class GleanerSearch(SearcherBase):
         result['geometry'] = {
             'text': geometry['text'],
             # put our lists into one big bag of geometries to put on a map
-            'geometry_collection': GeometryCollection(geometry['point'] + geometry['line'] + geometry['polygon'] + geometry['box'] + geometry['circle'])
+            'geometry_collection': GeometryCollection(
+                geometry['point'] +
+                geometry['line'] +
+                geometry['polygon'] +
+                geometry['box'] +
+                geometry['circle']
+            )
         }
         result['source'] = "Gleaner"
         return SearchResult(**result)
