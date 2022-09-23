@@ -116,7 +116,7 @@ GDB_JAVA_OPTS: >-
   -Dreuse.vars.in.subselects=true
 
 sentryEnvironment: production
-googleAnalyticsId: UA-234464538-2
+googleAnalyticsId: G-6XZ31PHHSZ
 
 storageNamespace: polder
 
