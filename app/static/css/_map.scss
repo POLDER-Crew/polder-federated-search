@@ -3,7 +3,9 @@
 .map__container {
     display: flex;
     flex-flow: row wrap;
+    padding: 0 3rem;
 }
+
 .map {
     flex: 1;
     height: 400px;
