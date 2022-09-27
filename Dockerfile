@@ -10,12 +10,15 @@ WORKDIR /app
 
 COPY . .
 
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
-    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
-    apt-get update && \
-    apt-get install -qq -y yarn
-RUN yarn install
-RUN yarn docker
+# get the PPA that has an actual node version from this decade
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
+
+RUN apt-get update
+RUN apt-get install -qqy nodejs
+RUN corepack enable \
+    && yarn install \
+    && yarn docker \
+    && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 8000
 CMD ["gunicorn", "--conf", "gunicorn_conf.py", "--bind", "0.0.0.0:8000", "main:app"]
