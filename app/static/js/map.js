@@ -265,11 +265,16 @@ const displayResult = function (map, pixel) {
     }
 };
 
+const mapContainer = $(".map__container");
+const arcticScreenReaderList = $("#map__screenreader--arctic");
+const antarcticScreenReaderList = $("#map__screenreader--antarctic");
+
+
 export function initializeMaps() {
     arcticResultsSource.clear(true);
     antarcticResultsSource.clear(true);
 
-    $(".map__container").removeClass("hidden");
+    mapContainer.removeClass("hidden");
 
 
     if (!arcticMap) {
@@ -301,6 +306,7 @@ export function initializeMaps() {
                 [new Attribution({collapsible: true,})]
             ),
         });
+
         antarcticMap.on("click", function (evt) {
             displayResult(antarcticMap, evt.pixel);
         });
@@ -308,6 +314,7 @@ export function initializeMaps() {
 }
 
 export function addSearchResult(name, geometry) {
+
     const arcticFeature = new GeoJSON().readFeature(geometry, {
         // If your tileset is using the default projection, don't need the next two lines.
         dataProjection: getProjection("ESPG:4326"),
@@ -324,6 +331,7 @@ export function addSearchResult(name, geometry) {
         // Can we reproject it in GeoSPARQL or something?
         arcticFeature.set("name", name);
         arcticResultsSource.addFeature(arcticFeature);
+        arcticScreenReaderList.append(`<li>${name}</li>`);
     }
 
     const antarcticFeature = new GeoJSON().readFeature(geometry, {
@@ -341,5 +349,6 @@ export function addSearchResult(name, geometry) {
         // todo: let's set these in the geojson on the server side.
         antarcticFeature.set("name", name);
         antarcticResultsSource.addFeature(antarcticFeature);
+        antarcticScreenReaderList.append(`<li>${name}</li>`);
     }
 }
