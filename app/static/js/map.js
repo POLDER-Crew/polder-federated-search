@@ -2,6 +2,7 @@ import $ from "jquery";
 import proj4 from "proj4";
 import { applyStyle, stylefunction } from "ol-mapbox-style";
 
+import {Attribution, defaults as defaultControls} from 'ol/control';
 import { containsExtent } from "ol/extent";
 import GeoJSON from "ol/format/GeoJSON";
 import MVT from "ol/format/MVT";
@@ -53,6 +54,7 @@ proj4.defs([
 ]);
 register(proj4);
 
+// Polar projections; if you're sticking to Mercator, you don't need these.
 let arcticProjection = getProjection("EPSG:3573");
 arcticProjection.setExtent(arcticExtentBoundary);
 
@@ -269,11 +271,15 @@ export function initializeMaps() {
 
     $(".map__container").removeClass("hidden");
 
+
     if (!arcticMap) {
         arcticMap = new Map({
             target: "map--arctic",
             view: arcticView,
             layers: [arcticLayer, arcticResultsLayer],
+            controls: defaultControls({attribution: false}).extend(
+                [new Attribution({collapsible: true})]
+            ),
         });
 
         arcticMap.on("click", function (evt) {
@@ -291,6 +297,9 @@ export function initializeMaps() {
                 antarcticPlacesLayer,
                 antarcticResultsLayer,
             ],
+            controls: defaultControls({attribution: false}).extend(
+                [new Attribution({collapsible: true,})]
+            ),
         });
         antarcticMap.on("click", function (evt) {
             displayResult(antarcticMap, evt.pixel);
