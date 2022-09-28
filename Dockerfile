@@ -10,10 +10,15 @@ WORKDIR /app
 
 COPY . .
 
-RUN apt-get update && apt-get install -qq -y gcc nodejs npm
-RUN npm i -g corepack
-RUN yarn install
-RUN yarn docker
+# get the PPA that has an actual node version from this decade
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
+
+RUN apt-get update
+RUN apt-get install -qqy nodejs
+RUN corepack enable \
+    && yarn install \
+    && yarn docker \
+    && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 8000
 CMD ["gunicorn", "--conf", "gunicorn_conf.py", "--bind", "0.0.0.0:8000", "main:app"]
