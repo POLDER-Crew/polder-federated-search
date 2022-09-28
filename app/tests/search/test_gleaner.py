@@ -130,6 +130,17 @@ class TestGleanerSearch(unittest.TestCase):
             "FILTER(?end_date <= '2023-03-31'^^xsd:date)", self.search.query)
         self.assertIn("OFFSET 50", self.search.query)
 
+
+    @patch('SPARQLWrapper.SPARQLWrapper.query')
+    def test_search_author_name(self, query):
+        query.return_value = self.mock_query
+        results = self.search.combined_search(
+            text="test",
+            author = 'Anonymous'
+        )
+
+        self.assertIn("CONTAINS(?author, '''Anonymous''')", self.search.query)
+
     @patch('SPARQLWrapper.SPARQLWrapper.query')
     def test_combined_search(self, query):
         query.return_value = self.mock_query

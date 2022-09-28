@@ -43,6 +43,8 @@ def _get_date_from_args(arg_name, kwargs):
 def _do_combined_search(template, **kwargs):
     sanitized_kwargs = {}
     sanitized_kwargs['text'] = kwargs.pop('text', None)
+    sanitized_kwargs['author'] = kwargs.pop('author',None)
+    
     # Human-readable pages start at 1
     sanitized_kwargs['page_number'] = int(kwargs.pop('page', 1))
 

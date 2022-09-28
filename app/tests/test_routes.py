@@ -44,6 +44,7 @@ class TestRoutes(unittest.TestCase):
 
         expected = {
             'text': 'Greenland',
+            'author': None,
             'page_number': 2,
             'start_min': start_min,
             'start_max': start_max,
@@ -72,6 +73,7 @@ class TestRoutes(unittest.TestCase):
 
         expected = {
             'text': 'walrus',
+            'author': None,
             'page_number': 5,
             'start_min': start_min,
             'start_max': start_max,
@@ -95,6 +97,7 @@ class TestRoutes(unittest.TestCase):
 
         expected = {
             'text': None,
+            'author': None,
             'page_number': 1,
             'start_min': None,
             'start_max': None,
@@ -117,6 +120,7 @@ class TestRoutes(unittest.TestCase):
 
         expected = {
             'text': None,
+            'author': None,
             'page_number': 42,
             'start_min': None,
             'start_max': None,
@@ -140,6 +144,7 @@ class TestRoutes(unittest.TestCase):
 
         expected = {
             'text': 'walrus',
+            'author': None,
             'page_number': 1,
             'start_min': None,
             'start_max': None,
@@ -168,6 +173,7 @@ class TestRoutes(unittest.TestCase):
 
         expected = {
             'text': None,
+            'author': None,
             'page_number': 1,
             'start_min': start_min,
             'start_max': None,
@@ -237,6 +243,7 @@ class TestRoutes(unittest.TestCase):
 
         expected = {
             'text': None,
+            'author': None,
             'page_number': 1,
             'start_min': start_min,
             'start_max': None,

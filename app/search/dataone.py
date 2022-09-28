@@ -34,6 +34,16 @@ class SolrDirectSearch(SearcherBase):
         else:
             return ""
 
+
+    @staticmethod
+    def _build_author_filter_query(author=None):
+        if author:
+            return f"&q=originText:"+author
+        else:
+            return ""
+
+
+
     @staticmethod
     def _build_date_filter_query(start_min=None, start_max=None, end_min=None, end_max=None):
         # convert our dates to the string representation of an ISO instant that Solr wants
@@ -98,7 +108,9 @@ class SolrDirectSearch(SearcherBase):
         end_min = kwargs.pop('end_min', None)
         end_max = kwargs.pop('end_max', None)
         page_number = kwargs.pop('page_number', 0)
+        author = kwargs.pop('author',None)
         query = self._build_text_search_query(text)
+        query += self._build_author_filter_query(author)
         query += self._build_date_filter_query(
             start_min, start_max, end_min, end_max)
         query = SolrDirectSearch.build_query(query, page_number)

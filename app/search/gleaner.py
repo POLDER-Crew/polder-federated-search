@@ -108,6 +108,7 @@ class GleanerSearch(SearcherBase):
                     }}
                     FILTER(ISLITERAL(?author)) .
                 }}
+                
                 {filter_query}
                 BIND(COALESCE(?identifier, ?s) AS ?id)
             }}
@@ -162,6 +163,16 @@ class GleanerSearch(SearcherBase):
                 luc:query '''{text}''' ;
                 luc:entities ?s .
                 ?s luc:score ?relevance .
+            """
+        else:
+            # A blank search in this doesn't filter results, it just takes longer.
+            return ""
+
+    @staticmethod
+    def _build_author_search_query(author=None):
+        if author:
+            return f"""
+                FILTER CONTAINS(?author, '''{author}''') . 
             """
         else:
             # A blank search in this doesn't filter results, it just takes longer.
@@ -242,6 +253,7 @@ class GleanerSearch(SearcherBase):
 
     def text_search(self, **kwargs):
         text = kwargs.pop('text', None)
+        author = kwargs.pop('author',None)
         page_number = kwargs.pop('page_number', 0)
 
         user_query = GleanerSearch._build_text_search_query(text)
@@ -265,6 +277,8 @@ class GleanerSearch(SearcherBase):
 
     def combined_search(self, **kwargs):
         text = kwargs.pop('text', None)
+        author = kwargs.pop('author', None)
+
         start_min = kwargs.pop('start_min', None)
         start_max = kwargs.pop('start_max', None)
         end_min = kwargs.pop('end_min', None)
@@ -274,10 +288,13 @@ class GleanerSearch(SearcherBase):
         date_query = GleanerSearch._build_date_filter_query(
             start_min, start_max, end_min, end_max)
         text_query = GleanerSearch._build_text_search_query(text)
+        author_query = GleanerSearch._build_author_search_query(author)
 
         # Assigning this to a class member makes it easier to test
-        self.query = GleanerSearch.build_query(
-            text_query, date_query, page_number)
+
+        self.query = GleanerSearch.build_query(text_query, date_query+author_query, page_number)
+
+
         return self.execute_query(page_number)
 
     # schema:GeoShape lines and polygons are represented as lists of
@@ -392,3 +409,4 @@ class GleanerSearch(SearcherBase):
         }
         result['source'] = "Gleaner"
         return SearchResult(**result)
+ 

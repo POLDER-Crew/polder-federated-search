@@ -114,3 +114,4 @@ $(document).ready(function () {
   $("form.search").submit(searchFormSubmit);
   $(".pagination").click(paginate);
 });
+
