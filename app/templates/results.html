@@ -18,7 +18,7 @@
         <!-- todo: separate out the result locations and template rendering
          so that we aren't calling these from each result object directly. This feels kind of gross. -->
         <script type="text/javascript">
-          resultGeometries["{{ result.title }}"] = {{ result.geometry | tojson | safe }};
+          resultGeometries["{{ result.title }}"] = {{ result.geometry.geometry_collection | tojson | safe }};
         </script>
       {% endif %}
       {% if result.doi %}
@@ -34,6 +34,12 @@
         </h3>
       </a>
       
+      {% if result.geometry and result.geometry.text %}
+        <h4>Location:</h4>
+        {% for text in result.geometry.text %}
+          {{text}}{{ ", " if not loop.last else "" }}
+        {% endfor %}
+      {% endif %}
 
       {% if result.keywords %}
         <p class="result__keywords">

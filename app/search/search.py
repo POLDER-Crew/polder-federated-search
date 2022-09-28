@@ -1,4 +1,5 @@
-from pygeojson import Point,Polygon
+from pygeojson import Polygon
+
 
 class SearchResult:
     """ A class representing each search result, so that we can have
@@ -22,36 +23,35 @@ class SearchResult:
         self.id = kwargs.pop('id')
         self.datasource = kwargs.pop('datasource', None)
         self.geometry = kwargs.pop('geometry', '')
-        self.author = kwargs.pop('author',[])
+        self.author = kwargs.pop('author', [])
         self.license = kwargs.pop('license', None)
         # May or may not be the same as the ID
         self.doi = kwargs.pop('doi', None)
         self.spatial_coverage = kwargs.pop('spatial_coverage', None)
-        self.temporal_coverage = kwargs.pop('temporal_coverage', "").split(', ')
+        self.temporal_coverage = kwargs.pop(
+            'temporal_coverage', "").split(', ')
         self.score = float(kwargs.pop('score'))
         # Good for debugging
         self.source = kwargs.pop('source', 'Anonymous')
 
         # Format and remove blank terms and duplicates
-        self.temporal_coverage = [t.replace('/', ' to ') for t in self.temporal_coverage if t]
+        self.temporal_coverage = [
+            t.replace('/', ' to ') for t in self.temporal_coverage if t]
         self.keywords = [k for k in self.keywords if k]
         self.author = [a for a in self.author if a]
         self.urls = list(set(x for x in self.urls if x))
         # If we have a DOI somewhere, use it as much as possible
-        prefixes = ['doi:','http://dx.doi.org/',"http://data.g-e-m.dk/datasets?doi=" ]
-
+        prefixes = ['doi:', 'http://dx.doi.org/',
+                    "http://data.g-e-m.dk/datasets?doi="]
 
         if not self.doi:
             for x in prefixes:
                 if self.id and self.id.startswith(x):
                     self.doi = self.id
                     break
-                elif any((match := url).startswith(x) for url in self.urls) :
+                elif any((match := url).startswith(x) for url in self.urls):
                     self.doi = 'doi:' + match.lstrip(x)
                     break
-
-        
-                
 
     """ Methods to make these sortable """
 
@@ -80,6 +80,21 @@ class SearchResult:
     def __str__(self):
         return f"Search Result from {self.source}: {self.id} with score {self.score}"
 
+    """ Helper to convert a bounding box (common in search results) to a GeoJSON Polygon """
+    @staticmethod
+    def polygon_from_box(boundingbox):
+        # Make a polygon with points in a counter clockwise motion and close
+        # the polygon by ending with the starting point
+        return Polygon(
+            coordinates=[
+                [(boundingbox['east'], boundingbox['south']),
+                 (boundingbox['east'], boundingbox['north']),
+                    (boundingbox['west'], boundingbox['north']),
+                    (boundingbox['west'], boundingbox['south']),
+                    (boundingbox['east'], boundingbox['south']) ]
+            ]
+        )
+
 
 class SearchResultSet:
     """ A class to represent a set of search results, so that we can
@@ -88,7 +103,7 @@ class SearchResultSet:
 
     def __init__(self, **kwargs):
         self.total_results = kwargs.pop('total_results', 0)
-        self.available_pages= kwargs.pop('available_pages', 0)
+        self.available_pages = kwargs.pop('available_pages', 0)
 
         # NOTE: Page numbers start counting from 1, because this number gets exposed
         # to the user, and people who are not programmers are weirded out by 0-indexed things

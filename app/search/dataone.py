@@ -3,7 +3,7 @@ from urllib.parse import quote
 import json
 import logging
 import math
-from pygeojson import Point, Polygon
+from pygeojson import Point
 import requests
 from .search import SearcherBase, SearchResultSet, SearchResult
 from app import app
@@ -118,7 +118,7 @@ class SolrDirectSearch(SearcherBase):
         return self.execute_query(query, page_number)
 
     def convert_result(self, result):
-        datasource = dict() 
+        datasource = dict()
         urls = []
         identifier = result.pop('id', None)
         # The landing page for DataONE datasets is always here
@@ -144,43 +144,40 @@ class SolrDirectSearch(SearcherBase):
             end = datetime.fromisoformat(result.pop('endDate').rstrip('Z'))
             result['temporal_coverage'] = datetime.date(
                 begin).isoformat() + "/" + datetime.date(end).isoformat()
+
         boundingbox = {'south': result.pop('southBoundCoord', None), 'north': result.pop(
             'northBoundCoord', None), 'west': result.pop('westBoundCoord', None), 'east': result.pop('eastBoundCoord', None)}
 
         if boundingbox:
             # Make a Point if the (north and south) and (east and west) have the same coordinates
             if boundingbox['north'] == boundingbox['south'] and boundingbox['east'] == boundingbox['west']:
-                geometry = Point(coordinates=(boundingbox['north'], boundingbox['east'])
+                bbox = Point(coordinates=(boundingbox['east'], boundingbox['north'])
                                  )
             else:
-                # Make a polygon with points in a counter clockwise motion and close the polygon by ending with the starting point
-                geometry = Polygon(
-                    coordinates=[
-                        [(boundingbox['east'], boundingbox['south']),
-                         (boundingbox['east'], boundingbox['north']),
-                            (boundingbox['west'], boundingbox['north']),
-                            (boundingbox['west'], boundingbox['south']),
-                            (boundingbox['east'], boundingbox['south']), ]
-                    ]
-                )
+                bbox = SearchResult.polygon_from_box(boundingbox)
+
+        geometry = {
+            # Named places, in DataONE results
+            'text': result.pop('placeKey', None),
+            'geometry_collection': bbox
+        }
         # passing the dictionary with the original data sources
-        self.data_source_key =  result.pop('datasource', '').lstrip("urn:node:")
+        self.data_source_key = result.pop('datasource', '').lstrip("urn:node:")
         if self.data_source_key in helper.get_original_dataone_sources():
-            datasource = helper.get_original_dataone_sources()[self.data_source_key]
-        
-            
+            datasource = helper.get_original_dataone_sources()[
+                self.data_source_key]
 
-
+        # Assure that author is a list
+        author = []
+        author.append(result.pop('author', []))
 
         return SearchResult(
             score=result.pop('score'),
             title=result.pop('title', None),
             id=identifier,
-            datasource = datasource,
+            datasource=datasource,
             abstract=result.pop('abstract', ""),
-            # But there is a named place available, in addition to the bounding box, which is what is being used here
-            spatial_coverage=result.pop('placeKey', None),
-            author=result.pop('author', []),
+            author=author,
             doi=doi,
             keywords=result.pop('keywords', []),
             origin=result.pop('origin', []),

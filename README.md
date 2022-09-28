@@ -137,7 +137,7 @@ A few of the setup and maintenence steps for the Polder Federated Search App req
 I'd love for people to use this for all kinds of scientific data repository searches - please feel free to fork it, submit a PR, or ask questions. The [Customization](https://polder-crew.github.io/Federated-Search-Documentation/customization.html) section of the book will be particularly useful to you.
 
 #### Building
-To build the Docker image for the web app, run `docker image build . `.
+To build the Docker image for the web app, run `docker image build . `. For multi-architecture support, run `docker buildx build --no-cache --pull --platform=linux/arm64,linux/amd64 .`.
 
 #### Setup
 Assuming that you're starting from **this directory**:
