@@ -12,27 +12,31 @@
             <span class="validity"></span>
         </div>
         <fieldset class="search__field">
-            <legend class="search__label">Search for date ranges representing when data was collected:</legend>
+            <legend class="search__label">Search for date ranges representing when data was collected</legend>
             <div class="date-picker__group">
-                {% with id="start_min", label_text="Starting on or after:" %}
+                <legend class="search__label">Data collection began between</legend>
+                {% with id="start_min", label_text="Start date:" %}
                     {% include 'partials/date-picker.html' %}
                 {% endwith %}
-                {% with id="start_max", label_text="Starting on or before:" %}
+                <div class="date-picker__and">and</div>
+                {% with id="start_max", label_text="End date:" %}
                     {% include 'partials/date-picker.html' %}
                 {% endwith %}
             </div>
             <div class="date-picker__group">
-                {% with id="end_min", label_text="Ending on or after:" %}
+                <legend class="search__label">Data collection ended between</legend>
+                {% with id="end_min", label_text="Start date:" %}
                     {% include 'partials/date-picker.html' %}
                 {% endwith %}
-                {% with id="end_max", label_text="Ending on or before:" %}
+                <div class="date-picker__and">and</div>
+                {% with id="end_max", label_text="End date:" %}
                     {% include 'partials/date-picker.html' %}
                 {% endwith %}
             </div>
             
         </fieldset>
         <div class="search__field">
-           <label class="search__label author" for="author">Search for Author Name </label>
+           <label class="search__label author" for="author">Search for authors named:</label>
         <input name="author" id="author"> 
 
         </div>

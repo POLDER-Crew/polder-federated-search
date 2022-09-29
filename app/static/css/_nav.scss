@@ -5,8 +5,7 @@
     background-color: constants.$soft-white;
     border-bottom: 2px solid constants.$light-blue;
     margin: 0;
-    padding: 0.5rem;
-    padding-bottom: 0.25rem;
+    padding: 0.25rem 0.5rem;
 
     @include constants.breakpoint(medium-and-up) {
         padding: 1rem;

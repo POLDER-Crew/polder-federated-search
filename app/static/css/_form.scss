@@ -2,6 +2,7 @@
 
 .search__header {
     color: constants.$dark-blue;
+    font-weight: normal;
     padding: 0 0.25rem;
 
     @include constants.breakpoint(medium-and-up) {
@@ -18,6 +19,11 @@
 
 .search__label {
     font-weight: constants.$font-weight-bold;
+    padding: 0.6rem 0;
+}
+
+.search__label--secondary {
+    font-weight: constants.$font-weight-normal;
     padding: 0.6rem 0;
 }
 
@@ -92,11 +98,11 @@
 .date-picker {
     justify-content: flex-start;
     margin: 0;
-    padding: 0.5rem 0;
 }
 
 .date-picker__group {
     flex: 0 1 auto;
+    padding: 0.5rem 0;
 }
 
 

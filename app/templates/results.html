@@ -85,7 +85,7 @@
         <h4>Abstract:</h4>
         {{ result.abstract|safe}}
 
-        {% if result.geometry %}
+        {% if result.geometry and result.geometry.text %}
               <div class="location">
                 <h4>Location:</h4>
                   <span class="result__location">{{ result.geometry.coordinates }}</span>
@@ -115,13 +115,9 @@
       </div>
       <!-- only show the buttons if javascript is enabled (nojs not defined) -->
       {% if nojs is not defined %}
-        <button class="show_more_button" >Show more</button>
-        <button class="show_less_button" >Show less</button>
+        <button class="show_more_button">Show more</button>
+        <button class="show_less_button">Show less</button>
       {% endif %}
-      
-
-
-     
      
       {% for url in result.urls[1:] %}
         {% if loop.first %}Alternate sources for this data:{% endif %}
