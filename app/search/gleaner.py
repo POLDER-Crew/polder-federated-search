@@ -85,10 +85,11 @@ class GleanerSearch(SearcherBase):
                 }}
                OPTIONAL {{
 
-                    {{ ?s schema:license ?license . }} UNION {{
+                    {{ ?s schema:license | schema:license/schema:license ?license . }} UNION {{
                     ?catalog ?relationship ?s .
                     ?catalog schema:license ?license .
                 }}
+                    FILTER(ISLITERAL(?license)) .
                 }}
                 OPTIONAL {{
                     ?s schema:url ?url .
