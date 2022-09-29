@@ -1,116 +1,114 @@
 
 {% if result_set.results %}
-<a class="screenreader-text" href="#main-content">
-  skip to results
-</a>
-{% with pages=result_set.available_pages, current_page=result_set.page_number %}
+  <a class="screenreader-text" href="#main-content">
+    skip to results
+  </a>
+
+  {% with pages=result_set.available_pages, current_page=result_set.page_number %}
     {% include 'partials/paginator.html' %}
   {% endwith %}
 
-<script type="text/javascript">
-  resultGeometries = {};
-</script>
+  <script type="text/javascript">
+    resultGeometries = {};
+  </script>
 
    <ul id='main-content' class="results">
-   {% for result in result_set.results %}
-    <li class="result" data-score={{ result.score }} data-source="{{ result.source }}" data-id="{{ result.id }}" id="{{ loop.index }}">
-      {% if result.geometry %}
-        <!-- todo: separate out the result locations and template rendering
-         so that we aren't calling these from each result object directly. This feels kind of gross. -->
-        <script type="text/javascript">
-          resultGeometries["{{ result.title }}"] = {{ result.geometry.geometry_collection | tojson | safe }};
-        </script>
-      {% endif %}
-      {% if result.doi %}
-        <div class="result__doi">
-          <a href="http://doi.org/{{ result.doi }}" class="doi__link" target="_blank" rel="noopener">
-            {{ result.doi }}
-          </a>
-        </div>
-      {% endif %}
-      <a href="{{ result.urls | first }}" target="_blank" rel="noopener">
-        <h3 class="result__title">
-          {{ result.title }}
-        </h3>
-      </a>
-      
-      {% if result.geometry and result.geometry.text %}
-        <h4>Location:</h4>
-        {% for text in result.geometry.text %}
-          {{text}}{{ ", " if not loop.last else "" }}
-        {% endfor %}
-      {% endif %}
-
-      {% if result.keywords %}
-        <p class="result__keywords">
-          <h4>Keywords:</h4>
-          {% for keyword in result.keywords %}
-          {{ keyword }}&nbsp;
-          {% endfor %}
-        </p>
-      {% endif %}
-
-
-     
-       
-      {% if nojs is not defined %}
-        <div class="result_field result--truncated" role="region" aria-expanded="false">
-          <h4>Abstract:</h4>
-          {{ result.abstract|safe|truncate(500) }}
-           
-        </div>
-      {% endif %}
-
-      <div class="result_field result--full" role="region" {% if nojs is not defined %}aria-hidden="true"{% endif %}>
-         {% if result.author %}
-            <div class="author">
-                <h4>Author:</h4>
-                  {% for author in result.author %}
-                    {{ author }}
-                  {% endfor %}
-            </div>
+    {% for result in result_set.results %}
+      <li class="result" data-score={{ result.score }} data-source="{{ result.source }}" data-id="{{ result.id }}" id="{{ loop.index }}">
+        {% if result.geometry %}
+          <!-- todo: separate out the result locations and template rendering
+          so that we aren't calling these from each result object directly. This feels kind of gross. -->
+          <script type="text/javascript">
+            resultGeometries["{{ result.title }}"] = {{ result.geometry.geometry_collection | tojson | safe }};
+          </script>
         {% endif %}
 
-        {% if result.temporal_coverage %}
-        <div class="timespan_covered"> 
-          <h4>Timespans covered:</h4>
-              <ul class="result__temporal-coverage">
-                    {% for time in result.temporal_coverage %}
-                    <li>{{ time }}</li>
-                  {% endfor %}
-              </ul>
+        <div class="result__doi">
+          <!-- making this div appear conditionally makes the result titles appear with an inconsistent top margin -->
+          {% if result.doi %}
+            <a href="http://doi.org/{{ result.doi }}" class="doi__link" target="_blank" rel="noopener">
+              {{ result.doi }}
+            </a>
+          {% endif %}
         </div>
-      {% endif %}
-      
-        <h4>Abstract:</h4>
-        {{ result.abstract|safe}}
+
+        <a href="{{ result.urls | first }}" target="_blank" rel="noopener">
+          <h3 class="result__title">
+            {{ result.title }}
+          </h3>
+        </a>
 
         {% if result.geometry and result.geometry.text %}
-              <div class="location">
-                <h4>Location:</h4>
-                  <span class="result__location">{{ result.geometry.coordinates }}</span>
-              </div>
+          <h4>Location:</h4>
+          {% for text in result.geometry.text %}
+            {{text}}
+          {% endfor %}
         {% endif %}
 
-        {% if result.license %}
-              <div class="license">
-                <h4>License:</h4>
-                  {{ result.license }}
-
-
-              </div>
+        {% if result.keywords %}
+          <p class="result__keywords">
+            <h4>Keywords:</h4>
+            {% for keyword in result.keywords %}
+              {{ keyword }}{{ ", " if not loop.last else "" }}
+            {% endfor %}
+          </p>
         {% endif %}
-        {% if result.datasource %}
-              <div class="data_source">
-                <h4>Original Source:</h4>
-                  {{ result.datasource['name'] }}
-                  <a href="{{ result.datasource['url'] }}" rel="noopener" target="_blank">
-                    {% if result.datasource['logo'] %}
-                        <img class="{{ result.datasource['key'] }}" src="{{ result.datasource['logo'] }}" alt="{{ result.datasource['name'] }}">
-                     {% endif %}
-                  </a>
-              </div>
+       
+        {% if nojs is not defined %}
+          <div class="result_field result--truncated" role="region" aria-expanded="false">
+            <h4>Abstract:</h4>
+              {{ result.abstract|safe|truncate(500) }}
+          </div>
         {% endif %}
+
+        <div class="result_field result--full" role="region" {% if nojs is not defined %}aria-hidden="true"{% endif %}>
+          {% if result.author %}
+            <div class="author">
+              <h4>Author(s):</h4>
+                {% for author in result.author %}
+                  {{ author }}{{ ", " if not loop.last else "" }}
+                {% endfor %}
+            </div>
+          {% endif %}
+
+          {% if result.temporal_coverage %}
+            <div class="timespan_covered">
+              <h4>Timespan(s) covered:</h4>
+                <ul class="result__temporal-coverage">
+                  {% for time in result.temporal_coverage %}
+                    <li>{{ time }}</li>
+                  {% endfor %}
+                </ul>
+            </div>
+          {% endif %}
+      
+          <h4>Abstract:</h4>
+          {{ result.abstract|safe}}
+
+          {% if result.geometry and result.geometry.text %}
+            <div class="location">
+              <h4>Location:</h4>
+              <span class="result__location">{{ result.geometry.coordinates }}</span>
+            </div>
+          {% endif %}
+
+          {% if result.license %}
+            <div class="license">
+              <h4>License:</h4>
+              {{ result.license }}
+            </div>
+          {% endif %}
+
+          {% if result.datasource %}
+            <div class="data_source">
+              <a class="data_source__link" href="{{ result.datasource['url'] }}" rel="noopener" target="_blank">
+                {{ result.datasource['name'] }}
+                {% if result.datasource['logo'] %}
+                  <img class="data_source__image {{ result.datasource['key'] }}" src="{{ result.datasource['logo'] }}" alt="{{ result.datasource['name'] }}">
+                {% endif %}
+              </a>
+            </div>
+          {% endif %}
         
       </div>
       <!-- only show the buttons if javascript is enabled (nojs not defined) -->
@@ -137,10 +135,10 @@
   {% endwith %}
 
 {% else %} {# No search results were returned. #}
-<div onclick="ga('send', 'event', 'Link', 'ZeroResults', 'example.com')" class="results results--empty">
-  <h3 id='zeroSearchResultsContainer'>No results were returned for your search.</h3>
-  {% if nojs %}
-    <a class="result__url" href="{{ url_for('home') }}">Please try again.</a>
-  {% endif %}
-</div>
+  <div onclick="ga('send', 'event', 'Link', 'ZeroResults', 'example.com')" class="results results--empty">
+    <h3 id='zeroSearchResultsContainer'>No results were returned for your search.</h3>
+    {% if nojs %}
+      <a class="result__url" href="{{ url_for('home') }}">Please try again.</a>
+    {% endif %}
+  </div>
 {% endif %}
