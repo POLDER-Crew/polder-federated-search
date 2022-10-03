@@ -18,6 +18,8 @@ import VectorTileSource from "ol/source/VectorTile";
 import { Circle, Text, Fill, Stroke, Style } from "ol/style";
 import View from "ol/View";
 
+const pixel_ratio = parseInt(window.devicePixelRatio) || 1;
+
 // PROJECTIONS: If you are using default map projections, you don't need any of this stuff.
 const arcticExtent = 6378137 * Math.PI; // Extent is half of the WGS84 Ellipsoid equatorial circumference.
 const arcticExtentBoundary = [
@@ -26,6 +28,7 @@ const arcticExtentBoundary = [
     arcticExtent,
     arcticExtent,
 ];
+
 const arcticTileSize = 512;
 const arcticMaxZoom = 18;
 
@@ -39,9 +42,8 @@ const antarcticExtentBoundary = [
 const antarcticTileSize = 256;
 const antarcticMaxZoom = 16;
 
-const pixel_ratio = parseInt(window.devicePixelRatio) || 1;
-
-// Set up the map projections for standard polar views.
+// Set up the map projections for standard polar views. If you're using Mercator,
+// you can delete these.
 proj4.defs([
     [
         "EPSG:3573",
@@ -62,8 +64,8 @@ let antarcticProjection = getProjection("EPSG:3031");
 antarcticProjection.setExtent(antarcticExtentBoundary);
 
 
-// EXTRA PLACES: if your map tiles include all the place names you want already, you don't need any of this stuff.
-// Places and countries styles for the antarctic map
+// EXTRA PLACES: Places and countries styles for the antarctic map.
+// If your map tiles include all the place names you want already, you don't need these.
 const placesTextFill = new Fill({ color: "#222" });
 const countriesTextFill = new Fill({ color: "#ac46ac" });
 const placesTextStroke = new Stroke({
@@ -95,7 +97,7 @@ const countriesTextStyle = function (feature) {
     });
 };
 
-// SEARCH RESULTS: customize these styles to match your colors
+// SEARCH RESULTS: customize these styles to match your colors and preferences
 const accentWarm = "#e66b3d"; // see _constants.scss
 const resultStroke = new Stroke({ color: accentWarm, width: 2 });
 const resultFill = new Fill({
@@ -125,6 +127,8 @@ const resultStyle = function (feature) {
 function getMinResolution(extent, tileSize, maxZoom) {
     return extent / (tileSize / 2) / Math.pow(2, maxZoom);
 }
+
+// VIEWS: if you have one map, you only need one view.
 
 // This tileset does not work correctly when you specify a projection for some reason,
 // even though it uses a non-standard projection.
@@ -188,6 +192,7 @@ fetch("/static/maps/style.json").then(function (response) {
     });
 });
 
+// EXTRA PLACES:
 // If your map already has all the place names you want on it, you don't need this part.
 // These two layers are just to put some labels on Antarctica to make
 // the map more usable.
@@ -226,6 +231,7 @@ fetch("/static/maps/countries.geojson").then(function (response) {
     });
 });
 
+// LAYERS:
 // A layer for the search results, on each map. You definitely need this
 // part (although if you only have one map, you only need one of them)
 let arcticResultsSource = new VectorSource({});
@@ -315,6 +321,8 @@ export function initializeMaps(lazy=false) {
 
 export function addSearchResult(name, geometry) {
 
+    // We're adding features twice in here because there are two maps.
+    // If you only have one map, you only need to do this once.
     const arcticFeature = new GeoJSON().readFeature(geometry, {
         // If your tileset is using the default projection, don't need the next two lines.
         dataProjection: getProjection("ESPG:4326"),

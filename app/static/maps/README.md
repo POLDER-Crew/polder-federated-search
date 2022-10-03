@@ -8,7 +8,7 @@ If you want to make your own map styles, you can do it in [Mapbox Studio](https:
 
 We also found some places and geographic features in Antarctica to put on the map, since the tileset we're using from GBIF doesn't have them; that's `places.geojson`, and `countries.geojson` for more zoomed-out views.
 
-Note that the Arctic and Antarctic map use different projections, and neither of them are the default web map projections. If you wish to adapt this app and just have one map, that is web mercator, you can simplify the code quite a bit.
+Note that the Arctic and Antarctic map use different projections, and neither of them are the default web map projections. If you wish to adapt this app and just have one map (most likely web mercator), you can simplify the code quite a bit.
 
 ### Other helpful resources:
 - [MapTiler](https://www.maptiler.com/)
