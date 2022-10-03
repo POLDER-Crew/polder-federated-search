@@ -77,7 +77,7 @@ class GleanerSearch(SearcherBase):
                     ?geo a schema:GeoCoordinates .
                     ?geo schema:longitude ?lon.
                     ?geo schema:latitude ?lat .
-                    BIND(concat('str(?lat), " ", str(?lon)') as ?spatial_coverage_point )  .
+                    BIND(concat(str(?lat), " ", str(?lon)) as ?spatial_coverage_point )  .
                 }}
 
                 OPTIONAL {{
