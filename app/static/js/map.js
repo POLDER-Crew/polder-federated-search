@@ -270,14 +270,14 @@ const arcticScreenReaderList = $("#map__screenreader--arctic");
 const antarcticScreenReaderList = $("#map__screenreader--antarctic");
 
 
-export function initializeMaps() {
+export function initializeMaps(lazy=false) {
     arcticResultsSource.clear(true);
     antarcticResultsSource.clear(true);
 
     mapContainer.removeClass("hidden");
 
 
-    if (!arcticMap) {
+    if (!lazy || !arcticMap) {
         arcticMap = new Map({
             target: "map--arctic",
             view: arcticView,
@@ -292,7 +292,7 @@ export function initializeMaps() {
         });
     }
 
-    if (!antarcticMap) {
+    if (!lazy || !antarcticMap) {
         antarcticMap = new Map({
             target: "map--antarctic",
             view: antarcticView,

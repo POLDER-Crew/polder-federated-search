@@ -45,6 +45,11 @@
       </section>
       {% block js %}
         <script type="module" src="{{ url_for('static', filename='dist/js/index.js') }}"></script>
+        <!-- for the search results showing up on the maps. Temporary until
+        these geometries are returned with an API. -->
+        <script type="text/javascript">
+        let resultGeometries = {};
+    </script>
       {% endblock %}
   </body>
 </html>

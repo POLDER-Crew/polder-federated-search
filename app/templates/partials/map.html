@@ -1,0 +1,25 @@
+{% if nojs is not defined %}
+    <div class="map__container hidden">
+        <div class="map map--arctic" id="map--arctic" tabindex="0" role="region-arctic" aria-roledescription="map">
+            <div class="screenreader-text">
+                A polar-projected map of the Arctic, with boundaries drawn for the spatial coverage of the following datasets:
+                <ul id="map__screenreader--arctic">
+                </ul>
+            </div>
+
+        </div>
+        <div class="map map--antarctic" id="map--antarctic" tabindex="0" role="region-antarctic" aria-roledescription="map">
+            <div class="screenreader-text">
+                A polar-projected map of the Antarctic, with boundaries drawn for the spatial coverage of the following datasets:
+                <ul id="map__screenreader--antarctic">
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- for the search results showing up on the maps. Temporary until
+        these geometries are returned with an API. -->
+    <script type="text/javascript">
+      resultGeometries = {};
+    </script>
+{% endif %}
