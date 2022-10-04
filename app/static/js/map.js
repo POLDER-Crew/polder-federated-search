@@ -271,16 +271,22 @@ const displayResult = function (map, pixel) {
     }
 };
 
-const mapContainer = $(".map__container");
-const arcticScreenReaderList = $("#map__screenreader--arctic");
-const antarcticScreenReaderList = $("#map__screenreader--antarctic");
+const $mapContainer = $(".map__container");
+let $arcticScreenReaderList = $("#map__screenreader--arctic");
+let $antarcticScreenReaderList = $("#map__screenreader--antarctic");
 
 
 export function initializeMaps(lazy=false) {
+    $arcticScreenReaderList = $("#map__screenreader--arctic");
+    $antarcticScreenReaderList = $("#map__screenreader--antarctic");
+
+    $arcticScreenReaderList.empty();
+    $antarcticScreenReaderList.empty();
+
     arcticResultsSource.clear(true);
     antarcticResultsSource.clear(true);
 
-    mapContainer.removeClass("hidden");
+    $mapContainer.removeClass("hidden");
 
 
     if (!lazy || !arcticMap) {
@@ -339,7 +345,7 @@ export function addSearchResult(name, geometry) {
         // Can we reproject it in GeoSPARQL or something?
         arcticFeature.set("name", name);
         arcticResultsSource.addFeature(arcticFeature);
-        arcticScreenReaderList.append(`<li>${name}</li>`);
+        $arcticScreenReaderList.append(`<li>${name}</li>`);
     }
 
     const antarcticFeature = new GeoJSON().readFeature(geometry, {
@@ -357,6 +363,6 @@ export function addSearchResult(name, geometry) {
         // todo: let's set these in the geojson on the server side.
         antarcticFeature.set("name", name);
         antarcticResultsSource.addFeature(antarcticFeature);
-        antarcticScreenReaderList.append(`<li>${name}</li>`);
+        $antarcticScreenReaderList.append(`<li>${name}</li>`);
     }
 }
