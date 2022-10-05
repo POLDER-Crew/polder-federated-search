@@ -2,6 +2,7 @@ import $ from "jquery";
 import proj4 from "proj4";
 import { applyStyle, stylefunction } from "ol-mapbox-style";
 
+import {Attribution, defaults as defaultControls} from 'ol/control';
 import { containsExtent } from "ol/extent";
 import GeoJSON from "ol/format/GeoJSON";
 import MVT from "ol/format/MVT";
@@ -17,6 +18,8 @@ import VectorTileSource from "ol/source/VectorTile";
 import { Circle, Text, Fill, Stroke, Style } from "ol/style";
 import View from "ol/View";
 
+const pixel_ratio = parseInt(window.devicePixelRatio) || 1;
+
 // PROJECTIONS: If you are using default map projections, you don't need any of this stuff.
 const arcticExtent = 6378137 * Math.PI; // Extent is half of the WGS84 Ellipsoid equatorial circumference.
 const arcticExtentBoundary = [
@@ -25,6 +28,7 @@ const arcticExtentBoundary = [
     arcticExtent,
     arcticExtent,
 ];
+
 const arcticTileSize = 512;
 const arcticMaxZoom = 18;
 
@@ -38,9 +42,8 @@ const antarcticExtentBoundary = [
 const antarcticTileSize = 256;
 const antarcticMaxZoom = 16;
 
-const pixel_ratio = parseInt(window.devicePixelRatio) || 1;
-
-// Set up the map projections for standard polar views.
+// Set up the map projections for standard polar views. If you're using Mercator,
+// you can delete these.
 proj4.defs([
     [
         "EPSG:3573",
@@ -53,6 +56,7 @@ proj4.defs([
 ]);
 register(proj4);
 
+// Polar projections; if you're sticking to Mercator, you don't need these.
 let arcticProjection = getProjection("EPSG:3573");
 arcticProjection.setExtent(arcticExtentBoundary);
 
@@ -60,8 +64,8 @@ let antarcticProjection = getProjection("EPSG:3031");
 antarcticProjection.setExtent(antarcticExtentBoundary);
 
 
-// EXTRA PLACES: if your map tiles include all the place names you want already, you don't need any of this stuff.
-// Places and countries styles for the antarctic map
+// EXTRA PLACES: Places and countries styles for the antarctic map.
+// If your map tiles include all the place names you want already, you don't need these.
 const placesTextFill = new Fill({ color: "#222" });
 const countriesTextFill = new Fill({ color: "#ac46ac" });
 const placesTextStroke = new Stroke({
@@ -93,7 +97,7 @@ const countriesTextStyle = function (feature) {
     });
 };
 
-// SEARCH RESULTS: customize these styles to match your colors
+// SEARCH RESULTS: customize these styles to match your colors and preferences
 const accentWarm = "#e66b3d"; // see _constants.scss
 const resultStroke = new Stroke({ color: accentWarm, width: 2 });
 const resultFill = new Fill({
@@ -123,6 +127,8 @@ const resultStyle = function (feature) {
 function getMinResolution(extent, tileSize, maxZoom) {
     return extent / (tileSize / 2) / Math.pow(2, maxZoom);
 }
+
+// VIEWS: if you have one map, you only need one view.
 
 // This tileset does not work correctly when you specify a projection for some reason,
 // even though it uses a non-standard projection.
@@ -186,6 +192,7 @@ fetch("/static/maps/style.json").then(function (response) {
     });
 });
 
+// EXTRA PLACES:
 // If your map already has all the place names you want on it, you don't need this part.
 // These two layers are just to put some labels on Antarctica to make
 // the map more usable.
@@ -224,6 +231,7 @@ fetch("/static/maps/countries.geojson").then(function (response) {
     });
 });
 
+// LAYERS:
 // A layer for the search results, on each map. You definitely need this
 // part (although if you only have one map, you only need one of them)
 let arcticResultsSource = new VectorSource({});
@@ -263,17 +271,32 @@ const displayResult = function (map, pixel) {
     }
 };
 
-export function initializeMaps() {
+const $mapContainer = $(".map__container");
+let $arcticScreenReaderList = $("#map__screenreader--arctic");
+let $antarcticScreenReaderList = $("#map__screenreader--antarctic");
+
+
+export function initializeMaps(lazy=false) {
+    $arcticScreenReaderList = $("#map__screenreader--arctic");
+    $antarcticScreenReaderList = $("#map__screenreader--antarctic");
+
+    $arcticScreenReaderList.empty();
+    $antarcticScreenReaderList.empty();
+
     arcticResultsSource.clear(true);
     antarcticResultsSource.clear(true);
 
-    $(".map__container").removeClass("hidden");
+    $mapContainer.removeClass("hidden");
 
-    if (!arcticMap) {
+
+    if (!lazy || !arcticMap) {
         arcticMap = new Map({
             target: "map--arctic",
             view: arcticView,
             layers: [arcticLayer, arcticResultsLayer],
+            controls: defaultControls({attribution: false}).extend(
+                [new Attribution({collapsible: true})]
+            ),
         });
 
         arcticMap.on("click", function (evt) {
@@ -281,7 +304,7 @@ export function initializeMaps() {
         });
     }
 
-    if (!antarcticMap) {
+    if (!lazy || !antarcticMap) {
         antarcticMap = new Map({
             target: "map--antarctic",
             view: antarcticView,
@@ -291,7 +314,11 @@ export function initializeMaps() {
                 antarcticPlacesLayer,
                 antarcticResultsLayer,
             ],
+            controls: defaultControls({attribution: false}).extend(
+                [new Attribution({collapsible: true,})]
+            ),
         });
+
         antarcticMap.on("click", function (evt) {
             displayResult(antarcticMap, evt.pixel);
         });
@@ -299,6 +326,9 @@ export function initializeMaps() {
 }
 
 export function addSearchResult(name, geometry) {
+
+    // We're adding features twice in here because there are two maps.
+    // If you only have one map, you only need to do this once.
     const arcticFeature = new GeoJSON().readFeature(geometry, {
         // If your tileset is using the default projection, don't need the next two lines.
         dataProjection: getProjection("ESPG:4326"),
@@ -315,6 +345,7 @@ export function addSearchResult(name, geometry) {
         // Can we reproject it in GeoSPARQL or something?
         arcticFeature.set("name", name);
         arcticResultsSource.addFeature(arcticFeature);
+        $arcticScreenReaderList.append(`<li>${name}</li>`);
     }
 
     const antarcticFeature = new GeoJSON().readFeature(geometry, {
@@ -332,5 +363,6 @@ export function addSearchResult(name, geometry) {
         // todo: let's set these in the geojson on the server side.
         antarcticFeature.set("name", name);
         antarcticResultsSource.addFeature(antarcticFeature);
+        $antarcticScreenReaderList.append(`<li>${name}</li>`);
     }
 }

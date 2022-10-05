@@ -1,9 +1,18 @@
+@use 'constants';
 @import 'npm:ol/ol.css';
 
 .map__container {
-    display: flex;
-    flex-flow: row wrap;
-    padding: 0 3rem;
+    display: block;
+    padding: 0 0.5rem;
+
+    @include constants.breakpoint(medium-and-up) {
+        padding: 0 1rem;
+    }
+
+    @include constants.breakpoint(large-and-up) {
+        display: flex;
+        flex-flow: row wrap;
+    }
 }
 
 .map {

@@ -34,7 +34,8 @@ function handleSearchResults($ajaxPromise) {
     })
     .always(function () {
       $searchButton.prop("disabled", false);
-      $resultsContainer.focus();
+      $resultsContainer[0].focus();
+      $resultsContainer[0].scrollIntoView();
       load.style.display = "none";
       initializeMaps();
       for (const [name, geometry] of Object.entries(resultGeometries)) {

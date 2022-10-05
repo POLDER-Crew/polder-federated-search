@@ -10,8 +10,6 @@
     }
 }
 
-
-
 .results {
     background-color: constants.$soft-white;
     list-style:  none;
@@ -38,6 +36,7 @@
 }
 
 .result__doi {
+    height: 1rem;
     padding: 0.25rem;
     text-align: right;
 }
@@ -105,8 +104,6 @@
     
 }
 
-.results__container--no-js .result--full { display: inline-block; }
-
 .screenreader-text {
         position: absolute;
         top: -1000px;
@@ -116,6 +113,7 @@
         text-align: left;
         overflow: hidden;
 }
+
 .screenreader-text:focus {
         left: 0;
         top: 0;
@@ -125,10 +123,20 @@
   
 }
 
-.data_source img{
-    max-width: 200px;
-    display: block;
-    margin: 1rem 0;
+.data_source {
+    text-align: right;
+}
+
+.data_source__link {
+    color: constants.$dark-blue;
+    font-weight: constants.$font-weight-bold;
+}
+
+.data_source .data_source__image {
+    max-width: 50px;
+    display: inline;
+    margin: 0.25rem;
+    vertical-align: middle;
 }
 
 
