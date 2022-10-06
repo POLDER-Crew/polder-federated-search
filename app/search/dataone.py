@@ -103,6 +103,9 @@ class SolrDirectSearch(SearcherBase):
 
     def combined_search(self, **kwargs):
         text = kwargs.pop('text', None)
+        text = text.replace("'",'')
+        text = text.replace('"','')
+        
         start_min = kwargs.pop('start_min', None)
         start_max = kwargs.pop('start_max', None)
         end_min = kwargs.pop('end_min', None)
