@@ -20,7 +20,44 @@ class GleanerSearch(SearcherBase):
 
         # GraphDB doesn't allow named subqueries. So we write our query out twice - once to get the total
         # result count, in order to do paging, and once to get the actual results and page through them.
-        base_query = f"""
+        # But we don't need to do all the processing / get all the attributes and information to do the count.
+        count_query = f"""
+            SELECT (COUNT(*) as ?total_results) {{
+                SELECT
+                    (GROUP_CONCAT(DISTINCT ?license ; separator=",") as ?license)
+                    (GROUP_CONCAT(DISTINCT ?author ; separator=",") as ?author)
+                    (GROUP_CONCAT(DISTINCT ?abstract ; separator=",") as ?abstract)
+                    (GROUP_CONCAT(DISTINCT ?keywords ; separator=",") as ?keywords)
+                {{
+                    ?s a schema:Dataset  .
+                    ?catalog ?relationship ?s .
+                    {text_query}
+                    ?s schema:name ?title .
+                    ?s schema:temporalCoverage ?temporal_coverage .
+                    {{
+                        ?s schema:keywords ?keywords .
+
+                    }} UNION {{
+                        ?catalog schema:keywords ?keywords .
+                    }}
+                    {{
+                        ?s schema:description ?abstract .
+                    }} UNION {{
+                        ?s schema:description/schema:value ?abstract .
+                    }}
+                    OPTIONAL {{
+                        {{
+                            ?s schema:creator/schema:name ?author .
+                        }} UNION {{
+                            ?catalog schema:creator/schema:name ?author .
+                        }}
+                        FILTER(ISLITERAL(?author)) .
+                    }}
+                    {filter_query}
+                }}
+            }}
+        """
+        data_query = f"""
             SELECT
             (MAX(?relevance) AS ?score)
             ?s
@@ -40,14 +77,13 @@ class GleanerSearch(SearcherBase):
             (GROUP_CONCAT(DISTINCT ?spatial_coverage_circle ; separator=",") as ?spatial_coverage_circle)
             (GROUP_CONCAT(DISTINCT ?spatial_coverage_point ; separator=",") as ?spatial_coverage_point)
             {{
-
-                {text_query}
                 ?s a schema:Dataset  .
+                ?catalog ?relationship ?s .
+                {text_query}
                 ?s schema:name ?title .
                 ?s schema:temporalCoverage ?temporal_coverage .
 
                 {{ ?s schema:keywords ?keywords . }} UNION {{
-                    ?catalog ?relationship ?s .
                     ?catalog schema:keywords ?keywords .
                 }}
 
@@ -86,7 +122,6 @@ class GleanerSearch(SearcherBase):
                OPTIONAL {{
 
                     {{ ?s schema:license | schema:license/schema:license ?license . }} UNION {{
-                    ?catalog ?relationship ?s .
                     ?catalog schema:license ?license .
                 }}
                     FILTER(ISLITERAL(?license)) .
@@ -104,7 +139,6 @@ class GleanerSearch(SearcherBase):
                 OPTIONAL {{
                     
                     {{ ?s schema:creator/schema:name ?author . }} UNION {{
-                        ?catalog ?relationship ?s .
                         ?catalog schema:creator/schema:name ?author .
                     }}
                     FILTER(ISLITERAL(?author)) .
@@ -142,13 +176,11 @@ class GleanerSearch(SearcherBase):
                 ?author
             {{
                 {{
-                    SELECT (COUNT(*) as ?total_results) {{
-                        {base_query}
-                    }}
+                    {count_query}
                 }}
                 UNION
                 {{
-                    {base_query}
+                    {data_query}
                     OFFSET {page_start}
                     LIMIT {GleanerSearch.PAGE_SIZE}
                 }}
@@ -173,7 +205,7 @@ class GleanerSearch(SearcherBase):
     def _build_author_search_query(author=None):
         if author:
             return f"""
-                FILTER CONTAINS(?author, '''{author}''') . 
+                FILTER(BOUND(?author) && CONTAINS(?author, '''{author}''')) .
             """
         else:
             # A blank search in this doesn't filter results, it just takes longer.
