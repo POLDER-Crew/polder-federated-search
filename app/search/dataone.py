@@ -79,6 +79,10 @@ class SolrDirectSearch(SearcherBase):
 
     def text_search(self, **kwargs):
         text = kwargs.pop('text', None)
+        if text!=None:
+            #Remove all quotes ()
+            text = text.replace("'",'')
+            text = text.replace('"','')
         page_number = kwargs.pop('page_number', 0)
 
         query = SolrDirectSearch.build_query(
@@ -103,9 +107,11 @@ class SolrDirectSearch(SearcherBase):
 
     def combined_search(self, **kwargs):
         text = kwargs.pop('text', None)
-        text = text.replace("'",'')
-        text = text.replace('"','')
-        
+        if text!=None:
+            #Remove all quotes ()
+            text = text.replace("'",'')
+            text = text.replace('"','')
+
         start_min = kwargs.pop('start_min', None)
         start_max = kwargs.pop('start_max', None)
         end_min = kwargs.pop('end_min', None)

@@ -255,10 +255,9 @@ class GleanerSearch(SearcherBase):
     def text_search(self, **kwargs):
         text = kwargs.pop('text', None)
         if text!=None:
-            if  text.startswith("'") and text.endswith("'"):
-                text = self.escape_char(text)
-            elif text.startswith('"') and text.endswith('"'):
-                text = self.escape_char(text)
+            # Converting all single quotes to double quotes 
+            text = text.replace("'",'"')
+            text = self.escape_char(text)
         author = kwargs.pop('author',None)
         page_number = kwargs.pop('page_number', 0)
 
@@ -271,25 +270,15 @@ class GleanerSearch(SearcherBase):
     # A helper method to escape char for different matches
     def escape_char(self,text):
         count = text.count('"') #for " " (double quotes)
-        count2 = text.count("'") #for ' ' (for single quotes)
+        
         
         #if it has a quote and the count of quotes is odd add an extra quote e.g "Biobasis " Zackenberg" (double quotes)
-        if text.startswith('"') and text.endswith('"') and count%2==1 :
+        if count%2==1 :
             text = text.replace('"','\\"')
             text = text + '\\"'
-            
 
-        #if it has a quote and the count of quotes is odd add an extra quote e.g 'Biobasis ' Zackenberg'  (single quotes)
-        elif text.startswith("'") and text.endswith("'") and count2%2==1:
-            text = text.replace("'",'\\"')
-            text = text + '\\"'
-
-        #If the texts has quotes escape them e.g 'Biobasis  Zackenberg' (single quotes)
-        elif text.startswith("'") and text.endswith("'"):
-            text = text.replace("'",'\\"')
-
-        #If the texts has quotes escape them e.g "Biobasis  Zackenberg" (double quotes)
-        elif text.startswith('"') and text.endswith('"'):
+        #If the texts has even vount of quotes escape them e.g "Biobasis  Zackenberg" (double quotes)
+        else :
             text = text.replace('"','\\"')
 
         return text
@@ -311,10 +300,9 @@ class GleanerSearch(SearcherBase):
     def combined_search(self, **kwargs):
         text = kwargs.pop('text', None)
         if text!=None:
-            if  text.startswith("'") and text.endswith("'"):
-                text = self.escape_char(text)
-            elif text.startswith('"') and text.endswith('"'):
-                text = self.escape_char(text)
+            text = text.replace("'",'"')
+            text = self.escape_char(text)
+            print('This is the text ' + text)
        
         author = kwargs.pop('author', None)
         start_min = kwargs.pop('start_min', None)
