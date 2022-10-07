@@ -302,7 +302,7 @@ class GleanerSearch(SearcherBase):
         if text!=None:
             text = text.replace("'",'"')
             text = self.escape_char(text)
-            print('This is the text ' + text)
+            
        
         author = kwargs.pop('author', None)
         start_min = kwargs.pop('start_min', None)
