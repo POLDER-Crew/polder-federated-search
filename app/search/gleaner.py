@@ -321,7 +321,7 @@ class GleanerSearch(SearcherBase):
             #text = text.replace("'",'"')
             text = self.escape_char(text)
 
-            print('The text is '+ text)
+            
             
        
         author = kwargs.pop('author', None)
