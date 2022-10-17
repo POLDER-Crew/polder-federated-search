@@ -85,28 +85,6 @@ class TestGleanerSearch(unittest.TestCase):
         
         self.assertIn(''' luc:query \'\'\'\\"BioBasis \\" Zackenberg\\"\\"\'\'\'''', self.search.query)
 
-    @patch('SPARQLWrapper.SPARQLWrapper.query')
-    def test_exact_text_search_odd_single_quotes(self, query):
-        
-
-        # Do the actual test
-       
-        results = self.search.text_search(text="""'BioBasis ' Zackenberg'""")
-        
-        self.assertIn(''' luc:query \'\'\'\\"BioBasis \\" Zackenberg\\"\\"\'\'\'''', self.search.query)
-
-
-
-    @patch('SPARQLWrapper.SPARQLWrapper.query')
-    def test_exact_text_search_single_quotes(self, query):
-        
-
-        # Do the actual test
-       
-        results = self.search.text_search(text="""'BioBasis  Zackenberg'""")
-        
-        self.assertIn('''luc:query \'\'\'\\"BioBasis  Zackenberg\\"'\'\'''', self.search.query)
-
 
 
     

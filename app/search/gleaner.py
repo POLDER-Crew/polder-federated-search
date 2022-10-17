@@ -254,9 +254,7 @@ class GleanerSearch(SearcherBase):
 
     def text_search(self, **kwargs):
         text = kwargs.pop('text', None)
-        if text!=None:
-            # Converting all single quotes to double quotes 
-            text = text.replace("'",'"')
+        if text!=None and  '"' in text:
             text = self.escape_char(text)
         author = kwargs.pop('author',None)
         page_number = kwargs.pop('page_number', 0)
@@ -270,34 +268,18 @@ class GleanerSearch(SearcherBase):
     # A helper method to escape char for different matches
     def escape_char(self,text):
         count = text.count('"') #for " " (double quotes)
-        count2 = text.count("'") #for ' ' (single quotes)
-
-       
-
-
         
-      
-        if '"' in text:
-            #if it has a double quotes and the count of the double quotes is odd add an extra quote e.g "Biobasis " Zackenberg" (double quotes)
-            if count%2==1 :
-                text = text.replace('"','\\"')
-                text = text + '\\"'
 
-            #If the texts has even count of double quotes escape them e.g "Biobasis  Zackenberg" (double quotes)
-            elif count%2==0:
-                
-                text = text.replace('"','\\"')
+        #if it has a double quotes and the count of the double quotes is odd add an extra quote e.g "Biobasis " Zackenberg" (double quotes)
+        if count%2==1 :
+            text = text.replace('"','\\"')
+            text = text + '\\"'
 
-        elif "'" in text:
-            #if it has a single quote and the count of the single quote is odd add an extra quote e.g 'Biobasis  Zackenberg' (single quotes)
-            if count2%2==1:
-                text = text.replace("'",'\\"')
-                text = text + '\\"'
+        #If the texts has even count of double quotes escape them e.g "Biobasis  Zackenberg" (double quotes)
+        elif count%2==0:
+            
+            text = text.replace('"','\\"')
 
-            #If the texts has even count of single quotes escape them e.g 'Biobasis  Zackenberg' (single quotes)
-            elif count2%2==0:
-                
-                text = text.replace("'",'\\"')
 
         return text
 
@@ -317,8 +299,7 @@ class GleanerSearch(SearcherBase):
 
     def combined_search(self, **kwargs):
         text = kwargs.pop('text', None)
-        if text!=None and ("'" in text or '"' in text):
-            #text = text.replace("'",'"')
+        if text!=None and  '"' in text:
             text = self.escape_char(text)
 
             
