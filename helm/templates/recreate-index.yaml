@@ -26,7 +26,7 @@ spec:
               name: polder-repo-config
           initContainers:
           - name: remove-minio-files
-            image: bitnami/minio-client:2022
+            image: bitnami/minio-client:2022.9.16
             env:
             - name: MINIO_CLIENT_ACCESS_KEY
               valueFrom:
@@ -127,7 +127,7 @@ spec:
             - "{{- include "gleaner.triplestore.endpoint" . }}/repositories/{{ .Values.storageNamespace }}/statements"
           containers:
           - name: write-to-triplestore
-            image: bitnami/minio-client:2022
+            image: bitnami/minio-client:2022.9.16
             env:
             - name: MINIO_CLIENT_ACCESS_KEY
               valueFrom:

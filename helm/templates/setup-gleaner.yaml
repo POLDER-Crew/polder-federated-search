@@ -162,7 +162,7 @@ spec:
           mountPath: /config
       containers:
       - name: write-to-triplestore
-        image: bitnami/minio-client:2022
+        image: bitnami/minio-client:2022.9.16
         env:
         - name: MINIO_CLIENT_ACCESS_KEY
           valueFrom:
