@@ -286,6 +286,8 @@ class GleanerSearch(SearcherBase):
 
     def text_search(self, **kwargs):
         text = kwargs.pop('text', None)
+        if text!=None and  '"' in text:
+            text = self.escape_char(text)
         author = kwargs.pop('author',None)
         page_number = kwargs.pop('page_number', 0)
 
@@ -294,6 +296,25 @@ class GleanerSearch(SearcherBase):
         # Assigning this to a class member makes it easier to test
         self.query = GleanerSearch.build_query(user_query, None, page_number)
         return self.execute_query(page_number)
+
+    # A helper method to escape char for different matches
+    def escape_char(self,text):
+        count = text.count('"') #for " " (double quotes)
+        
+
+        #if it has a double quotes and the count of the double quotes is odd add an extra quote e.g "Biobasis " Zackenberg" (double quotes)
+        if count%2==1 :
+            text = text.replace('"','\\"')
+            text = text + '\\"'
+
+        #If the texts has even count of double quotes escape them e.g "Biobasis  Zackenberg" (double quotes)
+        elif count%2==0:
+            
+            text = text.replace('"','\\"')
+
+
+        return text
+
 
     def date_filter_search(self, **kwargs):
         start_min = kwargs.pop('start_min', None)
@@ -310,8 +331,13 @@ class GleanerSearch(SearcherBase):
 
     def combined_search(self, **kwargs):
         text = kwargs.pop('text', None)
-        author = kwargs.pop('author', None)
+        if text!=None and  '"' in text:
+            text = self.escape_char(text)
 
+            
+            
+       
+        author = kwargs.pop('author', None)
         start_min = kwargs.pop('start_min', None)
         start_max = kwargs.pop('start_max', None)
         end_min = kwargs.pop('end_min', None)

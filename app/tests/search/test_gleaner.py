@@ -64,6 +64,32 @@ class TestGleanerSearch(unittest.TestCase):
         self.assertEqual(results, expected)
         self.assertIn("luc:query '''test'''", self.search.query)
 
+
+    @patch('SPARQLWrapper.SPARQLWrapper.query')
+    def test_exact_text_search_double_quotes(self, query):
+        
+
+        # Do the actual test
+       
+        results = self.search.text_search(text='''"BioBasis  Zackenberg"''')
+        
+        self.assertIn('''luc:query \'\'\'\\"BioBasis  Zackenberg\\"'\'\'''', self.search.query)
+
+    @patch('SPARQLWrapper.SPARQLWrapper.query')
+    def test_exact_text_search_odd_double_quotes(self, query):
+        
+
+        # Do the actual test
+       
+        results = self.search.text_search(text='''"BioBasis " Zackenberg"''')
+        
+        self.assertIn(''' luc:query \'\'\'\\"BioBasis \\" Zackenberg\\"\\"\'\'\'''', self.search.query)
+
+
+
+    
+
+
     @patch('SPARQLWrapper.SPARQLWrapper.query')
     def test_date_filter_none(self, query):
         query.return_value = self.mock_query
