@@ -24,37 +24,38 @@ class GleanerSearch(SearcherBase):
         count_query = f"""
             SELECT (COUNT(*) as ?total_results) {{
                 SELECT
-                    (GROUP_CONCAT(DISTINCT ?license ; separator=",") as ?license)
-                    (GROUP_CONCAT(DISTINCT ?author ; separator=",") as ?author)
+                    ?title
+                    (GROUP_CONCAT(DISTINCT ?author ; separator=",") as ?x)
                     (GROUP_CONCAT(DISTINCT ?abstract ; separator=",") as ?abstract)
                     (GROUP_CONCAT(DISTINCT ?keywords ; separator=",") as ?keywords)
                 {{
                     ?s a schema:Dataset  .
-                    ?catalog ?relationship ?s .
+
                     {text_query}
+
                     ?s schema:name ?title .
                     ?s schema:temporalCoverage ?temporal_coverage .
+                    ?s schema:description | schema:description/schema:value ?abstract .
                     {{
                         ?s schema:keywords ?keywords .
 
                     }} UNION {{
+                        ?catalog ?relationship ?s .
                         ?catalog schema:keywords ?keywords .
                     }}
-                    {{
-                        ?s schema:description ?abstract .
-                    }} UNION {{
-                        ?s schema:description/schema:value ?abstract .
-                    }}
+
                     OPTIONAL {{
                         {{
                             ?s schema:creator/schema:name ?author .
                         }} UNION {{
+                            ?catalog ?relationship ?s .
                             ?catalog schema:creator/schema:name ?author .
                         }}
                         FILTER(ISLITERAL(?author)) .
                     }}
                     {filter_query}
                 }}
+                GROUP BY ?title
             }}
         """
         data_query = f"""
@@ -78,19 +79,14 @@ class GleanerSearch(SearcherBase):
             (GROUP_CONCAT(DISTINCT ?spatial_coverage_point ; separator=",") as ?spatial_coverage_point)
             {{
                 ?s a schema:Dataset  .
-                ?catalog ?relationship ?s .
                 {text_query}
                 ?s schema:name ?title .
                 ?s schema:temporalCoverage ?temporal_coverage .
+                ?s schema:description | schema:description/schema:value ?abstract .
 
                 {{ ?s schema:keywords ?keywords . }} UNION {{
+                    ?catalog ?relationship ?s .
                     ?catalog schema:keywords ?keywords .
-                }}
-
-                {{
-                    ?s schema:description ?abstract .
-                }} UNION {{
-                    ?s schema:description/schema:value  ?abstract .
                 }}
 
                 {{
@@ -115,13 +111,12 @@ class GleanerSearch(SearcherBase):
                     ?geo schema:latitude ?lat .
                     BIND(concat(str(?lat), " ", str(?lon)) as ?spatial_coverage_point )  .
                 }}
-
                 OPTIONAL {{
                     ?s schema:sameAs ?sameAs .
                 }}
                OPTIONAL {{
-
                     {{ ?s schema:license | schema:license/schema:license ?license . }} UNION {{
+                    ?catalog ?relationship ?s .
                     ?catalog schema:license ?license .
                 }}
                     FILTER(ISLITERAL(?license)) .
@@ -139,6 +134,7 @@ class GleanerSearch(SearcherBase):
                 OPTIONAL {{
                     
                     {{ ?s schema:creator/schema:name ?author . }} UNION {{
+                        ?catalog ?relationship ?s .
                         ?catalog schema:creator/schema:name ?author .
                     }}
                     FILTER(ISLITERAL(?author)) .
@@ -147,13 +143,12 @@ class GleanerSearch(SearcherBase):
                 {filter_query}
                 BIND(COALESCE(?identifier, ?s) AS ?id)
             }}
-            GROUP BY ?s ?id ?url ?title  ?g
+            GROUP BY ?s ?id ?url ?title ?g
         """
 
         return f"""
             PREFIX luc: <http://www.ontotext.com/connectors/lucene#>
             PREFIX luc-index: <http://www.ontotext.com/connectors/lucene/instance#>
-            PREFIX onto: <http://www.ontotext.com/>
             PREFIX schema: <https://schema.org/>
             prefix prov: <http://www.w3.org/ns/prov#>
             PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -174,6 +169,7 @@ class GleanerSearch(SearcherBase):
                 ?spatial_coverage_circle
                 ?spatial_coverage_point
                 ?author
+                ?g
             {{
                 {{
                     {count_query}
