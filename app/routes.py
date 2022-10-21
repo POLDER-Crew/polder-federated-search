@@ -32,6 +32,11 @@ def about():
     return render_template('about.html')
 
 
+@app.route('/help/')
+def help():
+    return render_template('help.html')
+
+
 def _get_date_from_args(arg_name, kwargs):
     arg_date = kwargs.pop(arg_name, None)
     if arg_date:
