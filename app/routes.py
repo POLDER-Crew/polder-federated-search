@@ -2,7 +2,7 @@ import logging
 from flask import redirect, render_template, request, url_for
 from datetime import date
 from sentry_sdk import capture_exception
-from werkzeug.exceptions import HTTPException, NotFound, MethodNotAllowed
+from werkzeug.exceptions import HTTPException, NotFound, MethodNotAllowed, BadRequest
 
 from app import app
 from app.search.dataone import SolrDirectSearch
@@ -50,11 +50,12 @@ def _do_combined_search(template, **kwargs):
     sanitized_kwargs['text'] = kwargs.pop('text', None)
     sanitized_kwargs['author'] = kwargs.pop('author',None)
     
-    # Human-readable pages start at 1
-    sanitized_kwargs['page_number'] = int(kwargs.pop('page', 1))
 
-    # These all need to be date objects
     try:
+        # Human-readable pages start at 1
+        sanitized_kwargs['page_number'] = int(kwargs.pop('page', 1))
+
+        # These all need to be date objects
         sanitized_kwargs['start_min'] = _get_date_from_args(
             'start_min', kwargs)
         sanitized_kwargs['start_max'] = _get_date_from_args(
@@ -62,7 +63,8 @@ def _do_combined_search(template, **kwargs):
         sanitized_kwargs['end_min'] = _get_date_from_args('end_min', kwargs)
         sanitized_kwargs['end_max'] = _get_date_from_args('end_max', kwargs)
 
-    except ValueError as ve:  # we got some invalid dates
+    # we got some invalid dates or a type %SYSTEMROOT%\\win.ini where an int should be
+    except ValueError as ve:
         return str(ve), BAD_REQUEST_STATUS
 
     dataone = SolrDirectSearch().combined_search(**sanitized_kwargs)
@@ -91,13 +93,14 @@ def handle_404(e):
 
 
 @app.errorhandler(MethodNotAllowed)
+@app.errorhandler(BadRequest)
 # There are a lot of bots on the internet that try to post garbage
 # to get-only routes, and other such shenanigans, and they are
 # making lots of noise in Sentry.
 # If we're running a dev server, it's good to see this error
 # message because maybe we're trying to write a REST endpoint.
 # But if we're in production, it's better to bypass it.
-def handle_405(e):
+def handle_400_405(e):
     if app.debug == False:
         return render_template("500_generic.html", e=e)
     else:

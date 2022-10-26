@@ -225,6 +225,16 @@ class TestRoutes(unittest.TestCase):
 
     @patch('app.search.dataone.SolrDirectSearch.combined_search')
     @patch('app.search.gleaner.GleanerSearch.combined_search')
+    def test_invalid_page_number(self, gleaner, dataone):
+        gleaner.return_value = self.mock_result_set
+        dataone.return_value = self.mock_result_set
+
+        with app.test_client() as client:
+            response = client.get('/api/search?page=h4xx0r')
+            self.assertEqual(response.status, '400 BAD REQUEST')
+
+    @patch('app.search.dataone.SolrDirectSearch.combined_search')
+    @patch('app.search.gleaner.GleanerSearch.combined_search')
     def test_invalid_date(self, gleaner, dataone):
         gleaner.return_value = self.mock_result_set
         dataone.return_value = self.mock_result_set
