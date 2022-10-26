@@ -11,8 +11,41 @@ INSERT DATA {
           "propertyChain": [
             "$literal"
           ],
-          "facet": false
-        }
+          "facet": true
+        },
+        {
+          "fieldName": "author",
+          "propertyChain": [
+            "https://schema.org/creator",
+            "https://schema.org/name"
+          ],
+          "facet": true
+        },
+        {
+          "fieldName": "license$0",
+          "propertyChain": [
+            "https://schema.org/Dataset",
+            "https://schema.org/license"
+          ],
+          "facet": true
+        },
+        {
+          "fieldName": "license$1",
+          "propertyChain": [
+            "https://schema.org/Dataset",
+            "https://schema.org/license",
+            "https://schema.org/license"
+          ],
+          "facet": true
+        },
+        {
+          "fieldName": "license$2",
+          "propertyChain": [
+            "https://schema.org/DataCatalog",
+            "https://schema.org/license",
+          ],
+          "facet": true
+        },
       ],
       "languages": [
         ""

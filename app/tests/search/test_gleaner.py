@@ -165,7 +165,7 @@ class TestGleanerSearch(unittest.TestCase):
             author = 'Anonymous'
         )
 
-        self.assertIn("CONTAINS(?author, '''Anonymous''')", self.search.query)
+        self.assertIn("luc:query '''author:Anonymous'''", self.search.query)
 
     @patch('SPARQLWrapper.SPARQLWrapper.query')
     def test_combined_search(self, query):
