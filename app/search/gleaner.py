@@ -132,14 +132,14 @@ class GleanerSearch(SearcherBase):
                     ?sp prov:generated ?g  .
                 }}
                 OPTIONAL {{
-                    
+
                     {{ ?s schema:creator/schema:name ?author . }} UNION {{
                         ?catalog ?relationship ?s .
                         ?catalog schema:creator/schema:name ?author .
                     }}
                     FILTER(ISLITERAL(?author)) .
                 }}
-                
+
                 {filter_query}
                 BIND(COALESCE(?identifier, ?s) AS ?id)
             }}
@@ -152,16 +152,16 @@ class GleanerSearch(SearcherBase):
             PREFIX schema: <https://schema.org/>
             prefix prov: <http://www.w3.org/ns/prov#>
             PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-            SELECT 
-                ?total_results 
-                ?score 
-                ?id 
-                ?abstract 
-                ?url 
-                ?title 
-                ?sameAs 
-                ?keywords 
-                ?license 
+            SELECT
+                ?total_results
+                ?score
+                ?id
+                ?abstract
+                ?url
+                ?title
+                ?sameAs
+                ?keywords
+                ?license
                 ?spatial_coverage_text
                 ?spatial_coverage_polygon
                 ?spatial_coverage_line
@@ -185,23 +185,17 @@ class GleanerSearch(SearcherBase):
         """
 
     @staticmethod
-    def _build_text_search_query(text=None):
-        if text:
+    def _build_text_search_query(text=[]):
+        if len(text):
+            queries = ""
+            for term in text:
+                queries += f"""luc:query '''{term}''' ;"""
+
             return f"""
                 ?search a luc-index:full_text_search ;
-                luc:query '''{text}''' ;
+                {queries}
                 luc:entities ?s .
                 ?s luc:score ?relevance .
-            """
-        else:
-            # A blank search in this doesn't filter results, it just takes longer.
-            return ""
-
-    @staticmethod
-    def _build_author_search_query(author=None):
-        if author:
-            return f"""
-                FILTER(BOUND(?author) && CONTAINS(?author, '''{author}''')) .
             """
         else:
             # A blank search in this doesn't filter results, it just takes longer.
@@ -282,35 +276,39 @@ class GleanerSearch(SearcherBase):
 
     def text_search(self, **kwargs):
         text = kwargs.pop('text', None)
-        if text!=None and  '"' in text:
+        if text != None and '"' in text:
             text = self.escape_char(text)
-        author = kwargs.pop('author',None)
+        author = kwargs.pop('author', None)
+
+        full_text_params = []
+        if text:
+            full_text_params.append(text)
+        if author:
+            full_text_params.append(f"""author:{author}""")
+
         page_number = kwargs.pop('page_number', 0)
 
-        user_query = GleanerSearch._build_text_search_query(text)
+        user_query = GleanerSearch._build_text_search_query(full_text_params)
 
         # Assigning this to a class member makes it easier to test
         self.query = GleanerSearch.build_query(user_query, None, page_number)
         return self.execute_query(page_number)
 
     # A helper method to escape char for different matches
-    def escape_char(self,text):
-        count = text.count('"') #for " " (double quotes)
-        
+    def escape_char(self, text):
+        count = text.count('"')  # for " " (double quotes)
 
-        #if it has a double quotes and the count of the double quotes is odd add an extra quote e.g "Biobasis " Zackenberg" (double quotes)
-        if count%2==1 :
-            text = text.replace('"','\\"')
+        # if it has a double quotes and the count of the double quotes is odd add an extra quote e.g "Biobasis " Zackenberg" (double quotes)
+        if count % 2 == 1:
+            text = text.replace('"', '\\"')
             text = text + '\\"'
 
-        #If the texts has even count of double quotes escape them e.g "Biobasis  Zackenberg" (double quotes)
-        elif count%2==0:
-            
-            text = text.replace('"','\\"')
+        # If the texts has even count of double quotes escape them e.g "Biobasis  Zackenberg" (double quotes)
+        elif count % 2 == 0:
 
+            text = text.replace('"', '\\"')
 
         return text
-
 
     def date_filter_search(self, **kwargs):
         start_min = kwargs.pop('start_min', None)
@@ -327,13 +325,17 @@ class GleanerSearch(SearcherBase):
 
     def combined_search(self, **kwargs):
         text = kwargs.pop('text', None)
-        if text!=None and  '"' in text:
+        if text != None and '"' in text:
             text = self.escape_char(text)
 
-            
-            
-       
         author = kwargs.pop('author', None)
+
+        full_text_params = []
+        if text:
+            full_text_params.append(text)
+        if author:
+            full_text_params.append(f"""author:{author}""")
+
         start_min = kwargs.pop('start_min', None)
         start_max = kwargs.pop('start_max', None)
         end_min = kwargs.pop('end_min', None)
@@ -342,13 +344,12 @@ class GleanerSearch(SearcherBase):
 
         date_query = GleanerSearch._build_date_filter_query(
             start_min, start_max, end_min, end_max)
-        text_query = GleanerSearch._build_text_search_query(text)
-        author_query = GleanerSearch._build_author_search_query(author)
+        text_query = GleanerSearch._build_text_search_query(full_text_params)
 
         # Assigning this to a class member makes it easier to test
 
-        self.query = GleanerSearch.build_query(text_query, date_query+author_query, page_number)
-
+        self.query = GleanerSearch.build_query(
+            text_query, date_query, page_number)
 
         return self.execute_query(page_number)
 
@@ -401,7 +402,8 @@ class GleanerSearch(SearcherBase):
 
         if len(geometry['point']):
             geometry['point'] = list(map(
-                lambda coords: Point(coordinates=tuple(reversed(coords.split(' ')))),
+                lambda coords: Point(coordinates=tuple(
+                    reversed(coords.split(' ')))),
                 geometry['point'].split(',')
             ))
         else:
@@ -464,4 +466,3 @@ class GleanerSearch(SearcherBase):
         }
         result['source'] = "Gleaner"
         return SearchResult(**result)
- 
