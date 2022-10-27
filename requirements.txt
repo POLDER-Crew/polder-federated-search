@@ -7,7 +7,7 @@ pygeojson==0.2.0
 python-dotenv==0.20.0
 requests==2.26.0
 requests-mock==1.9.3
-sentry-sdk==1.9.5
+sentry-sdk==1.10.1
 SPARQLWrapper==1.8.5
 typing-extensions==3.10.0.2
 validators==0.20.0
