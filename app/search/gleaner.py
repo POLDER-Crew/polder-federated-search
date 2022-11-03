@@ -61,11 +61,9 @@ class GleanerSearch(SearcherBase):
         data_query = f"""
             SELECT
             (MAX(?relevance) AS ?score)
-            ?s
-            ?id
             ?url
             ?title
-            ?g
+            (GROUP_CONCAT(DISTINCT ?id ; separator=",") as ?id)
             (GROUP_CONCAT(DISTINCT ?license ; separator=",") as ?license)
             (GROUP_CONCAT(DISTINCT ?author ; separator=",") as ?author)
             (GROUP_CONCAT(DISTINCT ?abstract ; separator=",") as ?abstract)
@@ -129,9 +127,6 @@ class GleanerSearch(SearcherBase):
                     FILTER(ISLITERAL(?identifier)) .
                 }}
                 OPTIONAL {{
-                    ?sp prov:generated ?g  .
-                }}
-                OPTIONAL {{
 
                     {{ ?s schema:creator/schema:name ?author . }} UNION {{
                         ?catalog ?relationship ?s .
@@ -142,8 +137,9 @@ class GleanerSearch(SearcherBase):
 
                 {filter_query}
                 BIND(COALESCE(?identifier, ?s) AS ?id)
+                FILTER(ISLITERAL(?id))
             }}
-            GROUP BY ?s ?id ?url ?title ?g
+            GROUP BY ?url ?title ?g
         """
 
         return f"""
