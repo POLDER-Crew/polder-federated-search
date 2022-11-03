@@ -428,6 +428,12 @@ class GleanerSearch(SearcherBase):
         if len(geometry['box']):
             def _build_bbox_polygon_from_points(plist):
                 coords = plist.split(' ')
+
+                # Sometimes, this happens, and I think it is a mislabeled point,
+                # but... what exactly do people want us to do here?
+                if len(coords) < 4:
+                    return []
+
                 return SearchResult.polygon_from_box({
                     'south': coords[0],
                     'west': coords[1],
