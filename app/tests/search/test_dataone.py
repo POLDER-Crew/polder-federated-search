@@ -265,7 +265,7 @@ class TestSolrDirectSearch(unittest.TestCase):
         self.assertEqual(
             result.urls, ['https://search.dataone.org/view/An%20id', 'url1', 'url2', 'url3', 'url5', 'url6', 'url7'])
         self.assertEqual(result.title, 'A title'),
-        self.assertEqual(result.id, 'An id')
+        self.assertEqual(result.id, ['An id'])
         self.assertEqual(result.abstract, 'An abstract')
         self.assertEqual(result.geometry['text'], 'a location')
         self.assertEqual(result.keywords, ['keyword1', 'keyword2', 'keyword3'])
@@ -284,7 +284,7 @@ class TestSolrDirectSearch(unittest.TestCase):
         self.assertEqual(result.score, 4)
         self.assertEqual(result.doi, None)
         self.assertEqual(result.source, 'DataONE')
-        self.assertEqual(result.id, 'test1')
+        self.assertEqual(result.id, ['test1'])
         self.assertEqual(
             result.urls, ['https://search.dataone.org/view/test1'])
 

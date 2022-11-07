@@ -32,7 +32,7 @@ class TestSearchResult(unittest.TestCase):
         self.assertEqual(test_obj.title, kwargs_dict['title'])
         self.assertEqual(test_obj.urls, kwargs_dict['urls'])
         self.assertEqual(test_obj.abstract, kwargs_dict['abstract'])
-        self.assertEqual(test_obj.id, kwargs_dict['id'])
+        self.assertEqual(test_obj.id, [kwargs_dict['id']])
         self.assertEqual(test_obj.spatial_coverage,
                          kwargs_dict['spatial_coverage'])
         self.assertEqual(test_obj.temporal_coverage,
@@ -49,22 +49,22 @@ class TestSearchResult(unittest.TestCase):
 
     def test_init_doi(self):
         test_obj = search.SearchResult(id='doi:test_test', score=4)
-        self.assertEqual(test_obj.id, 'doi:test_test')
+        self.assertEqual(test_obj.id, ['doi:test_test'])
         self.assertEqual(test_obj.doi, 'doi:test_test')
         self.assertEqual(test_obj.urls, [])
 
     def test_doi_urls(self):
         test_obj = search.SearchResult(
             id='doi:test_test', score=4, urls=['http://test1', 'http://dx.doi.org/test_test'])
-        self.assertEqual(test_obj.id, 'doi:test_test')
+        self.assertEqual(test_obj.id, ['doi:test_test'])
         self.assertEqual(test_obj.doi, 'doi:test_test')
         test_obj.urls.sort()
         self.assertEqual(
             test_obj.urls, ['http://dx.doi.org/test_test', 'http://test1'])
 
-        test_obj_2 = search.SearchResult(id='doi:test2_test2', score=4, urls=[
+        test_obj_2 = search.SearchResult(id=['doi:test2_test2', 'test'], score=4, urls=[
                                          'http://test1', 'http://doi.org/test2_test2'])
-        self.assertEqual(test_obj_2.id, 'doi:test2_test2')
+        self.assertEqual(test_obj_2.id, ['doi:test2_test2', 'test'])
         self.assertEqual(test_obj_2.doi, 'doi:test2_test2')
         test_obj_2.urls.sort()
         self.assertListEqual(
@@ -72,7 +72,7 @@ class TestSearchResult(unittest.TestCase):
 
         test_obj_3 = search.SearchResult(id='doi:test3_test3', score=4, urls=[
                                         'http://test3', 'http://data.g-e-m.dk/datasets?doi=test3_test3'])
-        self.assertEqual(test_obj_3.id, 'doi:test3_test3')
+        self.assertEqual(test_obj_3.id, ['doi:test3_test3'])
         self.assertEqual(test_obj_3.doi, 'doi:test3_test3')
         test_obj_3.urls.sort()
         self.assertListEqual(
@@ -81,13 +81,13 @@ class TestSearchResult(unittest.TestCase):
 
         test_existing_doi = search.SearchResult(
             id='doi:test3', score=1, doi='existing_value')
-        self.assertEqual(test_existing_doi.id, 'doi:test3')
+        self.assertEqual(test_existing_doi.id, ['doi:test3'])
         self.assertEqual(test_existing_doi.doi, 'existing_value')
         self.assertListEqual(test_existing_doi.urls, [])
 
         test_doi_from_url = search.SearchResult(
             id='foo', score=4, urls=['http://test1', 'http://dx.doi.org/asdf'])
-        self.assertEqual(test_doi_from_url.id, 'foo')
+        self.assertEqual(test_doi_from_url.id, ['foo'])
         self.assertEqual(test_doi_from_url.doi, 'doi:asdf')
         test_doi_from_url.urls.sort()
         self.assertEqual(
@@ -98,13 +98,21 @@ class TestSearchResult(unittest.TestCase):
         self.assertEqual(test_obj.title, None)
         self.assertEqual(test_obj.urls, [])
         self.assertEqual(test_obj.abstract, "")
-        self.assertEqual(test_obj.id, 'test test test')
+        self.assertEqual(test_obj.id, ['test test test'])
         self.assertEqual(test_obj.spatial_coverage, None)
         self.assertEqual(test_obj.temporal_coverage, [])
         self.assertEqual(test_obj.score, 10.5)
 
 
-    
+    def test_multiple_ids(self):
+        test_obj = search.SearchResult(id=['test1', 'test2', 'test3'], score=10.5)
+        self.assertEqual(test_obj.title, None)
+        self.assertEqual(test_obj.urls, [])
+        self.assertEqual(test_obj.abstract, "")
+        self.assertEqual(test_obj.id, ['test1', 'test2', 'test3'])
+        self.assertEqual(test_obj.spatial_coverage, None)
+        self.assertEqual(test_obj.temporal_coverage, [])
+        self.assertEqual(test_obj.score, 10.5)
 
     def test_operators(self):
         a = search.SearchResult(id='a', score=1)

@@ -61,11 +61,9 @@ class GleanerSearch(SearcherBase):
         data_query = f"""
             SELECT
             (MAX(?relevance) AS ?score)
-            ?s
-            ?id
             ?url
             ?title
-            ?g
+            (GROUP_CONCAT(DISTINCT ?id ; separator=",") as ?id)
             (GROUP_CONCAT(DISTINCT ?license ; separator=",") as ?license)
             (GROUP_CONCAT(DISTINCT ?author ; separator=",") as ?author)
             (GROUP_CONCAT(DISTINCT ?abstract ; separator=",") as ?abstract)
@@ -129,9 +127,6 @@ class GleanerSearch(SearcherBase):
                     FILTER(ISLITERAL(?identifier)) .
                 }}
                 OPTIONAL {{
-                    ?sp prov:generated ?g  .
-                }}
-                OPTIONAL {{
 
                     {{ ?s schema:creator/schema:name ?author . }} UNION {{
                         ?catalog ?relationship ?s .
@@ -142,8 +137,9 @@ class GleanerSearch(SearcherBase):
 
                 {filter_query}
                 BIND(COALESCE(?identifier, ?s) AS ?id)
+                FILTER(ISLITERAL(?id))
             }}
-            GROUP BY ?s ?id ?url ?title ?g
+            GROUP BY ?url ?title ?g
         """
 
         return f"""
@@ -369,6 +365,7 @@ class GleanerSearch(SearcherBase):
         # if we didn't do a text search, we didn't get a score.
         # This is a workaround for now.
         result['score'] = result.pop('score', 1)
+        result['id'] = result.pop('id', '').split(',')
         result['urls'] = []
 
         url = result.pop('url', None)
@@ -388,8 +385,9 @@ class GleanerSearch(SearcherBase):
             result['urls'].append(url)
         if sameAs is not None:
             result['urls'].append(sameAs)
-        if validators.url(result['id']):
-            result['urls'].append(result['id'])
+        for x in result['id']:
+            if validators.url(x):
+                result['urls'].append(x)
 
         # Each of the things in the geometry dict can be a list, so take
         # them from being a list of strings to being a list of PyGeoJSON objects
@@ -432,6 +430,14 @@ class GleanerSearch(SearcherBase):
         if len(geometry['box']):
             def _build_bbox_polygon_from_points(plist):
                 coords = plist.split(' ')
+
+                # Sometimes, this happens, and I think it is a mislabeled point,
+                # but there isn't much that can be done about it. The best you can do
+                # is to make a null polygon so the rest of the GeoJSON pipeline
+                # doesn't blow up.
+                if len(coords) < 4:
+                    return Polygon(coordinates=[])
+
                 return SearchResult.polygon_from_box({
                     'south': coords[0],
                     'west': coords[1],
