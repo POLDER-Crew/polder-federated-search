@@ -326,7 +326,6 @@ export function initializeMaps(lazy=false) {
 }
 
 export function addSearchResult(name, geometry) {
-
     // We're adding features twice in here because there are two maps.
     // If you only have one map, you only need to do this once.
     const arcticFeature = new GeoJSON().readFeature(geometry, {

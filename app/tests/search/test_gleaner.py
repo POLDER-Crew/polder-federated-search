@@ -325,3 +325,32 @@ class TestGleanerSearch(unittest.TestCase):
                                       ('-10.4515', '-57.4443'), ('-10.4515', '-70.5397'), ('0.018', '-70.5397')]])
             ]).geometries)
         self.assertEqual(result.source, "Gleaner")
+
+    def test_convert_result_bad_bbox(self):
+        """ Sometimes you get a bbox with fewer than 4 coordinates to specify it """
+
+        test_result = {
+            'score': {'datatype': 'http://www.w3.org/2001/XMLSchema#double', 'type': 'literal', 'value': '0.375'},
+            'abstract': {'type': 'literal', 'value': 'This data file contains information'},
+            'title': {'type': 'literal', 'value': 'Iceflux trawl (SUIT & RMT) and ice stations'},
+            'url': {'type': 'literal', 'value': 'url1'},
+            'sameAs': {'type': 'literal', 'value': 'url2'},
+            'author': {'type': 'literal', 'value': 'author1,author2,author3'},
+            'spatial_coverage_text': {'type': 'literal', 'value': 'Antarctica,Greenland'},
+            'spatial_coverage_box': {'type': 'literal', 'value': '-70.5397 -10.4515 -57.4443'},
+            'id': {'type': 'literal', 'value': 'urn:uuid:696f9141-4e1a-5270-8c94-b0aabe0bbee7'},
+            'keywords': {'type': 'literal', 'value': 'keyword1,keyword2,keyword3'}
+        }
+        result = self.search.convert_result(test_result)
+        result.urls.sort()
+        self.assertIsInstance(result, search.SearchResult)
+        self.assertEqual(
+            len(result.geometry['geometry_collection'].geometries), 1)
+        self.assertEqual(len(result.geometry['text']), 2)
+        self.assertEqual(result.geometry['text'], ['Antarctica', 'Greenland'])
+        self.assertEqual(
+            result.geometry['geometry_collection'].geometries,
+            GeometryCollection([
+                Polygon(coordinates=[]),
+            ]).geometries)
+        self.assertEqual(result.source, "Gleaner")

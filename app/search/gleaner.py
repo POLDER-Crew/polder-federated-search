@@ -432,9 +432,11 @@ class GleanerSearch(SearcherBase):
                 coords = plist.split(' ')
 
                 # Sometimes, this happens, and I think it is a mislabeled point,
-                # but... what exactly do people want us to do here?
+                # but there isn't much that can be done about it. The best you can do
+                # is to make a null polygon so the rest of the GeoJSON pipeline
+                # doesn't blow up.
                 if len(coords) < 4:
-                    return []
+                    return Polygon(coordinates=[])
 
                 return SearchResult.polygon_from_box({
                     'south': coords[0],
