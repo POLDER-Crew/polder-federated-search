@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: nein09/polder-federated-search
+  repository: wdsito/polder-federated-search
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""

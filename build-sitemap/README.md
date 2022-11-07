@@ -2,4 +2,4 @@ This folder contains the necessary Dockerfile and script needed to query DataCit
 
 The docker image is currently published on Docker Hub as nein09/build-bas-sitemap. It could be used to build other sitemaps as well. It contains an instance of Minio Client, curl, jq, and bash.
 
-Build the image by doing `docker build  --tag nein09/build-bas-sitemap .`
+Build the image by doing `docker buildx build --no-cache --pull --platform=linux/arm64,linux/amd64 --push --tag wdsito/build-sitemap .`
