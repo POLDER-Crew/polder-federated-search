@@ -365,6 +365,7 @@ class GleanerSearch(SearcherBase):
         # if we didn't do a text search, we didn't get a score.
         # This is a workaround for now.
         result['score'] = result.pop('score', 1)
+        result['id'] = result.pop('id', '').split(',')
         result['urls'] = []
 
         url = result.pop('url', None)
@@ -384,8 +385,9 @@ class GleanerSearch(SearcherBase):
             result['urls'].append(url)
         if sameAs is not None:
             result['urls'].append(sameAs)
-        if validators.url(result['id']):
-            result['urls'].append(result['id'])
+        for x in result['id']:
+            if validators.url(x):
+                result['urls'].append(x)
 
         # Each of the things in the geometry dict can be a list, so take
         # them from being a list of strings to being a list of PyGeoJSON objects

@@ -1,5 +1,12 @@
 from pygeojson import Polygon
 
+DOI_PREFIXES = [
+    'doi:',
+    'http://dx.doi.org/',
+    'https://dx.doi.org/',
+    "http://data.g-e-m.dk/datasets?doi="
+]
+
 
 class SearchResult:
     """ A class representing each search result, so that we can have
@@ -10,17 +17,24 @@ class SearchResult:
 
     def __init__(self, **kwargs):
         if not 'id' in kwargs:
-            raise ValueError('Search results must have an id.')
+            raise ValueError('Search results must have one or more ids.')
 
         if not 'score' in kwargs:
             raise ValueError('Search results must have a score.')
 
+        self.id = []
         self.title = kwargs.pop('title', None)
         self.urls = kwargs.pop('urls', [])
         self.abstract = kwargs.pop('abstract', "")
         self.keywords = kwargs.pop('keywords', [])
         self.origin = kwargs.pop('origin', [])
-        self.id = kwargs.pop('id')
+        # Can be a single item or a list
+        identifier = kwargs.pop('id', None)
+        if isinstance(identifier, list):
+            self.id.extend(identifier)
+        else:
+            self.id.append(identifier)
+
         self.datasource = kwargs.pop('datasource', None)
         self.geometry = kwargs.pop('geometry', '')
         self.author = kwargs.pop('author', [])
@@ -40,16 +54,12 @@ class SearchResult:
         self.keywords = [k for k in self.keywords if k]
         self.author = [a for a in self.author if a]
         self.urls = list(set(x for x in self.urls if x))
-        # If we have a DOI somewhere, use it as much as possible
-        prefixes = ['doi:', 'http://dx.doi.org/',
-                    "http://data.g-e-m.dk/datasets?doi="]
 
+        # If we have a DOI somewhere, use it as much as possible
         if not self.doi:
-            for x in prefixes:
-                if self.id and self.id.startswith(x):
-                    self.doi = self.id
-                    break
-                elif any((match := url).startswith(x) for url in self.urls):
+            candidates = self.id + self.urls
+            for x in DOI_PREFIXES:
+                if any((match := url).startswith(x) for url in candidates):
                     self.doi = 'doi:' + match.lstrip(x)
                     break
 
@@ -91,7 +101,7 @@ class SearchResult:
                  (boundingbox['east'], boundingbox['north']),
                     (boundingbox['west'], boundingbox['north']),
                     (boundingbox['west'], boundingbox['south']),
-                    (boundingbox['east'], boundingbox['south']) ]
+                    (boundingbox['east'], boundingbox['south'])]
             ]
         )
 
