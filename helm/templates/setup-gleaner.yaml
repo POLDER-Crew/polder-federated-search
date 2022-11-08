@@ -79,7 +79,7 @@ spec:
         - "{{- include "gleaner.triplestore.endpoint" . }}/repositories/{{ .Values.storageNamespace }}/statements"
       # Run gleaner setup, which creates cloud storage buckets
       - name: gleaner-setup
-        image: nsfearthcube/gleaner:dev-v3.0.6-development
+        image: nsfearthcube/gleaner:dev-v3.0.7-development
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         args:
         - -cfg
@@ -115,7 +115,7 @@ spec:
       # Dynamically create the sitemaps for BAS and GCMD, and put
       # them somewherethat Gleaner can use to crawl
       - name: build-sitemap
-        image: nein09/build-sitemap:1.4
+        image: wdsito/build-sitemap:1.5
         env:
         - name: MINIO_CLIENT_ACCESS_KEY
           valueFrom:
@@ -137,7 +137,7 @@ spec:
         workingDir: /context
       # Finally, index our data repositories!
       - name: gleaner-initial-index
-        image: nsfearthcube/gleaner:dev-v3.0.6-development
+        image: nsfearthcube/gleaner:dev-v3.0.7-development
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         args:
         - -cfg

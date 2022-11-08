@@ -52,7 +52,7 @@ This tool uses Docker images to manage the different services that it depends on
 The web app itself that hosts the UI and does the searches is built using [Flask](https://flask.palletsprojects.com), which is a Python web framework. I chose Python because Python has good support for RDF and SPARQL operations with [RDFLib](https://rdflib.dev/). The frontend dependencies are HTML, JavaScript and SCSS, built using [Parcel](https://parceljs.org/). The maps in the user interface are built using [OpenLayers](https://openlayers.org/).
 
 ### Deployment
-A pre-built image for the web app is on Docker Hub as [nein09/polder-federated-search](https://hub.docker.com/repository/docker/nein09/polder-federated-search), and that is what all of the Helm/Kubernetes and Docker files in this repository are referencing. If you want to modify this project and build your own ones, you're welcome to.
+A pre-built image for the web app is on Docker Hub as [wdsito/polder-federated-search](https://hub.docker.com/repository/docker/wdsito/polder-federated-search), and that is what all of the Helm/Kubernetes and Docker files in this repository are referencing. If you want to modify this project and build your own ones, you're welcome to.
 
 #### Docker
 Assuming that you're starting from **this directory**:

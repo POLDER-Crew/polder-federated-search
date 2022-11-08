@@ -48,7 +48,7 @@ spec:
           value: "5"
       containers:
       - name: triplestore
-        image: nein09/graphdb:10.0.0-free
+        image: wdsito/graphdb:10.0.0-free
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         volumeMounts:
         - mountPath: /data/graphdb
