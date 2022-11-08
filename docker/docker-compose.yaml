@@ -125,7 +125,7 @@ services:
      - SERVICE_PORTS=9222
 
   webapp:
-    image: wdsito/polder-federated-search:1.43.8
+    image: wdsito/polder-federated-search:1.43.9
     depends_on:
       - triplestore
       - s3system
