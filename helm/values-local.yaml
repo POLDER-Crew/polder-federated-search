@@ -121,3 +121,5 @@ storageNamespace: polder
 ## PersistentVolumeClaim. created for you.
 persistence:
   existing: false
+
+crawlSchedule: "30 08 * * *" # every morning at 8:30

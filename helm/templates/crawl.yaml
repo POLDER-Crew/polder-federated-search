@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: crawl
 spec:
-  schedule: "0 0 * * 3"
+  schedule: {{ .Values.crawlSchedule }}
   jobTemplate:
     spec:
       template:
