@@ -135,7 +135,6 @@ If you open a web inspector on the results, you can look for web elements with `
 ### Related Docker images
 A few of the setup and maintenence steps for the Polder Federated Search App require purpose-built Docker images. They can be found at:
 - `build-sitemap` in this repository
-- https://github.com/WDS-ITO/graphdb-docker
 
 ### Development
 I'd love for people to use this for all kinds of scientific data repository searches - please feel free to fork it, submit a PR, or ask questions. The [Customization](https://polder-crew.github.io/Federated-Search-Documentation/customization.html) section of the book will be particularly useful to you.
