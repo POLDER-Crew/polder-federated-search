@@ -122,4 +122,6 @@ storageNamespace: polder
 persistence:
   existing: false
 
-crawlSchedule: "30 08 * * *" # every morning at 8:30
+# 30th of February run, will never be run automatically, only when we trigger it
+# Yes, this is cursed, but this is the only way you can put a manual-only job in a Helm chart
+crawlSchedule: "0 0 30 2 0"
