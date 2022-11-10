@@ -67,6 +67,8 @@ services:
       - MINIO_CLIENT_SECRET_KEY=${MINIO_SECRET_KEY}
       - MINIO_SERVER_HOST=s3system
       - MINIO_SERVER_PORT_NUMBER=9000
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
     volumes:
       - ./:/config
     working_dir: /config
