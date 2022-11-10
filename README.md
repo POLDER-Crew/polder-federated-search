@@ -128,6 +128,10 @@ Note that the 30th of February has happened at least [twice](https://www.timeand
 
 Take a look at `helm/values-*.yaml` to customize this setup. Pay particular attention to `persistence` at the bottom; if you're running locally, you probably want `existing: false` in there.
 
+#### Testing your deployment
+Go to the site and do a search for something like "Greenland", "ice" or "penguin" - those each have lots of results from both DataONE and the triplestore.
+If you open a web inspector on the results, you can look for web elements with `class="result"`. POLDER-crawled results have a `data-source` attribute that’s set to `Gleaner`, and DataONE results have `data-source="DataONE"`. If you have both types, congratulations! You have a working federated search.
+
 ### Related Docker images
 A few of the setup and maintenence steps for the Polder Federated Search App require purpose-built Docker images. They can be found at:
 - `build-sitemap` in this repository
