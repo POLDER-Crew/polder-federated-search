@@ -92,7 +92,7 @@ services:
     working_dir: /config
 
   triplestore:
-    image: wdsito/graphdb:10.0.0-free
+    image: ontotext/graphdb:10.1.0
     volumes:
       - triplestore:/opt
     environment:
