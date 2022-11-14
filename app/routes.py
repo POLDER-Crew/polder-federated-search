@@ -87,6 +87,13 @@ def combined_search():
     return _do_combined_search('results.html', **request.args)
 
 
+@app.route('/api/count')
+def get_count_repos():
+
+    gleaner_total_count = GleanerSearch(endpoint_url=app.config['GLEANER_ENDPOINT_URL']).get_total_count()
+    
+    return str(gleaner_total_count)
+
 @app.errorhandler(NotFound)
 def handle_404(e):
     return render_template("404.html", e=e), 404
