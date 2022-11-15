@@ -450,8 +450,15 @@ class GleanerSearch(SearcherBase):
             geometry['box'] = []
 
         if len(geometry['circle']):
-            logger.info(
-                "We got a circle as a spatial coverage object!", result)
+            # Circles are rare and not recommended! But they are valid. The only one
+            # we have seen in the wild was defined to have a radius of one meter.
+            # For that reason, I feel okay about turning it into a point for now.
+            geometry['circle'] = list(map(
+                lambda coords: Point(coordinates=tuple(
+                    # the last thing in the list is the radius, which we are throwing out
+                    reversed(coords.split(' ')[0:2]))),
+                geometry['circle'].split(',')
+            ))
         else:
             geometry['circle'] = []
 
