@@ -38,8 +38,8 @@ function handleSearchResults($ajaxPromise) {
       $resultsContainer[0].scrollIntoView();
       load.style.display = "none";
       initializeMaps();
-      for (const [name, geometry] of Object.entries(resultGeometries)) {
-        addSearchResult(name, geometry);
+      for (const [id, geometry] of Object.entries(resultGeometries)) {
+        addSearchResult(id, geometry);
       }
     });
 }

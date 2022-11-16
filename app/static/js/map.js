@@ -3,6 +3,7 @@ import proj4 from "proj4";
 import { applyStyle, stylefunction } from "ol-mapbox-style";
 
 import {Attribution, defaults as defaultControls} from 'ol/control';
+import {toStringHDMS} from 'ol/coordinate';
 import { containsExtent } from "ol/extent";
 import GeoJSON from "ol/format/GeoJSON";
 import MVT from "ol/format/MVT";
@@ -10,7 +11,8 @@ import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import VectorTileLayer from "ol/layer/VectorTile";
 import Map from "ol/Map";
-import { get as getProjection, fromLonLat } from "ol/proj";
+import Overlay from 'ol/Overlay';
+import { get as getProjection, fromLonLat, toLonLat } from "ol/proj";
 import { register } from "ol/proj/proj4";
 import OSM, { ATTRIBUTION } from "ol/source/OSM";
 import VectorSource from "ol/source/Vector";
@@ -249,8 +251,29 @@ let antarcticResultsLayer = new VectorLayer({
 let arcticMap;
 let antarcticMap;
 
+// Stuff for the popup that comes up when you click on the map
+const $popupContainer = $('#map__popup');
+const $popupContent = $('#map__popup-content');
+const $popupCloser = $('#map__popup-closer');
+
+const overlay = new Overlay({
+  element: $popupContainer[0],
+  autoPan: {
+    animation: {
+      duration: 250,
+    },
+  },
+});
+
+$popupCloser.on('click', function () {
+  overlay.setPosition(undefined);
+  $popupCloser.blur();
+  $popupContent.clear();
+  return false;
+});
+
 // the handler for clicking on the map.
-const displayResult = function (map, pixel) {
+const displayResult = function (map, pixel, coordinate) {
     const feature = map.forEachFeatureAtPixel(pixel, function (feature) {
         return feature;
     });
@@ -268,13 +291,17 @@ const displayResult = function (map, pixel) {
                 }),
             })
         );
+
+        const hdms = toStringHDMS(toLonLat(coordinate));
+
+        $popupContent.innerHTML = '<p>You clicked here:</p><code>' + hdms + '</code>';
+        overlay.setPosition(coordinate);
     }
 };
 
 const $mapContainer = $(".map__container");
 let $arcticScreenReaderList = $("#map__screenreader--arctic");
 let $antarcticScreenReaderList = $("#map__screenreader--antarctic");
-
 
 export function initializeMaps(lazy=false) {
     $arcticScreenReaderList = $("#map__screenreader--arctic");
@@ -293,6 +320,7 @@ export function initializeMaps(lazy=false) {
         arcticMap = new Map({
             target: "map--arctic",
             view: arcticView,
+            overlays: [overlay],
             layers: [arcticLayer, arcticResultsLayer],
             controls: defaultControls({attribution: false}).extend(
                 [new Attribution({collapsible: true})]
@@ -300,7 +328,7 @@ export function initializeMaps(lazy=false) {
         });
 
         arcticMap.on("click", function (evt) {
-            displayResult(arcticMap, evt.pixel);
+            displayResult(arcticMap, evt.pixel, evt.coordinate);
         });
     }
 
@@ -308,6 +336,7 @@ export function initializeMaps(lazy=false) {
         antarcticMap = new Map({
             target: "map--antarctic",
             view: antarcticView,
+            overlays: [overlay],
             layers: [
                 antarcticLayer,
                 antarcticCountriesLayer,
@@ -320,12 +349,12 @@ export function initializeMaps(lazy=false) {
         });
 
         antarcticMap.on("click", function (evt) {
-            displayResult(antarcticMap, evt.pixel);
+            displayResult(antarcticMap, evt.pixel, evt.coordinate);
         });
     }
 }
 
-export function addSearchResult(name, geometry) {
+export function addSearchResult(id, geometry) {
     // We're adding features twice in here because there are two maps.
     // If you only have one map, you only need to do this once.
     const arcticFeature = new GeoJSON().readFeature(geometry, {
@@ -342,7 +371,7 @@ export function addSearchResult(name, geometry) {
     ) {
         // todo: let's set these in the geojson on the server side.
         // Can we reproject it in GeoSPARQL or something?
-        arcticFeature.set("name", name);
+        arcticFeature.set("id", name);
         arcticResultsSource.addFeature(arcticFeature);
         $arcticScreenReaderList.append(`<li>${name}</li>`);
     }
@@ -360,7 +389,7 @@ export function addSearchResult(name, geometry) {
         )
     ) {
         // todo: let's set these in the geojson on the server side.
-        antarcticFeature.set("name", name);
+        antarcticFeature.set("id", name);
         antarcticResultsSource.addFeature(antarcticFeature);
         $antarcticScreenReaderList.append(`<li>${name}</li>`);
     }
