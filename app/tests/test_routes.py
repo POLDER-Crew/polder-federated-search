@@ -33,11 +33,14 @@ class TestRoutes(unittest.TestCase):
 
     @patch('app.search.gleaner.GleanerSearch.get_total_count')
     def test_total_count(self,gleaner):
-        gleaner.total_count = self.mock_result_set
+        gleaner.total_count = '1000'
         with app.test_client() as client:
             response = client.get(
                 '/api/count')
+            
             self.assertEqual(response.status, '200 OK')
+       
+        self.assertIn(gleaner.total_count,'1000')
 
 
     @patch('app.search.dataone.SolrDirectSearch.combined_search')
