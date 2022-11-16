@@ -40,7 +40,7 @@ class TestRoutes(unittest.TestCase):
             
             self.assertEqual(response.status, '200 OK')
        
-        self.assertIn(gleaner.total_count,'1000')
+        self.assertEqual(gleaner.total_count,'1000')
 
 
     @patch('app.search.dataone.SolrDirectSearch.combined_search')
