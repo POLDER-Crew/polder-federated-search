@@ -479,3 +479,63 @@ class GleanerSearch(SearcherBase):
         }
         result['source'] = "Gleaner"
         return SearchResult(**result)
+
+    
+    def build_total_count_query(self):
+
+        return f'''
+        PREFIX luc: <http://www.ontotext.com/connectors/lucene#>
+            PREFIX luc-index: <http://www.ontotext.com/connectors/lucene/instance#>
+            PREFIX schema: <https://schema.org/>
+            prefix prov: <http://www.w3.org/ns/prov#>
+            PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+                SELECT (COUNT(*) as ?total_results) {{
+                SELECT
+                    ?title
+                    (GROUP_CONCAT(DISTINCT ?author ; separator=",") as ?x)
+                    (GROUP_CONCAT(DISTINCT ?abstract ; separator=",") as ?abstract)
+                    (GROUP_CONCAT(DISTINCT ?keywords ; separator=",") as ?keywords)
+                {{
+                    ?s a schema:Dataset  .
+
+                    
+
+                    ?s schema:name ?title .
+                    ?s schema:temporalCoverage ?temporal_coverage .
+                    ?s schema:description | schema:description/schema:value ?abstract .
+                    {{
+                        ?s schema:keywords ?keywords .
+
+                    }} UNION {{
+                        ?catalog ?relationship ?s .
+                        ?catalog schema:keywords ?keywords .
+                    }}
+
+                    OPTIONAL {{
+                        {{
+                            ?s schema:creator/schema:name ?author .
+                        }} UNION {{
+                            ?catalog ?relationship ?s .
+                            ?catalog schema:creator/schema:name ?author .
+                        }}
+                        FILTER(ISLITERAL(?author)) .
+                    }}
+                   
+                }}
+                GROUP BY ?title
+            }}'''
+       
+    def get_total_count(self):
+        #logger.debug(self.query)
+        self.sparql.setQuery(self.build_total_count_query())
+        self.sparql.setMethod(POST)
+        self.sparql.setReturnFormat(JSON)
+        data = self.sparql.query().convert()
+        total_results = int(data['results']['bindings'].pop(0)[
+            'total_results']['value'])
+        return total_results
+        
+
+
+
+    

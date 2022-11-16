@@ -31,6 +31,18 @@ class TestRoutes(unittest.TestCase):
 
         self.assertEqual(response.status, '308 PERMANENT REDIRECT')
 
+    @patch('app.search.gleaner.GleanerSearch.get_total_count')
+    def test_total_count(self,gleaner):
+        gleaner.total_count = '1000'
+        with app.test_client() as client:
+            response = client.get(
+                '/api/count')
+            
+            self.assertEqual(response.status, '200 OK')
+       
+        self.assertEqual(gleaner.total_count,'1000')
+
+
     @patch('app.search.dataone.SolrDirectSearch.combined_search')
     @patch('app.search.gleaner.GleanerSearch.combined_search')
     def test_nojs_combined_search(self, gleaner, dataone):
