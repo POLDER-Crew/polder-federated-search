@@ -16,6 +16,8 @@ services:
     environment:
       - MINIO_ACCESS_KEY
       - MINIO_SECRET_KEY
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
     volumes:
       - ./:/config
     working_dir: /config
@@ -61,8 +63,8 @@ services:
     profiles:
       - setup
     environment:
-      - MINIO_ACCESS_KEY
-      - MINIO_SECRET_KEY
+      - MINIO_CLIENT_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_CLIENT_SECRET_KEY=${MINIO_SECRET_KEY}
       - MINIO_SERVER_HOST=s3system
       - MINIO_SERVER_PORT_NUMBER=9000
     volumes:
@@ -79,6 +81,8 @@ services:
     environment:
       - MINIO_ACCESS_KEY
       - MINIO_SECRET_KEY
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
     profiles:
       - crawl
     volumes:
@@ -111,8 +115,6 @@ services:
     volumes:
       - s3system:/data
     environment:
-      - MINIO_ACCESS_KEY
-      - MINIO_SECRET_KEY
       - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
       - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
     command: ["server", "/data", "--console-address", ":54321"]
