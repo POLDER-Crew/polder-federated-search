@@ -10,7 +10,7 @@ spec:
     spec:
       template:
         metadata:
-          name: crawl
+          name: recreate-index
         spec:
           restartPolicy: Never
           volumes:
