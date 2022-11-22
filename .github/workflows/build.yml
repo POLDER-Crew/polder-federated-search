@@ -14,7 +14,7 @@ jobs:
         uses: polyseam/get-version-from-package-json@1.0.0
         id: get-version-from-package-json
         with:
-          path-to-file: 'package.json'
+          path-to-package-json: 'package.json'
       - name: print-version
         run: echo "The version key in your json is ${{steps.get-version-from-package-json.outputs.version}}"
   build:
