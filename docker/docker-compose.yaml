@@ -110,7 +110,7 @@ services:
       - 9999:7200
 
   s3system:
-    image: minio/minio
+    image: minio/minio:RELEASE.2022-10-24T18-35-07Z
     ports:
       - 54321:54321
       - 9000:9000
