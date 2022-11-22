@@ -11,7 +11,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: get-version-from-package-json
-        uses: polyseam/get-version-from-package-json@v.1.0.0
+        uses: polyseam/get-version-from-package-json@1.0.0
         id: get-version-from-package-json
         with:
           path-to-file: 'package.json'
