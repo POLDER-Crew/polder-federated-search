@@ -37,8 +37,7 @@ jobs:
           with:
             push: true
             tags: wdsito/build-sitemaps:${{steps.get-version-from-package-json.outputs.version}}
-            file: ./build-sitemap/Dockerfile
-            context: .
+            context: ./build-sitemap
         - name: Image digest
           run: echo ${{ steps.docker_build.outputs.digest }}
         - name: Image digest
