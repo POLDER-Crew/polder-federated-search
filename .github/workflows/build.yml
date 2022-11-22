@@ -33,8 +33,8 @@ jobs:
           id: docker_build
           uses: docker/build-push-action@v2
           with:
-            push: true
-            tags: ${{ steps.get-version-from-package-json.outputs.version }}
+            push: true 
+            tags: wdsito/polder-federated-search:${{ steps.get-version-from-package-json.outputs.version }}
             file: Dockerfile
             context: .
         - name: build docker container
@@ -42,7 +42,7 @@ jobs:
           uses: docker/build-push-action@v2
           with:
             push: true
-            tags: ${{ steps.get-version-from-package-json.outputs.version }}
+            tags: wdsito/build-sitemaps:${{ steps.get-version-from-package-json.outputs.version }}
             file: build-sitemap/Dockerfile
             context: .
         - name: Image digest
