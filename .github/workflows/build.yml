@@ -30,12 +30,14 @@ jobs:
           uses: docker/build-push-action@v2
           with:
             push: true 
+            platforms: linux/amd64,linux/arm64
             tags: wdsito/polder-federated-search:${{steps.get-version-from-package-json.outputs.version}}
         - name: build docker container
           id: sitemap_docker_build
           uses: docker/build-push-action@v2
           with:
             push: true
+            platforms: linux/amd64,linux/arm64
             tags: wdsito/build-sitemaps:${{steps.get-version-from-package-json.outputs.version}}
             context: ./build-sitemap
         - name: Image digest
