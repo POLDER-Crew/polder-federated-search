@@ -162,7 +162,7 @@ spec:
           mountPath: /config
       containers:
       - name: write-to-triplestore
-        image: bitnami/minio-client:2022.9.16
+        image: minio/mc:RELEASE.2022-11-17T21-20-39Z
         env:
         - name: MINIO_CLIENT_ACCESS_KEY
           valueFrom:
@@ -181,7 +181,7 @@ spec:
         command:
         # the first line of the following bash command is supposed to happen automatically, according to
         # the documentation on docker hub, but it does not.
-        - /bin/bash
+        - /bin/sh
         - -c
         - >
           mc config host add minio "http://${MINIO_SERVER_HOST}:${MINIO_SERVER_PORT_NUMBER}" "${MINIO_CLIENT_ACCESS_KEY}" "${MINIO_CLIENT_SECRET_KEY}" &&
