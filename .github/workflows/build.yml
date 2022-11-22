@@ -35,8 +35,6 @@ jobs:
           with:
             push: true 
             tags: wdsito/polder-federated-search:test
-            file: ./Dockerfile
-            context: .
         - name: build docker container
           id: sitemap_docker_build
           uses: docker/build-push-action@v2
