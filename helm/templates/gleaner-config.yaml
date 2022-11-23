@@ -67,6 +67,6 @@ data:
     - name: ccadi
       type: sitemap
       headless: false
-      url: http://s3system:9000/sitemaps/ccadi-sitemap.xml
+      url: http://s3system-svc:{{ .Values.s3system_service.api_port }}/sitemaps/ccadi-sitemap.xml
       properName: Canadian Consortium for Arctic Data Interoperability
       domain: http://hedeby.uwaterloo.ca
