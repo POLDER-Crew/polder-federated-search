@@ -165,7 +165,6 @@ class GleanerSearch(SearcherBase):
                 ?spatial_coverage_circle
                 ?spatial_coverage_point
                 ?author
-                ?g
             {{
                 {{
                     {count_query}
