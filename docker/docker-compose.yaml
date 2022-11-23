@@ -67,6 +67,8 @@ services:
       - MINIO_CLIENT_SECRET_KEY=${MINIO_SECRET_KEY}
       - MINIO_SERVER_HOST=s3system
       - MINIO_SERVER_PORT_NUMBER=9000
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
     volumes:
       - ./:/config
     working_dir: /config
@@ -90,7 +92,7 @@ services:
     working_dir: /config
 
   triplestore:
-    image: wdsito/graphdb:10.0.0-free
+    image: ontotext/graphdb:10.1.0
     volumes:
       - triplestore:/opt
     environment:
@@ -108,7 +110,7 @@ services:
       - 9999:7200
 
   s3system:
-    image: minio/minio
+    image: minio/minio:RELEASE.2022-10-24T18-35-07Z
     ports:
       - 54321:54321
       - 9000:9000
@@ -127,7 +129,7 @@ services:
      - SERVICE_PORTS=9222
 
   webapp:
-    image: wdsito/polder-federated-search:1.43.9
+    image: wdsito/polder-federated-search:1.44.0
     depends_on:
       - triplestore
       - s3system

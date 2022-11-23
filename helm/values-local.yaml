@@ -121,3 +121,7 @@ storageNamespace: polder
 ## PersistentVolumeClaim. created for you.
 persistence:
   existing: false
+
+# 30th of February run, will never be run automatically, only when we trigger it
+# Yes, this is cursed, but this is the only way you can put a manual-only job in a Helm chart
+crawlSchedule: "0 0 30 2 0"
