@@ -136,7 +136,7 @@ class GleanerSearch(SearcherBase):
                 }}
 
                 {filter_query}
-                BIND(COALESCE(?identifier, ?s) AS ?id)
+                BIND(COALESCE(?identifier, ?url, ?s) AS ?id)
                 FILTER(ISLITERAL(?id))
             }}
             GROUP BY ?url ?title ?g
@@ -165,7 +165,6 @@ class GleanerSearch(SearcherBase):
                 ?spatial_coverage_circle
                 ?spatial_coverage_point
                 ?author
-                ?g
             {{
                 {{
                     {count_query}

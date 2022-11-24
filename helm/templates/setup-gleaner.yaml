@@ -113,9 +113,9 @@ spec:
           mountPath: /context
         workingDir: /context
       # Dynamically create the sitemaps for BAS and GCMD, and put
-      # them somewherethat Gleaner can use to crawl
+      # them somewhere that Gleaner can use to crawl
       - name: build-sitemap
-        image: wdsito/build-sitemap:1.5
+        image: wdsito/build-sitemap::{{ .Values.image.tag | default .Chart.AppVersion }}
         env:
         - name: MINIO_CLIENT_ACCESS_KEY
           valueFrom:
