@@ -38,7 +38,7 @@ jobs:
           with:
             push: true
             platforms: linux/amd64,linux/arm64
-            tags: wdsito/build-sitemaps:${{steps.get-version-from-package-json.outputs.version}}
+            tags: wdsito/build-sitemap:${{steps.get-version-from-package-json.outputs.version}}
             context: ./build-sitemap
         - name: Image digest
           run: echo ${{ steps.docker_build.outputs.digest }}
