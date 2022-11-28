@@ -112,10 +112,10 @@ spec:
         - name: gleaner-context
           mountPath: /context
         workingDir: /context
-      # Dynamically create the sitemaps for BAS and GCMD, and put
+      # Dynamically create the sitemaps for BAS, GCMD and CCADI, and put
       # them somewhere that Gleaner can use to crawl
       - name: build-sitemap
-        image: wdsito/build-sitemap::{{ .Values.image.tag | default .Chart.AppVersion }}
+        image: wdsito/build-sitemap:{{ .Values.image.tag | default .Chart.AppVersion }}
         env:
         - name: MINIO_CLIENT_ACCESS_KEY
           valueFrom:

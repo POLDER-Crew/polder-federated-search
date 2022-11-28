@@ -56,7 +56,7 @@ rm -f ccadi-sitemap.xml
 printf '<?xml version="1.0" encoding="UTF-8"?>\n' >> ccadi-sitemap.xml
 printf '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemalocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">' >> bas-sitemap.xml
 for i in http://hedeby.uwaterloo.ca/api/metadata?page={0..150}
-    do printf "<url><loc>${i}</loc></url>"
+    do printf "<url><loc>${i}</loc></url>" >> ccadi-sitemap.xml
 done
 
 printf "</urlset>" >> ccadi-sitemap.xml
