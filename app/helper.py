@@ -41,6 +41,6 @@ def get_original_gleaner_sources():
         'GEM': {'key': 'GEM', 'name': 'Greenland Ecosystem Monitoring', 'url': 'https://g-e-m.dk/', 'logo': 'img/gem.jpg'},
         'BAS': {'key': 'BAS', 'name': 'British Antarctic Survey', 'url': 'https://www.bas.ac.uk/', 'logo': 'img/bas.png'},
         'CCHDO': {'key': 'CCHDO', 'name': 'CLIVAR and Carbon Hydrographic Data Office', 'url': 'https://cchdo.ucsd.edu/', 'logo': 'img/logo_cchdo.svg'},
-        'CCADI': {'key': 'CCADI', 'name': 'Canadian Consortium for Arctic Data Interoperability', 'url': '', 'logo': 'img/CCADI-logo.png'}
+        'PDC': {'key': 'PDC', 'name': 'Polar Data Catalogue (via Canadian Consortium for Arctic Data Interoperability)', 'url': 'https://polardata.ca/', 'logo': 'img/pdc-logo.png'}
     }
     return gleaner_datasources

@@ -51,3 +51,8 @@ h4 {
 .hidden {
     display: none;
 }
+
+img.dark-background {
+    background-color: constants.$black;
+    padding: 0.5rem;
+}
