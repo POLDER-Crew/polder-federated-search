@@ -18,6 +18,12 @@
             gtag('config', '{{google_analytics_id}}');
           </script>
       {% endif %}
+
+      {% if sentry_environment!='production' %}
+      <meta name="robots" content="noindex"> 
+      {% endif %}
+
+
       <title>
           {% block title %}Home{% endblock %} - POLDER Federated Search
       </title>

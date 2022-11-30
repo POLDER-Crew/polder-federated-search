@@ -38,6 +38,10 @@ except OSError:
 def inject_google_analytics_id():
     return dict(google_analytics_id=app.config['GOOGLE_ANALYTICS_ID'])
 
+@app.context_processor
+def inject_sentry_environment():
+    return dict(sentry_environment=app.config['SENTRY_ENVIRONMENT'])
+
 from app import routes, template_helpers
 
 
