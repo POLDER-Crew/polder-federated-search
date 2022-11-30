@@ -6,7 +6,7 @@ mc config host add minio "http://${MINIO_SERVER_HOST}:${MINIO_SERVER_PORT_NUMBER
 
 # 'download' does not work for some reason, but 'public' permissions do
 mc stat minio/sitemaps || mc mb minio/sitemaps
-mc policy set public minio/sitemaps
+mc anonymous set public minio/sitemaps
 
 # Build the BAS sitemap first
 next="true"
