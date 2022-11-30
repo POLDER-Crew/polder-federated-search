@@ -79,11 +79,13 @@ def _do_combined_search(template, **kwargs):
 @app.route('/search')
 # Redirect to a stand-alone page to display results
 def nojs_combined_search():
+
     return _do_combined_search('search.html', **request.args)
 
 
 @app.route('/api/search')
 def combined_search():
+    
     return _do_combined_search('results.html', **request.args)
 
 
