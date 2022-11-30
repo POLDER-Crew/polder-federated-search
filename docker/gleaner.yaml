@@ -63,3 +63,4 @@ sources:
   url: http://s3system:9000/sitemaps/ccadi-sitemap.xml
   properName: Canadian Consortium for Arctic Data Interoperability
   domain: http://hedeby.uwaterloo.ca
+  active: true

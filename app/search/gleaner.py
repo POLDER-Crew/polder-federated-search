@@ -69,6 +69,7 @@ class GleanerSearch(SearcherBase):
             (GROUP_CONCAT(DISTINCT ?abstract ; separator=",") as ?abstract)
             (GROUP_CONCAT(DISTINCT ?sameAs ; separator=",") as ?sameAs)
             (GROUP_CONCAT(DISTINCT ?keywords ; separator=",") as ?keywords)
+            (GROUP_CONCAT(DISTINCT ?temporal_coverage ; separator=",") as ?temporal_coverage)
             (GROUP_CONCAT(DISTINCT ?spatial_coverage_text ; separator=",") as ?spatial_coverage_text)
             (GROUP_CONCAT(DISTINCT ?spatial_coverage_polygon ; separator=",") as ?spatial_coverage_polygon)
             (GROUP_CONCAT(DISTINCT ?spatial_coverage_line ; separator=",") as ?spatial_coverage_line)
@@ -139,14 +140,13 @@ class GleanerSearch(SearcherBase):
                 BIND(COALESCE(?identifier, ?url, ?s) AS ?id)
                 FILTER(ISLITERAL(?id))
             }}
-            GROUP BY ?url ?title ?g
+            GROUP BY ?url ?title
         """
 
         return f"""
             PREFIX luc: <http://www.ontotext.com/connectors/lucene#>
             PREFIX luc-index: <http://www.ontotext.com/connectors/lucene/instance#>
             PREFIX schema: <https://schema.org/>
-            prefix prov: <http://www.w3.org/ns/prov#>
             PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
             SELECT
                 ?total_results
@@ -158,6 +158,7 @@ class GleanerSearch(SearcherBase):
                 ?sameAs
                 ?keywords
                 ?license
+                ?temporal_coverage
                 ?spatial_coverage_text
                 ?spatial_coverage_polygon
                 ?spatial_coverage_line
