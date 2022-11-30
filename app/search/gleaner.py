@@ -140,14 +140,13 @@ class GleanerSearch(SearcherBase):
                 BIND(COALESCE(?identifier, ?url, ?s) AS ?id)
                 FILTER(ISLITERAL(?id))
             }}
-            GROUP BY ?url ?title ?g
+            GROUP BY ?url ?title
         """
 
         return f"""
             PREFIX luc: <http://www.ontotext.com/connectors/lucene#>
             PREFIX luc-index: <http://www.ontotext.com/connectors/lucene/instance#>
             PREFIX schema: <https://schema.org/>
-            prefix prov: <http://www.w3.org/ns/prov#>
             PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
             SELECT
                 ?total_results

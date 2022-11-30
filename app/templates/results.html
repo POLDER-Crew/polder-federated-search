@@ -94,9 +94,9 @@
           {% endif %}
 
           {% if result.license %}
-            <div class="license">
+            <div class="result__license">
               <h4>License:</h4>
-              {{ result.license }}
+              {{ result.license |urlize(nofollow="True", target="_blank") }}
             </div>
           {% endif %}
 
