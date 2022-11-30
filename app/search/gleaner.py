@@ -69,6 +69,7 @@ class GleanerSearch(SearcherBase):
             (GROUP_CONCAT(DISTINCT ?abstract ; separator=",") as ?abstract)
             (GROUP_CONCAT(DISTINCT ?sameAs ; separator=",") as ?sameAs)
             (GROUP_CONCAT(DISTINCT ?keywords ; separator=",") as ?keywords)
+            (GROUP_CONCAT(DISTINCT ?temporal_coverage ; separator=",") as ?temporal_coverage)
             (GROUP_CONCAT(DISTINCT ?spatial_coverage_text ; separator=",") as ?spatial_coverage_text)
             (GROUP_CONCAT(DISTINCT ?spatial_coverage_polygon ; separator=",") as ?spatial_coverage_polygon)
             (GROUP_CONCAT(DISTINCT ?spatial_coverage_line ; separator=",") as ?spatial_coverage_line)
@@ -158,6 +159,7 @@ class GleanerSearch(SearcherBase):
                 ?sameAs
                 ?keywords
                 ?license
+                ?temporal_coverage
                 ?spatial_coverage_text
                 ?spatial_coverage_polygon
                 ?spatial_coverage_line
