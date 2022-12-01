@@ -251,13 +251,11 @@ let antarcticResultsLayer = new VectorLayer({
 let arcticMap;
 let antarcticMap;
 
-// Stuff for the popup that comes up when you click on the map
-const $popupContainer = $('#map__popup');
-const $popupContent = $('#map__popup-content');
-const $popupCloser = $('#map__popup-closer');
+let $popupContainer;
+let $popupContent;
+let $popupCloser;
 
 const overlay = new Overlay({
-  element: $popupContainer[0],
   autoPan: {
     animation: {
       duration: 250,
@@ -265,35 +263,22 @@ const overlay = new Overlay({
   },
 });
 
-$popupCloser.on('click', function () {
-  overlay.setPosition(undefined);
-  $popupCloser.blur();
-  $popupContent.clear();
-  return false;
-});
-
 // the handler for clicking on the map.
 const displayResult = function (map, pixel, coordinate) {
     const feature = map.forEachFeatureAtPixel(pixel, function (feature) {
         return feature;
     });
-    if (feature) {
+    if (feature && feature.setStyle) { // sometimes you get back an ice layer or something
         feature.setStyle(
             new Style({
                 stroke: resultStroke,
                 fill: highlightedResultFill,
                 image: image,
-                text: new Text({
-                    text: feature.get("name"),
-                    fill: placesTextFill,
-                    stroke: placesTextStroke,
-                    padding: [5, 5, 5, 5],
-                }),
             })
         );
 
         const hdms = toStringHDMS(toLonLat(coordinate));
-
+        $popupContent = $('#map__popup-content');
         $popupContent.innerHTML = '<p>You clicked here:</p><code>' + hdms + '</code>';
         overlay.setPosition(coordinate);
     }
@@ -304,6 +289,13 @@ let $arcticScreenReaderList = $("#map__screenreader--arctic");
 let $antarcticScreenReaderList = $("#map__screenreader--antarctic");
 
 export function initializeMaps(lazy=false) {
+    // Stuff for the popup that comes up when you click on the map
+    $popupContainer = $('#map__popup');
+    $popupCloser = $('#map__popup-closer');
+
+    overlay.setElement($popupContainer[0])
+
+    // Accessibility helpers
     $arcticScreenReaderList = $("#map__screenreader--arctic");
     $antarcticScreenReaderList = $("#map__screenreader--antarctic");
 
@@ -352,6 +344,13 @@ export function initializeMaps(lazy=false) {
             displayResult(antarcticMap, evt.pixel, evt.coordinate);
         });
     }
+
+    $popupCloser.on('click', function () {
+      overlay.setPosition(undefined);
+      $popupCloser.blur();
+      $popupContent.clear();
+      return false;
+    });
 }
 
 export function addSearchResult(id, geometry) {
