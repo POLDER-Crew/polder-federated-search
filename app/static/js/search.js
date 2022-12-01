@@ -50,9 +50,11 @@ function searchFormSubmit(event) {
   showSearchPending();
 
   const $form = $(event.delegateTarget);
-  gtag("event", "search", {
-    search_term: $form.find("input[name='text']").val()
-  });
+  if(typeof gtag !== 'undefined') {
+    gtag("event", "search", {
+      search_term: $form.find("input[name='text']").val()
+    });
+  }
   handleSearchResults(
 
     $.ajax({
