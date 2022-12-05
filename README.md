@@ -29,12 +29,6 @@ There are many DataONE repositories, but of particular interest to the polar res
     - [Permanent Service for Mean Sea Level (PSMSL)](https://psmsl.org/)
     - [World Data Centre for Geomagnetism, Edinburgh](http://www.wdc.bgs.ac.uk/)
     - [World Data Center for Solid Earth Physics](http://www.wdcb.ru/)
-
-
-#### Future work
-- [National Snow and Ice Data Center](https://nsidc.org])
-- CRITTERBASE
-- Polar data from [DataStream](https://gordonfoundation.ca/initiatives/datastream/)
 - Repositories in the [Canadian Consortium for Arctic Data Interoperability (CCADI)](https://ccadi.ca/) network:
   - [Polar Data Catalogue](http://polardata.ca)
   - [Nordicana D](https://www.cen.ulaval.ca/nordicanad/en_BDDescription.aspx)
@@ -44,6 +38,12 @@ There are many DataONE repositories, but of particular interest to the polar res
   - Arctic Spatial Data Infrastructure ([ASDI](https://arctic-sdi.org/))
   - [INTERACT](https://eu-interact.org/)
   - Canadian Watershed Information Network ([CWIN](https://dev.uni-manitoba.links.com.au/data/dataset/))
+
+
+#### Future work
+- [National Snow and Ice Data Center](https://nsidc.org])
+- CRITTERBASE
+- Polar data from [DataStream](https://gordonfoundation.ca/initiatives/datastream/)
 
 
 ### Architecture
