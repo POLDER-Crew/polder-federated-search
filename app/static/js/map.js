@@ -279,7 +279,7 @@ const displayResult = function (map, pixel, coordinate) {
 
         const hdms = toStringHDMS(toLonLat(coordinate));
         $popupContent = $('#map__popup-content');
-        $popupContent.innerHTML = '<p>You clicked here:</p><code>' + hdms + '</code>';
+        $popupContent.html(`<h4><a href="#${feature.get('id')}">${feature.get('name')}</a></h4><p>position: <code>${hdms}</code></p>`);
         overlay.setPosition(coordinate);
     }
 };
@@ -348,15 +348,15 @@ export function initializeMaps(lazy=false) {
     $popupCloser.on('click', function () {
       overlay.setPosition(undefined);
       $popupCloser.blur();
-      $popupContent.clear();
+      $popupContent.empty();
       return false;
     });
 }
 
-export function addSearchResult(id, geometry) {
+export function addSearchResult(id, result) {
     // We're adding features twice in here because there are two maps.
     // If you only have one map, you only need to do this once.
-    const arcticFeature = new GeoJSON().readFeature(geometry, {
+    const arcticFeature = new GeoJSON().readFeature(result.geometry, {
         // If your tileset is using the default projection, don't need the next two lines.
         dataProjection: getProjection("ESPG:4326"),
         featureProjection: arcticProjection,
@@ -370,12 +370,13 @@ export function addSearchResult(id, geometry) {
     ) {
         // todo: let's set these in the geojson on the server side.
         // Can we reproject it in GeoSPARQL or something?
-        arcticFeature.set("id", name);
+        arcticFeature.set("id", id);
+        arcticFeature.set("name", result.name);
         arcticResultsSource.addFeature(arcticFeature);
-        $arcticScreenReaderList.append(`<li>${name}</li>`);
+        $arcticScreenReaderList.append(`<li>${result.name}</li>`);
     }
 
-    const antarcticFeature = new GeoJSON().readFeature(geometry, {
+    const antarcticFeature = new GeoJSON().readFeature(result.geometry, {
         // If your tileset is using the default projection, don't need the next two lines.
         dataProjection: getProjection("ESPG:4326"),
         featureProjection: antarcticProjection,
@@ -388,8 +389,9 @@ export function addSearchResult(id, geometry) {
         )
     ) {
         // todo: let's set these in the geojson on the server side.
-        antarcticFeature.set("id", name);
+        antarcticFeature.set("id", id);
+        antarcticFeature.set("name", result.name);
         antarcticResultsSource.addFeature(antarcticFeature);
-        $antarcticScreenReaderList.append(`<li>${name}</li>`);
+        $antarcticScreenReaderList.append(`<li>${result.name}</li>`);
     }
 }

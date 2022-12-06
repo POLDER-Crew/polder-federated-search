@@ -20,7 +20,10 @@
           so that we aren't calling these from each result object directly. Ideally,
           these geometries would be returned with an API. -->
           <script type="text/javascript">
-            resultGeometries["{{ loop.index }}"] = {{ result.geometry.geometry_collection | tojson | safe }};
+            resultGeometries["{{ loop.index }}"] = {
+              'name': "{{ result.title }}",
+              'geometry': {{ result.geometry.geometry_collection | tojson | safe }}
+            };
           </script>
         {% endif %}
 
