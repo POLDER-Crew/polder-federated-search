@@ -310,10 +310,17 @@ const selectRegionHandler = function (evt) {
 const selectRegionArctic = new Select({style: selectedResultStyle, multi: true});
 
 // The handler for showing the popup
-selectRegionArctic.on('select', selectRegionHandler);
+selectRegionArctic.on('select', function(evt) {
+    selectRegionAntarctic.getFeatures().clear(); // clear selected features on the other map
+    // call the generic handler
+    selectRegionHandler(evt);
+});
 
 const selectRegionAntarctic = new Select({style: selectedResultStyle, multi: true});
-selectRegionAntarctic.on('select', selectRegionHandler);
+selectRegionAntarctic.on('select', function(evt) {
+    selectRegionArctic.getFeatures().clear();
+    selectRegionHandler(evt);
+});
 
 const $mapContainer = $(".map__container");
 let $arcticScreenReaderList = $("#map__screenreader--arctic");
@@ -378,6 +385,8 @@ export function initializeMaps(lazy=false) {
       overlay.setPosition(undefined);
       $popupCloser.blur();
       $popupContent.empty();
+      selectRegionArctic.getFeatures().clear();
+      selectRegionAntarctic.getFeatures().clear();
       return false;
     });
 }

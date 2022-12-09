@@ -77,3 +77,8 @@
         color: constants.$light-blue;
     }
 }
+
+.map__popup-content {
+    max-height: 200px;
+    overflow: scroll;
+}
