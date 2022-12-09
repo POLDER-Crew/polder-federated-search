@@ -70,6 +70,10 @@
     margin-left: -11px;
 }
 
-.map__popup-content {
-    padding: 1rem;
+.popup-title a {
+    color: constants.$dark-blue;
+
+    &:hover, &:focus {
+        color: constants.$light-blue;
+    }
 }

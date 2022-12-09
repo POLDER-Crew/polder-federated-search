@@ -7,6 +7,8 @@ import {toStringHDMS} from 'ol/coordinate';
 import { containsExtent } from "ol/extent";
 import GeoJSON from "ol/format/GeoJSON";
 import MVT from "ol/format/MVT";
+import {defaults as defaultInteractions} from 'ol/interaction/defaults';
+import Select from 'ol/interaction/Select';
 import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import VectorTileLayer from "ol/layer/VectorTile";
@@ -101,12 +103,14 @@ const countriesTextStyle = function (feature) {
 
 // SEARCH RESULTS: customize these styles to match your colors and preferences
 const accentWarm = "#e66b3d"; // see _constants.scss
+const lightBlue = "#0092ad"; // see _constants.scss
 const resultStroke = new Stroke({ color: accentWarm, width: 2 });
+const selectedResultStroke = new Stroke({ color: lightBlue, width: 2 });
 const resultFill = new Fill({
     color: "rgba(230, 107, 61, 0.1)",
 });
-const highlightedResultFill = new Fill({
-    color: "rgba(230, 107, 61, 0.4)",
+const selectedResultFill = new Fill({
+    color: "rgba(255, 255, 255, 0.4)",
 });
 
 const image = new Circle({
@@ -115,11 +119,25 @@ const image = new Circle({
     stroke: resultStroke,
 });
 
+const selectedImage = new Circle({
+    radius: 5,
+    fill: selectedResultFill,
+    stroke: selectedResultStroke,
+});
+
 const resultStyle = function (feature) {
     return new Style({
         stroke: resultStroke,
         fill: resultFill,
         image: image,
+    });
+};
+
+const selectedResultStyle = function (feature) {
+    return new Style({
+        stroke: selectedResultStroke,
+        fill: selectedResultFill,
+        image: selectedImage,
     });
 };
 
@@ -263,26 +281,39 @@ const overlay = new Overlay({
   },
 });
 
-// the handler for clicking on the map.
-const displayResult = function (map, pixel, coordinate) {
-    const feature = map.forEachFeatureAtPixel(pixel, function (feature) {
-        return feature;
-    });
-    if (feature && feature.setStyle) { // sometimes you get back an ice layer or something
-        feature.setStyle(
-            new Style({
-                stroke: resultStroke,
-                fill: highlightedResultFill,
-                image: image,
-            })
-        );
+const selectRegionHandler = function (evt) {
+    let coordinate = evt.mapBrowserEvent.coordinate;
+    let map = evt.mapBrowserEvent.map;
 
+    overlay.setMap(map);
+    let popupHtml = '';
+    let showPopup = false;
+
+
+    evt.selected.forEach(function (feature) {
+        if (feature && feature.setStyle) { // sometimes you get back an ice layer or something
+            showPopup = true;
+            popupHtml += `<h4 class="popup-title"><a href="#${feature.get('id')}">${feature.get('name')}</a></h4>`;
+        }
+    });
+
+    if(showPopup) {
         const hdms = toStringHDMS(toLonLat(coordinate));
-        $popupContent = $('#map__popup-content');
-        $popupContent.html(`<h4><a href="#${feature.get('id')}">${feature.get('name')}</a></h4><p>position: <code>${hdms}</code></p>`);
+        popupHtml += `<p><code>${hdms}</code></p>`;
+        $popupContent.html(popupHtml);
         overlay.setPosition(coordinate);
     }
 };
+
+// The handler for changing the style of selected / deselected regions.
+// Can't have maps share them, apparently.
+const selectRegionArctic = new Select({style: selectedResultStyle, multi: true});
+
+// The handler for showing the popup
+selectRegionArctic.on('select', selectRegionHandler);
+
+const selectRegionAntarctic = new Select({style: selectedResultStyle, multi: true});
+selectRegionAntarctic.on('select', selectRegionHandler);
 
 const $mapContainer = $(".map__container");
 let $arcticScreenReaderList = $("#map__screenreader--arctic");
@@ -292,8 +323,12 @@ export function initializeMaps(lazy=false) {
     // Stuff for the popup that comes up when you click on the map
     $popupContainer = $('#map__popup');
     $popupCloser = $('#map__popup-closer');
+    $popupContent = $('#map__popup-content');
 
-    overlay.setElement($popupContainer[0])
+    overlay.setElement($popupContainer[0]);
+
+    // Prevents showing a stray overlay container on paging
+    overlay.setPosition(undefined);
 
     // Accessibility helpers
     $arcticScreenReaderList = $("#map__screenreader--arctic");
@@ -317,10 +352,7 @@ export function initializeMaps(lazy=false) {
             controls: defaultControls({attribution: false}).extend(
                 [new Attribution({collapsible: true})]
             ),
-        });
-
-        arcticMap.on("click", function (evt) {
-            displayResult(arcticMap, evt.pixel, evt.coordinate);
+            interactions: defaultInteractions().extend([selectRegionArctic])
         });
     }
 
@@ -338,10 +370,7 @@ export function initializeMaps(lazy=false) {
             controls: defaultControls({attribution: false}).extend(
                 [new Attribution({collapsible: true,})]
             ),
-        });
-
-        antarcticMap.on("click", function (evt) {
-            displayResult(antarcticMap, evt.pixel, evt.coordinate);
+            interactions: defaultInteractions().extend([selectRegionAntarctic])
         });
     }
 
