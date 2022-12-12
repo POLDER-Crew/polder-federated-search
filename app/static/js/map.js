@@ -3,14 +3,18 @@ import proj4 from "proj4";
 import { applyStyle, stylefunction } from "ol-mapbox-style";
 
 import {Attribution, defaults as defaultControls} from 'ol/control';
+import {toStringHDMS} from 'ol/coordinate';
 import { containsExtent } from "ol/extent";
 import GeoJSON from "ol/format/GeoJSON";
 import MVT from "ol/format/MVT";
+import {defaults as defaultInteractions} from 'ol/interaction/defaults';
+import Select from 'ol/interaction/Select';
 import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import VectorTileLayer from "ol/layer/VectorTile";
 import Map from "ol/Map";
-import { get as getProjection, fromLonLat } from "ol/proj";
+import Overlay from 'ol/Overlay';
+import { get as getProjection, fromLonLat, toLonLat } from "ol/proj";
 import { register } from "ol/proj/proj4";
 import OSM, { ATTRIBUTION } from "ol/source/OSM";
 import VectorSource from "ol/source/Vector";
@@ -99,12 +103,14 @@ const countriesTextStyle = function (feature) {
 
 // SEARCH RESULTS: customize these styles to match your colors and preferences
 const accentWarm = "#e66b3d"; // see _constants.scss
+const lightBlue = "#0092ad"; // see _constants.scss
 const resultStroke = new Stroke({ color: accentWarm, width: 2 });
+const selectedResultStroke = new Stroke({ color: lightBlue, width: 2 });
 const resultFill = new Fill({
     color: "rgba(230, 107, 61, 0.1)",
 });
-const highlightedResultFill = new Fill({
-    color: "rgba(230, 107, 61, 0.4)",
+const selectedResultFill = new Fill({
+    color: "rgba(255, 255, 255, 0.4)",
 });
 
 const image = new Circle({
@@ -113,11 +119,25 @@ const image = new Circle({
     stroke: resultStroke,
 });
 
+const selectedImage = new Circle({
+    radius: 5,
+    fill: selectedResultFill,
+    stroke: selectedResultStroke,
+});
+
 const resultStyle = function (feature) {
     return new Style({
         stroke: resultStroke,
         fill: resultFill,
         image: image,
+    });
+};
+
+const selectedResultStyle = function (feature) {
+    return new Style({
+        stroke: selectedResultStroke,
+        fill: selectedResultFill,
+        image: selectedImage,
     });
 };
 
@@ -249,34 +269,81 @@ let antarcticResultsLayer = new VectorLayer({
 let arcticMap;
 let antarcticMap;
 
-// the handler for clicking on the map.
-const displayResult = function (map, pixel) {
-    const feature = map.forEachFeatureAtPixel(pixel, function (feature) {
-        return feature;
+let $popupContainer;
+let $popupContent;
+let $popupCloser;
+
+const overlay = new Overlay({
+  autoPan: {
+    animation: {
+      duration: 250,
+    },
+  },
+});
+
+const expandResult = function(evt) {
+    $(evt.target.getAttribute('href')).find('.show_more_button').click();
+}
+
+const selectRegionHandler = function (evt) {
+    let coordinate = evt.mapBrowserEvent.coordinate;
+    let map = evt.mapBrowserEvent.map;
+
+    overlay.setMap(map);
+    let popupHtml = '';
+    let showPopup = false;
+
+
+    evt.selected.forEach(function (feature) {
+        if (feature && feature.setStyle) { // sometimes you get back an ice layer or something
+            showPopup = true;
+            popupHtml += `<h4 class="popup-title"><a class="result__anchor" href="#${feature.get('id')}">${feature.get('name')}</a></h4>`;
+        }
     });
-    if (feature) {
-        feature.setStyle(
-            new Style({
-                stroke: resultStroke,
-                fill: highlightedResultFill,
-                image: image,
-                text: new Text({
-                    text: feature.get("name"),
-                    fill: placesTextFill,
-                    stroke: placesTextStroke,
-                    padding: [5, 5, 5, 5],
-                }),
-            })
-        );
+
+    if(showPopup) {
+        const hdms = toStringHDMS(toLonLat(coordinate));
+        popupHtml += `<p><code>${hdms}</code></p>`;
+        $popupContent.html(popupHtml);
+        overlay.setPosition(coordinate);
+
+        $('.result__anchor').click(expandResult);
     }
 };
+
+// The handler for changing the style of selected / deselected regions.
+// Can't have maps share them, apparently.
+const selectRegionArctic = new Select({style: selectedResultStyle, multi: true});
+
+// The handler for showing the popup
+selectRegionArctic.on('select', function(evt) {
+    selectRegionAntarctic.getFeatures().clear(); // clear selected features on the other map
+    // call the generic handler
+    selectRegionHandler(evt);
+});
+
+const selectRegionAntarctic = new Select({style: selectedResultStyle, multi: true});
+selectRegionAntarctic.on('select', function(evt) {
+    selectRegionArctic.getFeatures().clear();
+    selectRegionHandler(evt);
+});
 
 const $mapContainer = $(".map__container");
 let $arcticScreenReaderList = $("#map__screenreader--arctic");
 let $antarcticScreenReaderList = $("#map__screenreader--antarctic");
 
-
 export function initializeMaps(lazy=false) {
+    // Stuff for the popup that comes up when you click on the map
+    $popupContainer = $('#map__popup');
+    $popupCloser = $('#map__popup-closer');
+    $popupContent = $('#map__popup-content');
+
+    overlay.setElement($popupContainer[0]);
+
+    // Prevents showing a stray overlay container on paging
+    overlay.setPosition(undefined);
+
+    // Accessibility helpers
     $arcticScreenReaderList = $("#map__screenreader--arctic");
     $antarcticScreenReaderList = $("#map__screenreader--antarctic");
 
@@ -293,14 +360,12 @@ export function initializeMaps(lazy=false) {
         arcticMap = new Map({
             target: "map--arctic",
             view: arcticView,
+            overlays: [overlay],
             layers: [arcticLayer, arcticResultsLayer],
             controls: defaultControls({attribution: false}).extend(
                 [new Attribution({collapsible: true})]
             ),
-        });
-
-        arcticMap.on("click", function (evt) {
-            displayResult(arcticMap, evt.pixel);
+            interactions: defaultInteractions().extend([selectRegionArctic])
         });
     }
 
@@ -308,6 +373,7 @@ export function initializeMaps(lazy=false) {
         antarcticMap = new Map({
             target: "map--antarctic",
             view: antarcticView,
+            overlays: [overlay],
             layers: [
                 antarcticLayer,
                 antarcticCountriesLayer,
@@ -317,18 +383,24 @@ export function initializeMaps(lazy=false) {
             controls: defaultControls({attribution: false}).extend(
                 [new Attribution({collapsible: true,})]
             ),
-        });
-
-        antarcticMap.on("click", function (evt) {
-            displayResult(antarcticMap, evt.pixel);
+            interactions: defaultInteractions().extend([selectRegionAntarctic])
         });
     }
+
+    $popupCloser.on('click', function () {
+      overlay.setPosition(undefined);
+      $popupCloser.blur();
+      $popupContent.empty();
+      selectRegionArctic.getFeatures().clear();
+      selectRegionAntarctic.getFeatures().clear();
+      return false;
+    });
 }
 
-export function addSearchResult(name, geometry) {
+export function addSearchResult(id, result) {
     // We're adding features twice in here because there are two maps.
     // If you only have one map, you only need to do this once.
-    const arcticFeature = new GeoJSON().readFeature(geometry, {
+    const arcticFeature = new GeoJSON().readFeature(result.geometry, {
         // If your tileset is using the default projection, don't need the next two lines.
         dataProjection: getProjection("ESPG:4326"),
         featureProjection: arcticProjection,
@@ -342,12 +414,13 @@ export function addSearchResult(name, geometry) {
     ) {
         // todo: let's set these in the geojson on the server side.
         // Can we reproject it in GeoSPARQL or something?
-        arcticFeature.set("name", name);
+        arcticFeature.set("id", id);
+        arcticFeature.set("name", result.name);
         arcticResultsSource.addFeature(arcticFeature);
-        $arcticScreenReaderList.append(`<li>${name}</li>`);
+        $arcticScreenReaderList.append(`<li>${result.name}</li>`);
     }
 
-    const antarcticFeature = new GeoJSON().readFeature(geometry, {
+    const antarcticFeature = new GeoJSON().readFeature(result.geometry, {
         // If your tileset is using the default projection, don't need the next two lines.
         dataProjection: getProjection("ESPG:4326"),
         featureProjection: antarcticProjection,
@@ -360,8 +433,9 @@ export function addSearchResult(name, geometry) {
         )
     ) {
         // todo: let's set these in the geojson on the server side.
-        antarcticFeature.set("name", name);
+        antarcticFeature.set("id", id);
+        antarcticFeature.set("name", result.name);
         antarcticResultsSource.addFeature(antarcticFeature);
-        $antarcticScreenReaderList.append(`<li>${name}</li>`);
+        $antarcticScreenReaderList.append(`<li>${result.name}</li>`);
     }
 }

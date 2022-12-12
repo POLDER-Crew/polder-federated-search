@@ -20,7 +20,10 @@
           so that we aren't calling these from each result object directly. Ideally,
           these geometries would be returned with an API. -->
           <script type="text/javascript">
-            resultGeometries["{{ result.title }}"] = {{ result.geometry.geometry_collection | tojson | safe }};
+            resultGeometries["{{ loop.index }}"] = {
+              'name': "{{ result.title }}",
+              'geometry': {{ result.geometry.geometry_collection | tojson | safe }}
+            };
           </script>
         {% endif %}
 
@@ -57,8 +60,10 @@
        
         {% if nojs is not defined %}
           <div class="result_field result--truncated" role="region" aria-expanded="false">
-            <h4>Abstract:</h4>
-              {{ result.abstract|safe|truncate(500) }}
+            {% if result.abstract %}
+              <h4>Abstract:</h4>
+                {{ result.abstract|safe|truncate(500) }}
+            {% endif %}
           </div>
         {% endif %}
 
@@ -83,8 +88,10 @@
             </div>
           {% endif %}
       
-          <h4>Abstract:</h4>
-          {{ result.abstract|safe}}
+          {% if result.abstract %}
+            <h4>Abstract:</h4>
+            {{ result.abstract|safe}}
+          {% endif %}
 
           {% if result.geometry and result.geometry.text %}
             <div class="location">

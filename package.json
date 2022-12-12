@@ -22,14 +22,14 @@
     "start": "call env.bat && nest start"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.16.11",
-    "@parcel/transformer-sass": "^2.3.2",
-    "parcel": "^2.3.2"
+    "@babel/preset-env": "^7.20.2",
+    "@parcel/transformer-sass": "^2.8.0",
+    "parcel": "^2.8.0"
   },
   "dependencies": {
-    "jquery": "^3.6.0",
-    "ol": "^6.15.1",
-    "ol-mapbox-style": "^8.2.0",
-    "proj4": "^2.0.0"
+    "jquery": "^3.6.1",
+    "ol": "^7.1.0",
+    "ol-mapbox-style": "^9.2.0",
+    "proj4": "^2.8.0"
   }
 }

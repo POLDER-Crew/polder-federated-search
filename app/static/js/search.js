@@ -38,8 +38,8 @@ function handleSearchResults($ajaxPromise) {
       $resultsContainer[0].scrollIntoView();
       load.style.display = "none";
       initializeMaps();
-      for (const [name, geometry] of Object.entries(resultGeometries)) {
-        addSearchResult(name, geometry);
+      for (const [id, result] of Object.entries(resultGeometries)) {
+        addSearchResult(id, result);
       }
     });
 }
@@ -50,9 +50,11 @@ function searchFormSubmit(event) {
   showSearchPending();
 
   const $form = $(event.delegateTarget);
-  gtag("event", "search", {
-    search_term: $form.find("input[name='text']").val()
-  });
+  if(typeof gtag !== 'undefined') {
+    gtag("event", "search", {
+      search_term: $form.find("input[name='text']").val()
+    });
+  }
   handleSearchResults(
 
     $.ajax({
