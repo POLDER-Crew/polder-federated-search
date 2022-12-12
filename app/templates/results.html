@@ -60,8 +60,10 @@
        
         {% if nojs is not defined %}
           <div class="result_field result--truncated" role="region" aria-expanded="false">
-            <h4>Abstract:</h4>
-              {{ result.abstract|safe|truncate(500) }}
+            {% if result.abstract %}
+              <h4>Abstract:</h4>
+                {{ result.abstract|safe|truncate(500) }}
+            {% endif %}
           </div>
         {% endif %}
 
@@ -86,8 +88,10 @@
             </div>
           {% endif %}
       
-          <h4>Abstract:</h4>
-          {{ result.abstract|safe}}
+          {% if result.abstract %}
+            <h4>Abstract:</h4>
+            {{ result.abstract|safe}}
+          {% endif %}
 
           {% if result.geometry and result.geometry.text %}
             <div class="location">
