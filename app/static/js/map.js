@@ -281,6 +281,10 @@ const overlay = new Overlay({
   },
 });
 
+const expandResult = function(evt) {
+    $(evt.target.getAttribute('href')).find('.show_more_button').click();
+}
+
 const selectRegionHandler = function (evt) {
     let coordinate = evt.mapBrowserEvent.coordinate;
     let map = evt.mapBrowserEvent.map;
@@ -293,7 +297,7 @@ const selectRegionHandler = function (evt) {
     evt.selected.forEach(function (feature) {
         if (feature && feature.setStyle) { // sometimes you get back an ice layer or something
             showPopup = true;
-            popupHtml += `<h4 class="popup-title"><a href="#${feature.get('id')}">${feature.get('name')}</a></h4>`;
+            popupHtml += `<h4 class="popup-title"><a class="result__anchor" href="#${feature.get('id')}">${feature.get('name')}</a></h4>`;
         }
     });
 
@@ -302,6 +306,8 @@ const selectRegionHandler = function (evt) {
         popupHtml += `<p><code>${hdms}</code></p>`;
         $popupContent.html(popupHtml);
         overlay.setPosition(coordinate);
+
+        $('.result__anchor').click(expandResult);
     }
 };
 
