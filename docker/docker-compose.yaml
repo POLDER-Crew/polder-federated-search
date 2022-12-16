@@ -57,7 +57,7 @@ services:
     - "http://triplestore:7200/repositories/polder/statements"
 
   sitemap-setup:
-    image: wdsito/build-sitemap:1.44.5
+    image: wdsito/build-sitemap:1.44.6
     depends_on:
     - s3system
     profiles:
@@ -129,7 +129,7 @@ services:
      - SERVICE_PORTS=9222
 
   webapp:
-    image: wdsito/polder-federated-search:1.44.5
+    image: wdsito/polder-federated-search:1.44.6
     depends_on:
       - triplestore
       - s3system
