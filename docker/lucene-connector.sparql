@@ -6,12 +6,54 @@ INSERT DATA {
     {
       "fields": [
         {
-          "fieldName": "fts",
+          "fieldName": "fts$0",
           "fieldNameTransform": "predicate.localName",
           "propertyChain": [
+            "https://schema.org/creator",
             "$literal"
           ],
-          "facet": true
+        },
+        {
+          "fieldName": "fts$1",
+          "propertyChain": [
+            "https://schema.org/license",
+            "$literal"
+          ],
+        },
+        {
+          "fieldName": "fts$2",
+          "propertyChain": [
+            "https://schema.org/name",
+            "$literal"
+          ],
+        },
+        {
+          "fieldName": "fts$3",
+          "propertyChain": [
+            "https://schema.org/description",
+            "$literal"
+          ],
+        },
+        {
+          "fieldName": "fts$4",
+          "propertyChain": [
+            "https://schema.org/temporalCoverage",
+            "$literal"
+          ],
+        },
+        {
+          "fieldName": "fts$5",
+          "propertyChain": [
+            "https://schema.org/keywords",
+            "$literal"
+          ],
+        },
+        {
+          "fieldName": "fts$6",
+          "propertyChain": [
+            "https://schema.org/spatialCoverage",
+            "$literal"
+          ],
         },
         {
           "fieldName": "author",
@@ -22,27 +64,10 @@ INSERT DATA {
           "facet": true
         },
         {
-          "fieldName": "license$0",
+          "fieldName": "license",
           "propertyChain": [
-            "https://schema.org/Dataset",
-            "https://schema.org/license"
-          ],
-          "facet": true
-        },
-        {
-          "fieldName": "license$1",
-          "propertyChain": [
-            "https://schema.org/Dataset",
             "https://schema.org/license",
-            "https://schema.org/license"
-          ],
-          "facet": true
-        },
-        {
-          "fieldName": "license$2",
-          "propertyChain": [
-            "https://schema.org/DataCatalog",
-            "https://schema.org/license",
+            "$literal"
           ],
           "facet": true
         },
