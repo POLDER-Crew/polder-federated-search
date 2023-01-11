@@ -17,7 +17,7 @@ INSERT DATA {
           "fieldName": "author",
           "propertyChain": [
             "https://schema.org/creator",
-            "https://schema.org/name"
+            "$literal"
           ],
           "facet": true
         },
