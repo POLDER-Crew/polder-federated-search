@@ -9,49 +9,88 @@ INSERT DATA {
           "fieldName": "fts$0",
           "fieldNameTransform": "predicate.localName",
           "propertyChain": [
-            "https://schema.org/creator",
-            "$literal"
+            "https://schema.org/name"
           ],
         },
         {
           "fieldName": "fts$1",
-          "propertyChain": [
-            "https://schema.org/license",
-            "$literal"
-          ],
-        },
-        {
-          "fieldName": "fts$2",
+          "fieldNameTransform": "predicate.localName",
           "propertyChain": [
             "https://schema.org/name",
             "$literal"
           ],
         },
         {
-          "fieldName": "fts$3",
+          "fieldName": "fts$2",
+          "fieldNameTransform": "predicate.localName",
           "propertyChain": [
             "https://schema.org/description",
+          ],
+        },
+        {
+          "fieldName": "fts$3",
+          "fieldNameTransform": "predicate.localName",
+          "propertyChain": [
+            "https://schema.org/creator",
             "$literal"
           ],
         },
         {
           "fieldName": "fts$4",
+          "fieldNameTransform": "predicate.localName",
           "propertyChain": [
-            "https://schema.org/temporalCoverage",
-            "$literal"
+            "https://schema.org/license",
           ],
         },
         {
           "fieldName": "fts$5",
+          "fieldNameTransform": "predicate.localName",
+          "propertyChain": [
+            "https://schema.org/license",
+            "$literal"
+          ],
+        },
+        {
+          "fieldName": "fts$6",
+          "fieldNameTransform": "predicate.localName",
+          "propertyChain": [
+            "https://schema.org/temporalCoverage",
+          ],
+        },
+        {
+          "fieldName": "fts$7",
+          "fieldNameTransform": "predicate.localName",
+          "propertyChain": [
+            "https://schema.org/keywords",
+          ],
+        },
+        {
+          "fieldName": "fts$8",
+          "fieldNameTransform": "predicate.localName",
           "propertyChain": [
             "https://schema.org/keywords",
             "$literal"
           ],
         },
         {
-          "fieldName": "fts$6",
+          "fieldName": "fts$9"
+          "fieldNameTransform": "predicate.localName",,
           "propertyChain": [
             "https://schema.org/spatialCoverage",
+          ],
+        },
+        {
+          "fieldName": "fts$10",
+          "fieldNameTransform": "predicate.localName",
+          "propertyChain": [
+            "https://schema.org/variableMeasured",
+          ],
+        },
+        {
+          "fieldName": "fts$11",
+          "fieldNameTransform": "predicate.localName",
+          "propertyChain": [
+            "https://schema.org/variableMeasured",
             "$literal"
           ],
         },
