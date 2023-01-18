@@ -3,6 +3,7 @@ kind: Job
 metadata:
   name: setup-gleaner
 spec:
+  ttlSecondsAfterFinished: 100
   template:
     metadata:
       name: setup-gleaner
