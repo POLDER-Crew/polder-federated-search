@@ -25,9 +25,12 @@ RUN  \
      rm -rf /var/cache/apk/*
 
 COPY build-sitemaps.sh /usr/local/bin/build-sitemaps.sh
-COPY index-gcmd.py /usr/local/bin/index-gcmd.py
+COPY *.py /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/build-sitemaps.sh
-RUN chmod +x /usr/local/bin/index-gcmd.py
+RUN chmod +x /usr/local/bin/*.py
+
+RUN python3 -m ensurepip --upgrade
+RUN python3 -m pip install requests
 
 ENTRYPOINT ["build-sitemaps.sh"]

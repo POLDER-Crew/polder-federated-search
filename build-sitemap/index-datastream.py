@@ -1,9 +1,7 @@
 import requests
 import json
-import numpy as np
-import pandas as pd
-import datetime
 from requests.structures import CaseInsensitiveDict
+from sitemap_utils import createSitemapFromList
 
 # Make a get request to get Metadata info from Datastream
 
@@ -12,11 +10,7 @@ api_key = '3SKMA34iPB7LLcnweqd3IC7MdGXZRTNr'
 headers = CaseInsensitiveDict()
 headers["x-api-key"] = api_key
 response = requests.get(link, headers=headers)
-data = response.json()
+data = response.json()['value']
 
-
-
-'''
-with open('datastream.json','w') as f:
-    json.dump(data['value'], f)
-'''
+dataUrls = map(lambda d: 'https://doi.org/' + d['DOI'], data)
+createSitemapFromList(dataUrls, 'datastream-sitemap.xml')

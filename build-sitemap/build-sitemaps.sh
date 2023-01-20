@@ -45,8 +45,12 @@ mc cp bas-sitemap.xml minio/sitemaps/bas-sitemap.xml
 # Build the GCMD sitemap next
 
 python3 /usr/local/bin/index-gcmd.py
-
 mc cp gcmd-sitemap.xml minio/sitemaps/gcmd-sitemap.xml
+
+# Build the DataStream sitemap next
+
+python3 /usr/local/bin/index-datastream.py
+mc cp datastream-sitemap.xml minio/sitemaps/datastream-sitemap.xml
 
 # Build the CCADI sitemap
 
