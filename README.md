@@ -54,6 +54,11 @@ The web app itself that hosts the UI and does the searches is built using [Flask
 ### Deployment
 A pre-built image for the web app is on Docker Hub as [wdsito/polder-federated-search](https://hub.docker.com/repository/docker/wdsito/polder-federated-search), and that is what all of the Helm/Kubernetes and Docker files in this repository are referencing. If you want to modify this project and build your own ones, you're welcome to.
 
+There is also a sitemap-building step for some of the data repositories that don't have sitemaps that work in the way we want (e.g. they don't have sitemaps, we wanted to scope down the datasets crawled to just polar data, or some other reason). That step uses a purpose-built Docker image, and the code for that is in `build-sitemap` in this repository.
+
+#### Images and versions
+Images are automatically built with [Github Actions](https://github.com/WDS-ITO/polder-federated-search/tree/main/.github/workflows), and tagged with the version specified in `package.json` (in this directory).
+
 #### Docker
 Assuming that you're starting from **this directory**:
 1. To build and run the web app, Docker needs to know about some environment variables. There are examples ones in `dev.env` - copy it to `.env` and fill in the correct values for you. Save the file and then run `source .env`.
@@ -132,12 +137,10 @@ Take a look at `helm/values-*.yaml` to customize this setup. Pay particular atte
 Go to the site and do a search for something like "Greenland", "ice" or "penguin" - those each have lots of results from both DataONE and the triplestore.
 If you open a web inspector on the results, you can look for web elements with `class="result"`. POLDER-crawled results have a `data-source` attribute that’s set to `Gleaner`, and DataONE results have `data-source="DataONE"`. If you have both types, congratulations! You have a working federated search.
 
-### Related Docker images
-A few of the setup and maintenence steps for the Polder Federated Search App require purpose-built Docker images. They can be found at:
-- `build-sitemap` in this repository
-
 ### Development
 I'd love for people to use this for all kinds of scientific data repository searches - please feel free to fork it, submit a PR, or ask questions. The [Customization](https://polder-crew.github.io/Federated-Search-Documentation/customization.html) section of the book will be particularly useful to you.
+
+If you use the Github Actions (see the Images and Versions section above) to automatically build and push Docker images to the WDS-ITO Docker hub, you'll need to update the versions in `package.json`, as well as `helm/Chart.yaml` and the versions in `docker/docker-compose.yaml` in order to get the images with your latest code.
 
 #### Building
 To build the Docker image for the web app, run `docker image build . `. For multi-architecture support, run `docker buildx build --no-cache --pull --platform=linux/arm64,linux/amd64 .`.
