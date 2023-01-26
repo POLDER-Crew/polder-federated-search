@@ -71,3 +71,10 @@ data:
       properName: Polar Data Catalog (via Canadian Consortium for Arctic Data Interoperability)
       domain: http://hedeby.uwaterloo.ca
       active: true
+    - name: datastream
+      type: sitemap
+      headless: false
+      url: http://s3system:9000/sitemaps/datastream-sitemap.xml
+      properName: DataStream
+      domain: http://datastream.org
+      active: true
