@@ -82,6 +82,8 @@ spec:
             secretKeyRef:
               key:  minioSecretKey
               name: {{ .Release.Name }}-secrets
+        - name: MINIO_API_TRANSITION_WORKERS
+          value: "{{ .Values.MINIO_WORKERS }}"
       - name: headless
         image: chromedp/headless-shell:stable
         imagePullPolicy: {{ .Values.image.pullPolicy }}

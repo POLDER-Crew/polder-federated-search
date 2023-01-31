@@ -116,6 +116,11 @@ GDB_JAVA_OPTS: >-
   -Dgraphdb.append.request.id.headers=true
   -Dreuse.vars.in.subselects=true
 
+# needs to be >= GOMAXPROCS/2. The default is 100.
+# 100 just started failing as "too few" in production
+# one day so here we are.
+MINIO_WORKERS: 200
+
 sentryEnvironment: production
 googleAnalyticsId: G-6XZ31PHHSZ
 
