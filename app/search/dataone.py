@@ -18,6 +18,11 @@ class SolrDirectSearch(SearcherBase):
     LATITUDE_FILTER = "(northBoundCoord:[50 TO *] OR southBoundCoord:[* TO -50])"
     DUPLICATE_FILTER = " AND -obsoletedBy:*"
     LANDING_URL_PREFIX = "https://search.dataone.org/view/"
+    KEYWORDS_BOOST = '5.0'
+    ABSTRACT_BOOST = '2.0'
+    TITLE_BOOST = '5.0'
+
+
 
     @staticmethod
     def build_query(user_query="", page_number=1):
@@ -25,7 +30,7 @@ class SolrDirectSearch(SearcherBase):
         # to the user, and people who are not programmers are weirded out by 0-indexed things.
         # The max is there in case a negative url parameter gets in here and causes havoc.
         page_start = max(0, page_number - 1) * SolrDirectSearch.PAGE_SIZE
-        return f"{SolrDirectSearch.ENDPOINT_URL}?start={page_start}&fq={SolrDirectSearch.LATITUDE_FILTER}{SolrDirectSearch.DUPLICATE_FILTER}{user_query}&rows={SolrDirectSearch.PAGE_SIZE}&wt=json&fl=*,score"
+        return f"{SolrDirectSearch.ENDPOINT_URL}?start={page_start}&fq={SolrDirectSearch.LATITUDE_FILTER}{SolrDirectSearch.DUPLICATE_FILTER}{user_query}&defType=dismax&qf=keywords^{SolrDirectSearch.KEYWORDS_BOOST}+abstract^{SolrDirectSearch.ABSTRACT_BOOST}+title^{SolrDirectSearch.TITLE_BOOST}&rows={SolrDirectSearch.PAGE_SIZE}&wt=json&fl=*,score"
 
     @staticmethod
     def _build_text_search_query(text=None):
