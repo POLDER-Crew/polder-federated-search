@@ -25,7 +25,7 @@ class SolrDirectSearch(SearcherBase):
         # to the user, and people who are not programmers are weirded out by 0-indexed things.
         # The max is there in case a negative url parameter gets in here and causes havoc.
         page_start = max(0, page_number - 1) * SolrDirectSearch.PAGE_SIZE
-        return f"{SolrDirectSearch.ENDPOINT_URL}?start={page_start}&fq={SolrDirectSearch.LATITUDE_FILTER}{SolrDirectSearch.DUPLICATE_FILTER}{user_query}&rows={SolrDirectSearch.PAGE_SIZE}&wt=json&fl=*,score"
+        return f"{SolrDirectSearch.ENDPOINT_URL}?start={page_start}&fq={SolrDirectSearch.LATITUDE_FILTER}{SolrDirectSearch.DUPLICATE_FILTER}{user_query}&defType=dismax&qf=keywords^5.0+abstract^2.0+title^5.0&rows={SolrDirectSearch.PAGE_SIZE}&wt=json&fl=*,score"
 
     @staticmethod
     def _build_text_search_query(text=None):

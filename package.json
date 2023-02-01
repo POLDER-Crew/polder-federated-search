@@ -24,6 +24,7 @@
   "devDependencies": {
     "@babel/preset-env": "^7.20.2",
     "@parcel/transformer-sass": "^2.8.1",
+    "buffer": "^5.5.0",
     "parcel": "^2.8.1"
   },
   "dependencies": {
