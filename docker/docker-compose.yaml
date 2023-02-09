@@ -29,33 +29,10 @@ services:
     volumes:
       - ./:/config
     working_dir: /config
-    command:
-    - curl
-    - -vs
-    - -X
-    - POST
-    - -H
-    - 'Content-Type:multipart/form-data'
-    - -F
-    - "config=@./polder.ttl"
-    - "http://triplestore:7200/rest/repositories"
-    - --next
-    - -X
-    - POST
-    - --header
-    - 'Accept: application/json'
-    - --data-urlencode
-    - update@./lucene-connector.sparql
-    - "http://triplestore:7200/repositories/polder/statements"
-    - --next
-    - -X
-    - POST
-    - --header
-    - 'Accept: application/json'
-    - --data-urlencode
-    - update@./geosparql.sparql
-    - "http://triplestore:7200/repositories/polder/statements"
-
+    environment:
+      - GLEANER_ENDPOINT_URL=http://triplestore:7200/repositories/polder
+      - GRAPHDB_REST_URL=http://triplestore:7200/rest
+    command: sh ./triplestore-setup.sh
   sitemap-setup:
     image: wdsito/build-sitemap:1.46.0
     depends_on:
