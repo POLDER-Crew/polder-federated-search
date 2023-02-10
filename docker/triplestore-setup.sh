@@ -10,17 +10,28 @@ curl -vs -X POST -H "Authorization:$token" -H 'Content-Type:multipart/form-data'
 curl -vs -X POST -H "Authorization:$token" -H 'Accept: application/json' --data-urlencode update@./lucene-connector.sparql "$GLEANER_ENDPOINT_URL"/statements
 curl -vs -X POST -H "Authorization:$token" -H 'Accept: application/json' --data-urlencode update@./geosparql.sparql "$GLEANER_ENDPOINT_URL"/statements
 # Turn on security and add a user that can write to the triplestore
-curl -X POST -H "Authorization:$token" -H 'Content-Type: application/json' -d true "$GRAPHDB_REST_URL"/security
+curl -vs -X POST -H "Authorization:$token" -H 'Content-Type: application/json' -d true "$GRAPHDB_REST_URL"/security
+curl -vs -X POST -H "Authorization:$token" -H 'Content-Type: application/json' -d '
+    {
+        "appSettings": {
+            "DEFAULT_SAMEAS": true,
+            "DEFAULT_INFERENCE": true,
+            "EXECUTE_COUNT": true,
+            "IGNORE_SHARED_QUERIES": false
+        },
+        "grantedAuthorities": ["ROLE_USER","WRITE_REPO_*","READ_REPO_*"],
+        "username": "$GRAPHDB_INDEXER_USER",
+        "password": "$GRAPHDB_INDEXER_PASSWORD"
+    }' "$GRAPHDB_REST_URL"/security/users/"$GRAPHDB_INDEXER_USER"
 
 # Turn on read-only free access
 curl -X POST -H "Authorization:$token" -H'Content-Type: application/json' -H 'Accept:  */*' -d '
     {
-            "appSettings": {
-                    "DEFAULT_SAMEAS": true,
-                    "DEFAULT_INFERENCE": true,
-                    "EXECUTE_COUNT": true,
-                    "IGNORE_SHARED_QUERIES": true
-                    },
-            "authorities": ["string"],
-            "enabled": true
+        "appSettings": {
+                "DEFAULT_SAMEAS": true,
+                "DEFAULT_INFERENCE": true,
+                "EXECUTE_COUNT": true,
+                "IGNORE_SHARED_QUERIES": true
+                },
+        "enabled": true
     }' "$GRAPHDB_REST_URL"/security/free-access
