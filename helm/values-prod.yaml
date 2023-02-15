@@ -1,75 +1,6 @@
-# Default values for polder-federated-search.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-replicaCount: 1
-
-image:
-  repository: wdsito/polder-federated-search
-  pullPolicy: Always
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
-
-imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
-
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
-
-podAnnotations: {}
-
-podSecurityContext: {}
-  # fsGroup: 2000
-
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
-
-service:
-  type: ClusterIP
-  port: 8000
-
-triplestore_service:
-  type: ClusterIP
-  port: 7200
-
-headless_service:
-  type: ClusterIP
-  port: 9222
-
-s3system_service:
-  type: ClusterIP
-  ui_port: 54321
-  api_port: 9000
-# It's not normally a great idea to hardcode a service IP address. However, in this case, we have
-# a configMap for Gleaner that needs to know where this endpoint is (it's under minio:address in
-# setup-gleaner.yaml), and which will only accept an IP address, which means that we can't use the
-# service DNS name for this. We could use helm's lookup function for this, EXCEPT that ConfigMaps are
-# evaluated before everything else - which means that the service does not have an IP address when
-# the ConfigMap is constructed. The workaround is to decide on an IP address and assign one.
-  ip_address: 10.96.0.12
+# Production deployment values for polder-federated-search.
 
 ingress:
-  enabled: true
-  className: nginx
-  annotations:
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "360"
-    nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, OPTIONS"
-    nginx.ingress.kubernetes.io/cors-allow-origin: '$http_origin'
-    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
   hosts:
     - host: search.polder.info
       paths:
@@ -80,42 +11,6 @@ ingress:
     - search.polder.info
     secretName: ingress-nginx-tls-cert
 
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
-
-GDB_JAVA_OPTS: >-
-  -Xmx6g -Xms2g
-  -Dgraphdb.home=/opt/graphdb/home
-  -Dgraphdb.workbench.importDirectory=/opt/graphdb/home/graphdb-import
-  -Dgraphdb.workbench.cors.enable=true
-  -Denable-context-index=true
-  -Dentity-pool-implementation=transactional
-  -Dhealth.max.query.time.seconds=60
-  -Dgraphdb.append.request.id.headers=true
-  -Dreuse.vars.in.subselects=true
-
 # needs to be >= GOMAXPROCS/2. The default is 100.
 # 100 just started failing as "too few" in production
 # one day so here we are.
@@ -123,14 +18,5 @@ MINIO_WORKERS: 200
 
 sentryEnvironment: production
 googleAnalyticsId: G-6XZ31PHHSZ
-
-storageNamespace: polder
-
-## Persist data to a persistent volume.
-## Where are we storing the files we index and the triplestore data?
-# Setting 'existing' to true means you're running on a cluster (probably DataONE's) that has a
-## PersistentVolumeClaim. created for you.
-persistence:
-  existing: true
 
 crawlSchedule: "0 0 * * 3" # every Wednesday
