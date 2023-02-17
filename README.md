@@ -67,14 +67,8 @@ Assuming that you're starting from **this directory**:
 1. `cd docker`
 1. `docker-compose up -d`
 1. `docker-compose --profile setup up -d` in order to start all of the necessary services and set up Gleaner for indexing.
-1. Do a crawl (these instructions assume you are in the `docker` directory):
-    1. `curl -O https://schema.org/version/latest/schemaorg-current-https.jsonld`
-    1. `docker-compose --profile crawl up -d`
-
-    NOTE: There is a missing step here. The crawled results need to be written to the triplestore. For now, you can run `./write-to-triplestore.sh`.
-         1. For windows, you need to download [Cygwin](https://www.cygwin.com/setup-x86_64.exe).
-         1. Change directory to the docker in Cygwin (`cd docker`).
-         1. Run the `./write-to-triplestore.sh`. to write to triplestore.
+1. Do a crawl (these instructions assume you are in the `docker` directory): `docker-compose --profile crawl up -d`
+1. When the crawl is done, write the data to the triplestore: `docker-compose --profile write up -d`
 1. Run the web app: `docker-compose --profile web up -d`
 
 If you're using Docker Desktop, you can use the UI to open the docker-webapp image in a browser.
@@ -104,6 +98,8 @@ That file will be structured like this:
       minioSecretKey: <your base64 encoded value here>
       flaskSecretKey: <your base64 encoded value here>
       sentryDsn: <your base64 encoded value here>
+      graphdbIndexerPassword: <your base64 encoded value here>
+      graphdbRootPassword: <your base64 encoded value here>
 ```
 You can see that the values of the secrets are base64 encoded - in order to do this, run ` echo -n 'mysecretkey' | base64` on your command line for each value, and paste the result in where the key goes. Don't check in your real secrets anywhere!
   You can read more about secrets [here](https://kubernetes.io/docs/concepts/configuration/secret/).
