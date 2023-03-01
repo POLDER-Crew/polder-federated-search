@@ -40,6 +40,10 @@ service:
   type: ClusterIP
   port: 8000
 
+triplestore_service:
+  type: ClusterIP
+  port: 7200
+
 headless_service:
   type: ClusterIP
   port: 9222

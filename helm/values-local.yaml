@@ -21,4 +21,4 @@ persistence:
 
 # A date in the past, will never run automatically, only when we trigger it
 # Yes, this is cursed, but this is the only way you can put a manual-only job in a Helm chart
-schedule: "0 0 0 1 1 ? 1970"
+schedule: "0 0 0 ? 1970"
