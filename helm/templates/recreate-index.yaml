@@ -3,9 +3,9 @@ kind: CronJob
 metadata:
   name: recreate-index
 spec:
-  # 30th of February run, will never be run automatically, only when we trigger it
+  # A date in the past, will never run automatically, only when we trigger it
   # Yes, this is cursed, but this is the only way you can put a manual-only job in a Helm chart
-  schedule: "0 0 30 2 0"
+  schedule: "0 0 0 1 1 ? 1970"
   jobTemplate:
     spec:
       template:
