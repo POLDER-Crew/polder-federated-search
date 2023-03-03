@@ -5,11 +5,7 @@ metadata:
 spec:
   # 30th of February run, will never be run automatically, only when we trigger it
   # Yes, this is cursed, but this is the only way you can put a manual-only job in a Helm chart
-<<<<<<< HEAD
-  schedule: "0 0 0 ? 1970"
-=======
   schedule: "0 0 30 2 0"
->>>>>>> parent of 6e7dac1 (REmove unused config, make cron jobs more stable)
   jobTemplate:
     spec:
       template:
@@ -81,13 +77,13 @@ spec:
                 secretKeyRef:
                   key:  minioSecretKey
                   name: {{ .Release.Name }}-secrets
-            workingDir: /config
             volumeMounts:
             - name: gleaner-config
               mountPath: /config/gleaner.yaml
               subPath: gleaner.yaml
             - name: gleaner-context
               mountPath: /config
+            workingDir: /config
           # The easiest way is just to remove the repository and recreate it
           - name: clear-triplestore
             image: curlimages/curl:7.88.1
@@ -95,65 +91,16 @@ spec:
             volumeMounts:
             - name: polder-repo-config
               mountPath: /config
-            command:
-            - curl
-            - -vs
-            - --get
-            - -X
-            - DELETE
-            - "{{- include "gleaner.triplestore.endpoint" . }}/repositories/{{ .Values.storageNamespace }}"
-            - --next
-            - -vs
-            - -X
-            - POST
-            - -H
-            - 'Content-Type:multipart/form-data'
-            - -F
-            - "config=@./polder.ttl"
-            - "{{- include "gleaner.triplestore.endpoint" . }}/rest/repositories/"
-            - --next
-            - -vs
-            - -X
-            - POST
-            - --header
-            - 'Accept: application/json'
-            - --data-urlencode
-            - update@./lucene-connector.sparql
-            - "{{- include "gleaner.triplestore.endpoint" . }}/repositories/{{ .Values.storageNamespace }}/statements"
-            - --next
-            - -vs
-            - -X
-            - POST
-            - --header
-            - 'Accept: application/json'
-            - --data-urlencode
-            - update@./geosparql.sparql
-            - "{{- include "gleaner.triplestore.endpoint" . }}/repositories/{{ .Values.storageNamespace }}/statements"
-          containers:
-          - name: write-to-triplestore
-            image: minio/mc:RELEASE.2022-11-17T21-20-39Z
             env:
-            - name: MINIO_CLIENT_ACCESS_KEY
-              valueFrom:
-                secretKeyRef:
-                  key:  minioAccessKey
-                  name: {{ .Release.Name }}-secrets
-            - name: MINIO_CLIENT_SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  key:  minioSecretKey
-                  name: {{ .Release.Name }}-secrets
-            - name: MINIO_SERVER_HOST
-              value: {{ include "gleaner.s3system.endpoint" . }}
-            - name: MINIO_SERVER_PORT_NUMBER
-              value: "{{ .Values.s3system_service.api_port }}"
+            - name: GLEANER_ENDPOINT_URL
+              value: {{ include "gleaner.triplestore.endpoint" . }}/repositories/{{ .Values.storageNamespace }}
+            - name: GRAPHDB_REST_URL
+              value: {{ include "gleaner.triplestore.endpoint" . }}/rest
             command:
-            # the first line of the following bash command is supposed to happen automatically, according to
-            # the documentation on docker hub, but it does not.
-            - /bin/sh
+            - sh
             - -c
-            - >
-              mc config host add minio "http://${MINIO_SERVER_HOST}:${MINIO_SERVER_PORT_NUMBER}" "${MINIO_CLIENT_ACCESS_KEY}" "${MINIO_CLIENT_SECRET_KEY}" &&
-              for i in $(mc find minio/{{ .Values.storageNamespace }}/milled); do
-                mc cat $i | curl -X POST -H 'Content-Type:text/rdf+n3;charset=utf-8' --data-binary  @- {{ include "gleaner.triplestore.endpoint" . }}/repositories/{{ .Values.storageNamespace }}/statements
-              done
+            - ./clear-triplestore.sh
+          containers:
+          - {{ include "write-to-triplestore" . }}
+
+

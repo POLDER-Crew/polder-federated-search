@@ -30,7 +30,8 @@ spec:
             options:
             - name: ndots
               value: "5"
-          initContainers:
+          initContainers: # shared container specs
+          # We need the latest schema.org context, so fetch it
           - name: get-contextfiles
             image: curlimages/curl:7.88.1
             command:
@@ -58,38 +59,12 @@ spec:
                 secretKeyRef:
                   key:  minioSecretKey
                   name: {{ .Release.Name }}-secrets
-            workingDir: /config
             volumeMounts:
             - name: gleaner-config
               mountPath: /config/gleaner.yaml
               subPath: gleaner.yaml
             - name: gleaner-context
               mountPath: /config
+            workingDir: /config
           containers:
-          - name: write-to-triplestore
-            image: minio/mc:RELEASE.2022-11-17T21-20-39Z
-            env:
-            - name: MINIO_CLIENT_ACCESS_KEY
-              valueFrom:
-                secretKeyRef:
-                  key:  minioAccessKey
-                  name: {{ .Release.Name }}-secrets
-            - name: MINIO_CLIENT_SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  key:  minioSecretKey
-                  name: {{ .Release.Name }}-secrets
-            - name: MINIO_SERVER_HOST
-              value: {{ include "gleaner.s3system.endpoint" . }}
-            - name: MINIO_SERVER_PORT_NUMBER
-              value: "{{ .Values.s3system_service.api_port }}"
-            command:
-            # the first line of the following bash command is supposed to happen automatically, according to
-            # the documentation on docker hub, but it does not.
-            - /bin/sh
-            - -c
-            - >
-              mc config host add minio "http://${MINIO_SERVER_HOST}:${MINIO_SERVER_PORT_NUMBER}" "${MINIO_CLIENT_ACCESS_KEY}" "${MINIO_CLIENT_SECRET_KEY}" &&
-              for i in $(mc find minio/{{ .Values.storageNamespace }}/milled); do
-                mc cat $i | curl -X POST -H 'Content-Type:text/rdf+n3;charset=utf-8' --data-binary  @- {{ include "gleaner.triplestore.endpoint" . }}/repositories/{{ .Values.storageNamespace }}/statements
-              done
+          - {{ include "write-to-triplestore" . }}

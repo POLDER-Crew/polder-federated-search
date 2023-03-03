@@ -107,3 +107,86 @@ polder-pvc-02
 local-volume-s3system
 {{- end }}
 {{- end }}
+
+{{/*
+Partials for commonly used containers
+*/}}
+{{- define "get-contextfiles" -}}
+name: get-contextfiles
+image: curlimages/curl:7.88.1
+command:
+- curl
+- -O
+- https://schema.org/version/latest/schemaorg-current-https.jsonld
+volumeMounts:
+- name: gleaner-context
+  mountPath: /context
+workingDir: /context
+{{- end }}
+
+{{- define "gleaner-index" }}
+name: gleaner-index
+image: nsfearthcube/gleaner:v3.0.8_fix129
+imagePullPolicy: {{ .Values.image.pullPolicy }}
+args:
+- -cfg
+- gleaner
+env:
+- name: MINIO_ACCESS_KEY
+  valueFrom:
+    secretKeyRef:
+      key:  minioAccessKey
+      name: {{ .Release.Name }}-secrets
+- name: MINIO_SECRET_KEY
+  valueFrom:
+    secretKeyRef:
+      key:  minioSecretKey
+      name: {{ .Release.Name }}-secrets
+volumeMounts:
+- name: gleaner-config
+  mountPath: /config/gleaner.yaml
+  subPath: gleaner.yaml
+- name: gleaner-context
+  mountPath: /config
+workingDir: /config
+{{- end }}
+
+{{- define "write-to-triplestore" }}
+name: write-to-triplestore
+image: minio/mc:RELEASE.2022-11-17T21-20-39Z
+imagePullPolicy: {{ .Values.image.pullPolicy }}
+workingDir: /config
+volumeMounts:
+- name: polder-repo-config
+  mountPath: /config
+command:
+- sh
+- -c
+- ./write-to-triplestore.sh
+env:
+- name: GLEANER_ENDPOINT_URL
+  value: {{ include "gleaner.triplestore.endpoint" . }}/repositories/{{ .Values.storageNamespace }}
+- name: GRAPHDB_REST_URL
+  value: {{ include "gleaner.triplestore.endpoint" . }}/rest
+- name: GRAPHDB_INDEXER_USER
+  value: indexer-user
+- name: GRAPHDB_INDEXER_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      key:  graphdbIndexerPassword
+      name: {{ .Release.Name }}-secrets
+- name: MINIO_ACCESS_KEY
+  valueFrom:
+    secretKeyRef:
+      key:  minioAccessKey
+      name: {{ .Release.Name }}-secrets
+- name: MINIO_SECRET_KEY
+  valueFrom:
+    secretKeyRef:
+      key:  minioSecretKey
+      name: {{ .Release.Name }}-secrets
+- name: MINIO_SERVER_HOST
+  value: {{ include "gleaner.s3system.endpoint" . }}
+- name: MINIO_SERVER_PORT_NUMBER
+  value: "{{ .Values.s3system_service.api_port }}"
+{{- end }}
