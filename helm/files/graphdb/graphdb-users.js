@@ -1,1 +1,1 @@
-/Users/melindaminch/polder-federated-search/deployment-support/graphdb/graphdb-users.js
+../../../deployment-support/graphdb/graphdb-users.js

@@ -1,1 +1,1 @@
-/Users/melindaminch/polder-federated-search/deployment-support/graphdb/write-to-triplestore.sh
+../../../deployment-support/graphdb/write-to-triplestore.sh

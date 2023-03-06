@@ -1,1 +1,1 @@
-/Users/melindaminch/polder-federated-search/deployment-support/graphdb/triplestore-setup.sh
+../../../deployment-support/graphdb/triplestore-setup.sh
