@@ -60,30 +60,8 @@ spec:
             - name: gleaner-context
               mountPath: /context
             workingDir: /context
-          - name: gleaner-index
-            image: nsfearthcube/gleaner:v3.0.8_fix129
-            imagePullPolicy: {{ .Values.image.pullPolicy }}
-            args:
-            - -cfg
-            - gleaner
-            env:
-            - name: MINIO_ACCESS_KEY
-              valueFrom:
-                secretKeyRef:
-                  key:  minioAccessKey
-                  name: {{ .Release.Name }}-secrets
-            - name: MINIO_SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  key:  minioSecretKey
-                  name: {{ .Release.Name }}-secrets
-            volumeMounts:
-            - name: gleaner-config
-              mountPath: /config/gleaner.yaml
-              subPath: gleaner.yaml
-            - name: gleaner-context
-              mountPath: /config
-            workingDir: /config
+          # Finally, index our data repositories!
+          - {{ include "gleaner-index" . | indent 12 }}
           # The easiest way is just to remove the repository and recreate it
           - name: clear-triplestore
             image: curlimages/curl:7.88.1
