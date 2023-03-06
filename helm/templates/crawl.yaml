@@ -43,6 +43,6 @@ spec:
               mountPath: /context
             workingDir: /context
           # Finally, index our data repositories!
-          - {{ include "gleaner-index" . | indent 10 }}
+          {{ include "gleaner-index" . | indent 10 }}
           containers:
-          - {{ include "write-to-triplestore" . }}
+          {{ include "write-to-triplestore" . | indent 10 }}

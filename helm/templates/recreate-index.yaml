@@ -61,7 +61,7 @@ spec:
               mountPath: /context
             workingDir: /context
           # Finally, index our data repositories!
-          - {{ include "gleaner-index" . | indent 12 }}
+          {{ include "gleaner-index" . | indent 10 }}
           # The easiest way is just to remove the repository and recreate it
           - name: clear-triplestore
             image: curlimages/curl:7.88.1
@@ -79,6 +79,6 @@ spec:
             - -c
             - ./clear-triplestore.sh
           containers:
-          - {{ include "write-to-triplestore" . }}
+          {{ include "write-to-triplestore" . | indent 10 }}
 
 
