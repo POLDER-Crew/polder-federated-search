@@ -53,6 +53,11 @@ spec:
         volumeMounts:
         - mountPath: /data/graphdb
           name: triplestore-volume
+        - name: settings
+          configMap:
+            name: triplestore-config
+          source: ../deployment-support/graphdb/graphdb-settings.js
+          target: /opt/graphdb/home/data/settings.js
         ports:
         - containerPort: {{ .Values.triplestore_service.port }}
         env:

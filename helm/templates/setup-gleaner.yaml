@@ -64,6 +64,11 @@ spec:
             secretKeyRef:
               key:  graphdbIndexerPassword
               name: {{ .Release.Name }}-secrets
+        - name: GRAPHDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key:  graphdbRootPassword
+              name: {{ .Release.Name }}-secrets
       # Run gleaner setup, which creates cloud storage buckets
       - name: gleaner-setup
         image: nsfearthcube/gleaner:v3.0.8_fix129

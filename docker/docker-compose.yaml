@@ -6,7 +6,7 @@ services:
 
   gleaner-setup:
     image: nsfearthcube/gleaner:v3.0.8_fix129
-    command: -cfg gleaner -setup
+    command: -cfg docker -setup
     depends_on:
       - triplestore
       - s3system
@@ -43,6 +43,7 @@ services:
       - GRAPHDB_REST_URL=http://triplestore:7200/rest
       - GRAPHDB_INDEXER_USER
       - GRAPHDB_INDEXER_PASSWORD
+      - GRAPHDB_ROOT_PASSWORD
     command: sh ./triplestore-setup.sh
 
   sitemap-setup:
@@ -83,6 +84,9 @@ services:
       - type: bind
         source: ../deployment-support/graphdb/graphdb-settings.js
         target: /opt/graphdb/home/data/settings.js
+      - type: bind
+        source: ../deployment-support/graphdb/graphdb-users.js
+        target: /opt/graphdb/home/data/users.js
       - triplestore:/opt
     environment:
       GDB_JAVA_OPTS: >-

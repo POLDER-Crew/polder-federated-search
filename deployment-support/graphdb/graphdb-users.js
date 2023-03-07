@@ -2,7 +2,7 @@
   "users" : {
     "admin" : {
       "username" : "admin",
-      "password" : "{bcrypt}$2a$10$1EGIVefe72hCg1dypNCjCeyrs1XKrOt5.VUC.vADTjy7vEjBpAT3.",
+      "password" : "{bcrypt}$2a$10$qr/tAGcMXlvb1zLaskOQuuCiZnnVMPcmMMaI/dv0POVO.lR4qYOmO",
       "grantedAuthorities" : [ "ROLE_ADMIN" ],
       "appSettings" : {
         "DEFAULT_INFERENCE" : true,
@@ -11,11 +11,11 @@
         "IGNORE_SHARED_QUERIES" : false,
         "EXECUTE_COUNT" : true
       },
-      "dateCreated" : 1676502250553
+      "dateCreated" : 1676506756379
     },
     "indexer-user" : {
       "username" : "indexer-user",
-      "password" : "{bcrypt}$2a$10$makSbYLkozIT18DNMAVdwOrnie.017hXt0Uy7UM7X2tWBTJ.9SzYS",
+      "password" : "{bcrypt}$2a$10$9ARLdLrp3ggqKg2v7Baktukf0q9Fu8nHzC2WGXd2IJ.uqqPwxU2x.",
       "grantedAuthorities" : [ "WRITE_REPO_*", "READ_REPO_*", "ROLE_USER" ],
       "appSettings" : {
         "DEFAULT_SAMEAS" : true,
@@ -23,7 +23,7 @@
         "EXECUTE_COUNT" : true,
         "IGNORE_SHARED_QUERIES" : false
       },
-      "dateCreated" : 1676502254981
+      "dateCreated" : 1676594808685
     }
   },
   "user_queries" : {
