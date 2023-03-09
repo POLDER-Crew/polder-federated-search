@@ -65,9 +65,16 @@ data:
       active: true
       domain: http://localhost
     - sourcetype: api
-      name: ccadi-pdc
+      name: ccadi
       url: "http://hedeby.uwaterloo.ca/aggregator/metadata?page=%d"
       properName: ccadi
+      domain: http://hedeby.uwaterloo.ca
+      apipagelimit: 500
+      active: true
+    - sourcetype: api
+      name: pdc
+      url: "http://hedeby.uwaterloo.ca/api/metadata?page=%d"
+      properName: pdc
       domain: http://hedeby.uwaterloo.ca
       apipagelimit: 500
       active: true

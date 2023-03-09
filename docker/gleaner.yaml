@@ -64,6 +64,13 @@ sources:
   domain: http://hedeby.uwaterloo.ca
   apipagelimit: 500
   active: true
+- sourcetype: api
+  name: pdc
+  url: "http://hedeby.uwaterloo.ca/api/metadata?page=%d"
+  properName: pdc
+  domain: http://hedeby.uwaterloo.ca
+  apipagelimit: 500
+  active: true
 - name: datastream
   type: sitemap
   headless: false
