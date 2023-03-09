@@ -58,6 +58,11 @@ spec:
             name: triplestore-config
           source: ../deployment-support/graphdb/graphdb-settings.js
           target: /opt/graphdb/home/data/settings.js
+        - name: users
+          configMap:
+            name: triplestore-config
+          source: ../deployment-support/graphdb/graphdb-users.js
+          target: /opt/graphdb/home/data/users.js
         ports:
         - containerPort: {{ .Values.triplestore_service.port }}
         env:

@@ -59,6 +59,19 @@ There is also a sitemap-building step for some of the data repositories that don
 #### Images and versions
 Images are automatically built with [Github Actions](https://github.com/WDS-ITO/polder-federated-search/tree/main/.github/workflows), and tagged with the version specified in `package.json` (in this directory).
 
+#### Deployment-support
+There is a directory called `deployment-support`, which has files that both Docker and Helm / Kubernetes can use to configure Gleaner and Graphdb.
+
+##### Gleaner
+`docker.yaml` is what Docker uses to configure Gleaner when you run it using `docker compose`. Logs will go into this folder as well as other files associated with a Gleaner run.
+
+##### GraphDB
+Files in here are used by both Docker and Helm / Kubernetes to work with GraphDB. There are shell scripts to set up, clear, and write to GraphDB, as well as various settings files.
+
+The file `EXAMPLE-graphdb-users.js` is standing in for a file that you should not check into source control - `graphdb-users.js`. The reason to not check it in is because it contains password hashes. You can either generate `bcrypt`-ed password hashes using a tool like [this one](https://bcrypt.online/) or start a GraphDB instance, create the users you want (remember to reset the admin password too, it's 'root' by default), and then download the `users.js` file, which is at ` /opt/graphdb/home/data/users.js`. You could use the GraphDB instance that comes up with `docker-compose up -d` for this purpose; if you start it in Docker Desktop, it's the one labeled `docker_triplestore_1`, and you can talk to it at `http://localhost:9999`. If you set users and passwords before running `docker-compose --profile setup up -d`, you'll be in good shape. Don't forget to set the matching ones in your `.env` file as well.
+
+The [GraphDB documentation](https://graphdb.ontotext.com/documentation/10.1/) may be of use to you here.
+
 #### Docker
 Assuming that you're starting from **this directory**:
 1. To build and run the web app, Docker needs to know about some environment variables. There are examples ones in `dev.env` - copy it to `.env` and fill in the correct values for you. Save the file and then run `source .env`.
