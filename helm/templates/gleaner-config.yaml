@@ -64,12 +64,19 @@ data:
       properName: Global Change Master Directory
       active: true
       domain: http://localhost
-    - name: ccadi-pdc
-      type: sitemap
-      headless: false
-      url: http://s3system-svc:{{ .Values.s3system_service.api_port }}/sitemaps/ccadi-sitemap.xml
-      properName: Polar Data Catalog (via Canadian Consortium for Arctic Data Interoperability)
+    - sourcetype: api
+      name: ccadi
+      url: "http://hedeby.uwaterloo.ca/aggregator/metadata?page=%d"
+      properName: ccadi
       domain: http://hedeby.uwaterloo.ca
+      apipagelimit: 500
+      active: true
+    - sourcetype: api
+      name: pdc
+      url: "http://hedeby.uwaterloo.ca/api/metadata?page=%d"
+      properName: pdc
+      domain: http://hedeby.uwaterloo.ca
+      apipagelimit: 500
       active: true
     - name: datastream
       type: sitemap

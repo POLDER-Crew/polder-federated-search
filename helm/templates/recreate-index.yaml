@@ -51,7 +51,7 @@ spec:
               mc config host add minio "http://${MINIO_SERVER_HOST}:${MINIO_SERVER_PORT_NUMBER}" "${MINIO_CLIENT_ACCESS_KEY}" "${MINIO_CLIENT_SECRET_KEY}" &&
               mc rm -r --force minio/{{ .Values.storageNamespace }}
           - name: get-contextfiles
-            image: curlimages/curl:7.85.0
+            image: curlimages/curl:7.88.1
             command:
             - curl
             - -O
@@ -61,7 +61,7 @@ spec:
               mountPath: /context
             workingDir: /context
           - name: gleaner-index
-            image: nsfearthcube/gleaner:dev-v3.0.7-development
+            image: nsfearthcube/gleaner:v3.0.8_fix129
             imagePullPolicy: {{ .Values.image.pullPolicy }}
             args:
             - -cfg
@@ -86,7 +86,7 @@ spec:
               mountPath: /config
           # The easiest way is just to remove the repository and recreate it
           - name: clear-triplestore
-            image: curlimages/curl:7.85.0
+            image: curlimages/curl:7.88.1
             workingDir: /config
             volumeMounts:
             - name: polder-repo-config

@@ -35,7 +35,7 @@ spec:
       initContainers:
         # Literally wait for GraphDB to come up so we can create a repository
       - name: wait-for-triplestore-up
-        image: curlimages/curl:7.85.0
+        image: curlimages/curl:7.88.1
         command:
         - /bin/sh
         - -c
@@ -47,7 +47,7 @@ spec:
           done
       # Next, create the graphdb repository that we want to use for this app
       - name: setup-triplestore
-        image: curlimages/curl:7.85.0
+        image: curlimages/curl:7.88.1
         workingDir: /config
         volumeMounts:
         - name: polder-repo-config
@@ -80,7 +80,7 @@ spec:
         - "{{- include "gleaner.triplestore.endpoint" . }}/repositories/{{ .Values.storageNamespace }}/statements"
       # Run gleaner setup, which creates cloud storage buckets
       - name: gleaner-setup
-        image: nsfearthcube/gleaner:dev-v3.0.7-development
+        image: nsfearthcube/gleaner:v3.0.8_fix129
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         args:
         - -cfg
@@ -104,7 +104,7 @@ spec:
           subPath: gleaner.yaml
       # We need the latest schema.org context, so fetch it
       - name: get-contextfiles
-        image: curlimages/curl:7.85.0
+        image: curlimages/curl:7.88.1
         command:
         - curl
         - -O
@@ -138,7 +138,7 @@ spec:
         workingDir: /context
       # Finally, index our data repositories!
       - name: gleaner-initial-index
-        image: nsfearthcube/gleaner:dev-v3.0.7-development
+        image: nsfearthcube/gleaner:v3.0.8_fix129
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         args:
         - -cfg
