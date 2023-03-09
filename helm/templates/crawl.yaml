@@ -32,7 +32,7 @@ spec:
               value: "5"
           initContainers:
           - name: get-contextfiles
-            image: curlimages/curl:7.85.0
+            image: curlimages/curl:7.88.1
             command:
             - curl
             - -O
@@ -42,7 +42,7 @@ spec:
               mountPath: /context
             workingDir: /context
           - name: gleaner-index
-            image: nsfearthcube/gleaner:dev-v3.0.7-development
+            image: nsfearthcube/gleaner:v3.0.8_fix129
             imagePullPolicy: {{ .Values.image.pullPolicy }}
             args:
             - -cfg
