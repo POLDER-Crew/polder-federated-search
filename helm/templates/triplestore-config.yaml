@@ -7,7 +7,5 @@ metadata:
 data:
   settings.js: |-
 {{ tpl (.Files.Get "files/graphdb/graphdb-settings.js" | indent 4) . }}
-{{- end }}
   users.js: |-
 {{ tpl (.Files.Get "files/graphdb/graphdb-users.js" | indent 4) . }}
-{{- end }}
