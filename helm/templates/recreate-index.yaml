@@ -21,9 +21,7 @@ spec:
               name: gleaner-config
           - name: gleaner-context
             emptyDir: {}
-          - name: polder-repo-config
-            configMap:
-              name: polder-repo-config
+          {{ include "polder-repo-config-volume" . | indent 10 }}
           initContainers:
           - name: remove-minio-files
             image: minio/mc:RELEASE.2022-11-17T21-20-39Z

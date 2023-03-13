@@ -13,9 +13,7 @@ spec:
       - name: gleaner-config
         configMap:
           name: gleaner-config
-      - name: polder-repo-config
-        configMap:
-          name: polder-repo-config
+      {{ include "polder-repo-config-volume" . | indent 6 }}
       - name: gleaner-context
         emptyDir: {}
       dnsPolicy: None

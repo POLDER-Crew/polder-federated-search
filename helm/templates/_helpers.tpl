@@ -190,3 +190,10 @@ Partials for commonly used containers
   - name: MINIO_SERVER_PORT_NUMBER
     value: "{{ .Values.s3system_service.api_port }}"
 {{- end }}
+
+{{- define "polder-repo-config-volume" }}
+- name: polder-repo-config
+  configMap:
+    name: polder-repo-config
+    defaultMode: 0777
+{{- end }}
