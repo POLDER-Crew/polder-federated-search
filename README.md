@@ -1,6 +1,7 @@
 # POLDER Federated Search
 
 ## A federated search app for and by the polar data community
+The POLDER Federated Search was originally developed by the [World Data System International Technology Office](https://wds-ito.org/) between 2021-2023 in response to needs identified by the [POLDER Working Group](http://polder.info). It is currently deployed at https://search.polder.info.
 
 For more comprehensive documentation, [see this book](https://polder-crew.github.io/Federated-Search-Documentation).
 
