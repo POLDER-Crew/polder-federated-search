@@ -68,7 +68,13 @@ There is a directory called `deployment-support`, which has files that both Dock
 ##### GraphDB
 Files in here are used by both Docker and Helm / Kubernetes to work with GraphDB. There are shell scripts to set up, clear, and write to GraphDB, as well as various settings files.
 
-The file `EXAMPLE-graphdb-users.js` is standing in for a file that you should not check into source control - `graphdb-users.js`. The reason to not check it in is because it contains password hashes. You can either generate `bcrypt`-ed password hashes using a tool like [this one](https://bcrypt.online/) or start a GraphDB instance, create the users you want (remember to reset the admin password too, it's 'root' by default), and then download the `users.js` file, which is at ` /opt/graphdb/home/data/users.js`. You could use the GraphDB instance that comes up with `docker-compose up -d` for this purpose; if you start it in Docker Desktop, it's the one labeled `docker_triplestore_1`, and you can talk to it at `http://localhost:9999`. If you set users and passwords before running `docker-compose --profile setup up -d`, you'll be in good shape. Don't forget to set the matching ones in your `.env` file as well.
+The file `EXAMPLE-graphdb-users.js` is standing in for a file that you should not check into source control - `graphdb-users.js`. The reason to not check it in is because it contains password hashes. You can either generate `bcrypt`-ed password hashes using a tool like [this one](https://bcrypt.online/) or start a GraphDB instance, create the users you want (remember to reset the admin password too, it's 'root' by default), and then download the `users.js` file, which is at ` /opt/graphdb/home/data/users.js`. You could use the GraphDB image referenced in `docker-compose.yaml` for this purpose. I recommend doing the following:
+1. `docker run -p 127.0.0.1:7200:7200 -t ontotext/graphdb:10.2.0` (substitute the appropriate image version there)
+1. Go to http://localhost:7200/users, change the admin password and add the users you want
+1. Find the image running in Docker Desktop, go to the terminal tab and do `cat /opt/graphdb/home/data/users.js`
+1. Congratulations, that's your new graphdb-users.js file.
+
+Don't forget to set the matching passwords in your `.env` file as well.
 
 The [GraphDB documentation](https://graphdb.ontotext.com/documentation/10.1/) may be of use to you here.
 
