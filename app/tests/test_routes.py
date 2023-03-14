@@ -4,7 +4,7 @@ from datetime import date
 from app import app
 from app.search.search import SearchResultSet
 
-from app.routes import home, combined_search, nojs_combined_search
+from app.routes import home, combined_search, nojs_combined_search, query
 
 app.testing = True
 
@@ -278,3 +278,18 @@ class TestRoutes(unittest.TestCase):
 
             gleaner.assert_called_with(**expected)
             dataone.assert_called_with(**expected)
+
+    @patch('app.search.gleaner.GleanerSearch.pass_through_query')
+    def test_query(self, query):
+        query.return_value = '{"results": {"bindings": "some data"}}'
+        with app.test_client() as client:
+            response = client.get(
+                '/api/sparql?query="select * where { ?s ?p ?o .} limit 100"')
+            self.assertEqual(response.status, '404 NOT FOUND')
+            self.assertEqual(respose.body, query.return_value)
+
+    def test_query_no_param(self):
+        with app.test_client() as client:
+            response = client.get('/api/sparql')
+            self.assertEqual(response.status, '400 BAD REQUEST')
+            self.assertEqual(respose.body, query.return_value)

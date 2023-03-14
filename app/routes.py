@@ -97,12 +97,14 @@ def get_count_repos():
     return str(gleaner_total_count)
 
 
-@app.route('/query')
+@app.route('/api/sparql')
 # A pass-through for our SPARQL endpoint, for partners to query directly.
-def query():
-    sparql = request.args['sparql']
+def sparql():
+    if not 'query' in request.args:
+        return "Query parameter 'query' is required", BAD_REQUEST_STATUS
+    query = request.args['query']
     result = GleanerSearch(
-        endpoint_url=app.config['GLEANER_ENDPOINT_URL']).pass_through_query(sparql)
+        endpoint_url=app.config['GLEANER_ENDPOINT_URL']).pass_through_query(query)
     return result
 
 
