@@ -32,16 +32,15 @@ class TestRoutes(unittest.TestCase):
         self.assertEqual(response.status, '308 PERMANENT REDIRECT')
 
     @patch('app.search.gleaner.GleanerSearch.get_total_count')
-    def test_total_count(self,gleaner):
+    def test_total_count(self, gleaner):
         gleaner.total_count = '1000'
         with app.test_client() as client:
             response = client.get(
                 '/api/count')
-            
-            self.assertEqual(response.status, '200 OK')
-       
-        self.assertEqual(gleaner.total_count,'1000')
 
+            self.assertEqual(response.status, '200 OK')
+
+        self.assertEqual(gleaner.total_count, '1000')
 
     @patch('app.search.dataone.SolrDirectSearch.combined_search')
     @patch('app.search.gleaner.GleanerSearch.combined_search')
@@ -62,7 +61,7 @@ class TestRoutes(unittest.TestCase):
             'start_max': start_max,
             'end_min': end_min,
             'end_max': end_max
-            }
+        }
 
         with app.test_client() as client:
             response = client.get(
@@ -115,7 +114,7 @@ class TestRoutes(unittest.TestCase):
             'start_max': None,
             'end_min': None,
             'end_max': None
-            }
+        }
 
         with app.test_client() as client:
             response = client.get('/api/search')
@@ -138,7 +137,7 @@ class TestRoutes(unittest.TestCase):
             'start_max': None,
             'end_min': None,
             'end_max': None
-            }
+        }
 
         with app.test_client() as client:
             response = client.get('/api/search?page=42')
@@ -146,7 +145,6 @@ class TestRoutes(unittest.TestCase):
 
             gleaner.assert_called_with(**expected)
             dataone.assert_called_with(**expected)
-
 
     @patch('app.search.dataone.SolrDirectSearch.combined_search')
     @patch('app.search.gleaner.GleanerSearch.combined_search')
@@ -162,7 +160,7 @@ class TestRoutes(unittest.TestCase):
             'start_max': None,
             'end_min': None,
             'end_max': None
-            }
+        }
 
         with app.test_client() as client:
             response = client.get('/api/search?text=walrus')
@@ -204,7 +202,7 @@ class TestRoutes(unittest.TestCase):
             self.assertEqual(response.status, '200 OK')
 
             expected['start_min'] = None
-            expected['start_max'] =  start_max
+            expected['start_max'] = start_max
 
             gleaner.assert_called_with(**expected)
             dataone.assert_called_with(**expected)
@@ -213,7 +211,7 @@ class TestRoutes(unittest.TestCase):
             self.assertEqual(response.status, '200 OK')
 
             expected['end_min'] = end_min
-            expected['start_max'] =  None
+            expected['start_max'] = None
 
             gleaner.assert_called_with(**expected)
             dataone.assert_called_with(**expected)
@@ -222,7 +220,7 @@ class TestRoutes(unittest.TestCase):
             self.assertEqual(response.status, '200 OK')
 
             expected['end_min'] = None
-            expected['end_max'] =  end_max
+            expected['end_max'] = end_max
 
             gleaner.assert_called_with(**expected)
             dataone.assert_called_with(**expected)
@@ -274,7 +272,8 @@ class TestRoutes(unittest.TestCase):
         }
 
         with app.test_client() as client:
-            response = client.get('/api/search?start_min=2008-01-01&start_max=')
+            response = client.get(
+                '/api/search?start_min=2008-01-01&start_max=')
             self.assertEqual(response.status, '200 OK')
 
             gleaner.assert_called_with(**expected)
