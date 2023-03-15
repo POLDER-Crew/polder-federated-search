@@ -66,12 +66,12 @@ spec:
         args:
             - |
               set -eu
-              if [[ ! -f /opt/graphdb/home/work/workbench/settings.js && ! -f /opt/graphdb/home/data/users.js && -f /tmp/graphdb-settings/users.js ]]; then
+              if [[ -f /tmp/graphdb-settings/users.js ]]; then
                 echo "Provisioning users with users.js file..."
                 mkdir -p /opt/graphdb/home/data ;
                 cp /tmp/graphdb-settings/users.js /opt/graphdb/home/data/users.js
               fi
-              if [[ ! -f /opt/graphdb/home/work/workbench/settings.js && ! -f /opt/graphdb/home/data/settings.js && -f /tmp/graphdb-settings/settings.js ]]; then
+              if [[ -f /tmp/graphdb-settings/settings.js ]]; then
                 echo "Provisioning settings with settings.js file..."
                 mkdir -p /opt/graphdb/home/data ;
                 cp /tmp/graphdb-settings/settings.js /opt/graphdb/home/data/settings.js
