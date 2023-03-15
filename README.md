@@ -60,6 +60,25 @@ There is also a sitemap-building step for some of the data repositories that don
 #### Images and versions
 Images are automatically built with [Github Actions](https://github.com/WDS-ITO/polder-federated-search/tree/main/.github/workflows), and tagged with the version specified in `package.json` (in this directory).
 
+#### Deployment-support
+There is a directory called `deployment-support`, which has files that both Docker and Helm / Kubernetes can use to configure Gleaner and Graphdb.
+
+##### Gleaner
+`docker.yaml` is what Docker uses to configure Gleaner when you run it using `docker compose`. Logs will go into this folder as well as other files associated with a Gleaner run.
+
+##### GraphDB
+Files in here are used by both Docker and Helm / Kubernetes to work with GraphDB. There are shell scripts to set up, clear, and write to GraphDB, as well as various settings files.
+
+The file `EXAMPLE-graphdb-users.js` is standing in for a file that you should not check into source control - `graphdb-users.js`. The reason to not check it in is because it contains password hashes. You can either generate `bcrypt`-ed password hashes using a tool like [this one](https://bcrypt.online/) or start a GraphDB instance, create the users you want (remember to reset the admin password too, it's 'root' by default), and then download the `users.js` file, which is at ` /opt/graphdb/home/data/users.js`. You could use the GraphDB image referenced in `docker-compose.yaml` for this purpose. I recommend doing the following:
+1. `docker run -p 127.0.0.1:7200:7200 -t ontotext/graphdb:10.2.0` (substitute the appropriate image version there)
+1. Go to http://localhost:7200/users, change the admin password and add the users you want
+1. Find the image running in Docker Desktop, go to the terminal tab and do `cat /opt/graphdb/home/data/users.js`
+1. Congratulations, that's your new graphdb-users.js file.
+
+Don't forget to set the matching passwords in your `.env` file as well.
+
+The [GraphDB documentation](https://graphdb.ontotext.com/documentation/10.1/) may be of use to you here.
+
 #### Docker
 Assuming that you're starting from **this directory**:
 1. To build and run the web app, Docker needs to know about some environment variables. There are examples ones in `dev.env` - copy it to `.env` and fill in the correct values for you. Save the file and then run `source .env`.
@@ -68,14 +87,8 @@ Assuming that you're starting from **this directory**:
 1. `cd docker`
 1. `docker-compose up -d`
 1. `docker-compose --profile setup up -d` in order to start all of the necessary services and set up Gleaner for indexing.
-1. Do a crawl (these instructions assume you are in the `docker` directory):
-    1. `curl -O https://schema.org/version/latest/schemaorg-current-https.jsonld`
-    1. `docker-compose --profile crawl up -d`
-
-    NOTE: There is a missing step here. The crawled results need to be written to the triplestore. For now, you can run `./write-to-triplestore.sh`.
-         1. For windows, you need to download [Cygwin](https://www.cygwin.com/setup-x86_64.exe).
-         1. Change directory to the docker in Cygwin (`cd docker`).
-         1. Run the `./write-to-triplestore.sh`. to write to triplestore.
+1. Do a crawl (these instructions assume you are in the `docker` directory): `docker-compose --profile crawl up -d`
+1. When the crawl is done, write the data to the triplestore: `docker-compose --profile write up -d`
 1. Run the web app: `docker-compose --profile web up -d`
 
 If you're using Docker Desktop, you can use the UI to open the docker-webapp image in a browser.
@@ -105,9 +118,12 @@ That file will be structured like this:
       minioSecretKey: <your base64 encoded value here>
       flaskSecretKey: <your base64 encoded value here>
       sentryDsn: <your base64 encoded value here>
+      graphdbIndexerPassword: <your base64 encoded value here>
+      graphdbRootPassword: <your base64 encoded value here>
 ```
 You can see that the values of the secrets are base64 encoded - in order to do this, run ` echo -n 'mysecretkey' | base64` on your command line for each value, and paste the result in where the key goes. Don't check in your real secrets anywhere!
-  You can read more about secrets [here](https://kubernetes.io/docs/concepts/configuration/secret/).
+
+You can read more about secrets [here](https://kubernetes.io/docs/concepts/configuration/secret/).
 
 In order to deploy to the `dev` or `prod` clusters, which are currently hosted in DataONE's analagous Kubernetes clusters, you need to ask someone in that organization for their Kubernetes config information. Name that file `polder.config` and put it in this directory; it'll get added to your environment automatically.
 

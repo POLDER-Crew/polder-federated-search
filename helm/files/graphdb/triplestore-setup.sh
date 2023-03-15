@@ -1,0 +1,1 @@
+../../../deployment-support/graphdb/triplestore-setup.sh

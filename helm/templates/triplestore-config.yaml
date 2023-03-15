@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: triplestore-config
+  labels:
+    app: triplestore
+data:
+  settings.js: |-
+{{ tpl (.Files.Get "files/graphdb/graphdb-settings.js" | indent 4) . }}
+  users.js: |-
+{{ tpl (.Files.Get "files/graphdb/graphdb-users.js" | indent 4) . }}

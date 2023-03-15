@@ -48,8 +48,7 @@ def _get_date_from_args(arg_name, kwargs):
 def _do_combined_search(template, **kwargs):
     sanitized_kwargs = {}
     sanitized_kwargs['text'] = kwargs.pop('text', None)
-    sanitized_kwargs['author'] = kwargs.pop('author',None)
-    
+    sanitized_kwargs['author'] = kwargs.pop('author', None)
 
     try:
         # Human-readable pages start at 1
@@ -85,16 +84,29 @@ def nojs_combined_search():
 
 @app.route('/api/search')
 def combined_search():
-    
+
     return _do_combined_search('results.html', **request.args)
 
 
 @app.route('/api/count')
 def get_count_repos():
 
-    gleaner_total_count = GleanerSearch(endpoint_url=app.config['GLEANER_ENDPOINT_URL']).get_total_count()
-    
+    gleaner_total_count = GleanerSearch(
+        endpoint_url=app.config['GLEANER_ENDPOINT_URL']).get_total_count()
+
     return str(gleaner_total_count)
+
+
+@app.route('/api/sparql')
+# A pass-through for our SPARQL endpoint, for partners to query directly.
+def sparql():
+    if not 'query' in request.args:
+        return "Query parameter 'query' is required", BAD_REQUEST_STATUS
+    query = request.args['query']
+    result = GleanerSearch(
+        endpoint_url=app.config['GLEANER_ENDPOINT_URL']).pass_through_query(query)
+    return result
+
 
 @app.errorhandler(NotFound)
 def handle_404(e):

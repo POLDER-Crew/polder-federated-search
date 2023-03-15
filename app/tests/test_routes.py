@@ -1,10 +1,11 @@
 import unittest
+import json
 from unittest.mock import patch
 from datetime import date
 from app import app
 from app.search.search import SearchResultSet
 
-from app.routes import home, combined_search, nojs_combined_search
+from app.routes import home, combined_search, nojs_combined_search, sparql
 
 app.testing = True
 
@@ -32,16 +33,15 @@ class TestRoutes(unittest.TestCase):
         self.assertEqual(response.status, '308 PERMANENT REDIRECT')
 
     @patch('app.search.gleaner.GleanerSearch.get_total_count')
-    def test_total_count(self,gleaner):
+    def test_total_count(self, gleaner):
         gleaner.total_count = '1000'
         with app.test_client() as client:
             response = client.get(
                 '/api/count')
-            
-            self.assertEqual(response.status, '200 OK')
-       
-        self.assertEqual(gleaner.total_count,'1000')
 
+            self.assertEqual(response.status, '200 OK')
+
+        self.assertEqual(gleaner.total_count, '1000')
 
     @patch('app.search.dataone.SolrDirectSearch.combined_search')
     @patch('app.search.gleaner.GleanerSearch.combined_search')
@@ -62,7 +62,7 @@ class TestRoutes(unittest.TestCase):
             'start_max': start_max,
             'end_min': end_min,
             'end_max': end_max
-            }
+        }
 
         with app.test_client() as client:
             response = client.get(
@@ -115,7 +115,7 @@ class TestRoutes(unittest.TestCase):
             'start_max': None,
             'end_min': None,
             'end_max': None
-            }
+        }
 
         with app.test_client() as client:
             response = client.get('/api/search')
@@ -138,7 +138,7 @@ class TestRoutes(unittest.TestCase):
             'start_max': None,
             'end_min': None,
             'end_max': None
-            }
+        }
 
         with app.test_client() as client:
             response = client.get('/api/search?page=42')
@@ -146,7 +146,6 @@ class TestRoutes(unittest.TestCase):
 
             gleaner.assert_called_with(**expected)
             dataone.assert_called_with(**expected)
-
 
     @patch('app.search.dataone.SolrDirectSearch.combined_search')
     @patch('app.search.gleaner.GleanerSearch.combined_search')
@@ -162,7 +161,7 @@ class TestRoutes(unittest.TestCase):
             'start_max': None,
             'end_min': None,
             'end_max': None
-            }
+        }
 
         with app.test_client() as client:
             response = client.get('/api/search?text=walrus')
@@ -204,7 +203,7 @@ class TestRoutes(unittest.TestCase):
             self.assertEqual(response.status, '200 OK')
 
             expected['start_min'] = None
-            expected['start_max'] =  start_max
+            expected['start_max'] = start_max
 
             gleaner.assert_called_with(**expected)
             dataone.assert_called_with(**expected)
@@ -213,7 +212,7 @@ class TestRoutes(unittest.TestCase):
             self.assertEqual(response.status, '200 OK')
 
             expected['end_min'] = end_min
-            expected['start_max'] =  None
+            expected['start_max'] = None
 
             gleaner.assert_called_with(**expected)
             dataone.assert_called_with(**expected)
@@ -222,7 +221,7 @@ class TestRoutes(unittest.TestCase):
             self.assertEqual(response.status, '200 OK')
 
             expected['end_min'] = None
-            expected['end_max'] =  end_max
+            expected['end_max'] = end_max
 
             gleaner.assert_called_with(**expected)
             dataone.assert_called_with(**expected)
@@ -274,8 +273,24 @@ class TestRoutes(unittest.TestCase):
         }
 
         with app.test_client() as client:
-            response = client.get('/api/search?start_min=2008-01-01&start_max=')
+            response = client.get(
+                '/api/search?start_min=2008-01-01&start_max=')
             self.assertEqual(response.status, '200 OK')
 
             gleaner.assert_called_with(**expected)
             dataone.assert_called_with(**expected)
+
+    @patch('app.search.gleaner.GleanerSearch.pass_through_query')
+    def test_query(self, query):
+        query.return_value = json.loads('{"results": {"bindings": "some data"}}')
+        with app.test_client() as client:
+            response = client.get(
+                '/api/sparql?query="select * where { ?s ?p ?o .} limit 100"')
+            self.assertEqual(response.status, '200 OK')
+            self.assertEqual(response.content_type, 'application/json')
+            self.assertEqual(response.json["results"]["bindings"], "some data")
+
+    def test_query_no_param(self):
+        with app.test_client() as client:
+            response = client.get('/api/sparql')
+            self.assertEqual(response.status, '400 BAD REQUEST')

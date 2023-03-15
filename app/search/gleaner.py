@@ -480,7 +480,6 @@ class GleanerSearch(SearcherBase):
         result['source'] = "Gleaner"
         return SearchResult(**result)
 
-    
     def build_total_count_query(self):
 
         return f'''
@@ -498,7 +497,7 @@ class GleanerSearch(SearcherBase):
                 {{
                     ?s a schema:Dataset  .
 
-                    
+
 
                     ?s schema:name ?title .
                     ?s schema:temporalCoverage ?temporal_coverage .
@@ -520,13 +519,13 @@ class GleanerSearch(SearcherBase):
                         }}
                         FILTER(ISLITERAL(?author)) .
                     }}
-                   
+
                 }}
                 GROUP BY ?title
             }}'''
-       
+
     def get_total_count(self):
-        #logger.debug(self.query)
+        # logger.debug(self.query)
         self.sparql.setQuery(self.build_total_count_query())
         self.sparql.setMethod(POST)
         self.sparql.setReturnFormat(JSON)
@@ -534,8 +533,15 @@ class GleanerSearch(SearcherBase):
         total_results = int(data['results']['bindings'].pop(0)[
             'total_results']['value'])
         return total_results
-        
 
+    def pass_through_query(self, query):
+        self.query = query
+        self.sparql.setQuery(query)
 
+        if self.sparql.isSparqlUpdateRequest():
+            raise ValueError(
+                "This is a read-only endpoint. Queries that modify the database will be rejected.")
 
-    
+        self.sparql.setMethod(POST)
+        self.sparql.setReturnFormat(JSON)
+        return self.sparql.query().convert()

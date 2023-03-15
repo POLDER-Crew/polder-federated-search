@@ -6,7 +6,7 @@ services:
 
   gleaner-setup:
     image: nsfearthcube/gleaner:v3.0.8_fix129
-    command: -cfg gleaner -setup
+    command: -cfg docker -setup
     depends_on:
       - triplestore
       - s3system
@@ -19,45 +19,35 @@ services:
       - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
       - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
     volumes:
-      - ./:/config
+      - ../deployment-support/gleaner/:/config
     working_dir: /config
+
+  get-contextfiles:
+    image: curlimages/curl:7.88.1
+    profiles:
+      - setup
+    volumes:
+      - ../deployment-support/gleaner/:/config
+    working_dir: /config
+    command: curl -O https://schema.org/version/latest/schemaorg-current-https.jsonld
 
   triplestore-setup:
     image: curlimages/curl:7.88.1
     depends_on:
     - triplestore
     volumes:
-      - ./:/config
+      - ../deployment-support/graphdb/:/config
     working_dir: /config
-    command:
-    - curl
-    - -vs
-    - -X
-    - POST
-    - -H
-    - 'Content-Type:multipart/form-data'
-    - -F
-    - "config=@./polder.ttl"
-    - "http://triplestore:7200/rest/repositories"
-    - --next
-    - -X
-    - POST
-    - --header
-    - 'Accept: application/json'
-    - --data-urlencode
-    - update@./lucene-connector.sparql
-    - "http://triplestore:7200/repositories/polder/statements"
-    - --next
-    - -X
-    - POST
-    - --header
-    - 'Accept: application/json'
-    - --data-urlencode
-    - update@./geosparql.sparql
-    - "http://triplestore:7200/repositories/polder/statements"
+    environment:
+      - GLEANER_ENDPOINT_URL=http://triplestore:7200/repositories/polder
+      - GRAPHDB_REST_URL=http://triplestore:7200/rest
+      - GRAPHDB_INDEXER_USER
+      - GRAPHDB_INDEXER_PASSWORD
+      - GRAPHDB_ROOT_PASSWORD
+    command: sh ./triplestore-setup.sh
 
   sitemap-setup:
-    image: wdsito/build-sitemap:1.46.0
+    image: wdsito/build-sitemap:1.47.0
     depends_on:
     - s3system
     profiles:
@@ -69,13 +59,10 @@ services:
       - MINIO_SERVER_PORT_NUMBER=9000
       - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
       - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
-    volumes:
-      - ./:/config
-    working_dir: /config
 
   gleaner:
     image: nsfearthcube/gleaner:v3.0.8_fix129
-    command: -cfg gleaner
+    command: -cfg docker
     depends_on:
       - triplestore
       - s3system
@@ -88,12 +75,18 @@ services:
     profiles:
       - crawl
     volumes:
-      - ./:/config
+      - ../deployment-support/gleaner/:/config
     working_dir: /config
 
   triplestore:
     image: ontotext/graphdb:10.2.0
     volumes:
+      - type: bind
+        source: ../deployment-support/graphdb/graphdb-settings.js
+        target: /opt/graphdb/home/data/settings.js
+      - type: bind
+        source: ../deployment-support/graphdb/graphdb-users.js
+        target: /opt/graphdb/home/data/users.js
       - triplestore:/opt
     environment:
       GDB_JAVA_OPTS: >-
@@ -128,8 +121,29 @@ services:
     environment:
      - SERVICE_PORTS=9222
 
+  write-to-triplestore:
+    image: minio/mc:RELEASE.2022-11-17T21-20-39Z
+    depends_on:
+      - triplestore
+      - s3system
+    volumes:
+      - ../deployment-support/graphdb/:/config
+    working_dir: /config
+    environment:
+      - GLEANER_ENDPOINT_URL=http://triplestore:7200/repositories/polder
+      - GRAPHDB_REST_URL=http://triplestore:7200/rest
+      - MINIO_ACCESS_KEY
+      - MINIO_SECRET_KEY
+      - MINIO_SERVER_HOST=http://s3system
+      - MINIO_SERVER_PORT=9000
+      - GRAPHDB_INDEXER_USER
+      - GRAPHDB_INDEXER_PASSWORD
+    profiles:
+      - write
+    entrypoint: ["sh", "-c", "./write-to-triplestore.sh"]
+
   webapp:
-    image: wdsito/polder-federated-search:1.46.0
+    image: wdsito/polder-federated-search:1.47.0
     depends_on:
       - triplestore
       - s3system

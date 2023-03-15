@@ -385,3 +385,43 @@ class TestGleanerSearch(unittest.TestCase):
                 Point(coordinates=('-85.25', '73.25')),
             ]).geometries)
         self.assertEqual(result.source, "Gleaner")
+
+    @patch('SPARQLWrapper.SPARQLWrapper.query')
+    def test_pass_through_query(self, query):
+        query.return_value = self.mock_query
+        result = self.search.pass_through_query("SELECT * in ?s ?p ?o")
+        self.assertEqual("SELECT * in ?s ?p ?o", self.search.query)
+
+    @patch('SPARQLWrapper.SPARQLWrapper.query')
+    def test_pass_through_query_update(self, query):
+        query.return_value = self.mock_query
+        with self.assertRaises(ValueError):
+            result = self.search.pass_through_query("DELETE * in ?s ?p ?o")
+
+        with self.assertRaises(ValueError):
+            result = self.search.pass_through_query("INSERT * in ?s ?p ?o")
+
+    @patch('SPARQLWrapper.Wrapper.urlopener')
+    def test_pass_through_query_malformed_sparql(self, urlopen):
+    # gross, but requests-mock does not touch the requests
+    # that SPARQLWrapper makes using good old urllib
+    # for some reason, even if I try to capture
+    # every request, so here we are creating fake file handles
+    # because that's what the response object that
+    # SPARQLWrapper knows how to work with expects
+
+        with patch("builtins.open", mock_open(read_data="some data")) as file_patch:
+            test_response_fp = open("foo")
+
+        resp = addinfourl(
+            test_response_fp,  # our fake file pointer
+            {},  # empty headers
+            self.search.ENDPOINT_URL
+        )
+        resp.code = 500
+        urlopen.return_value = resp
+        urlopen.side_effect = HTTPError(
+            "oh no", 500, {}, {}, test_response_fp
+        )
+        with self.assertRaises(SPARQLExceptions.EndPointInternalError):
+            results = self.search.pass_through_query("SELECT test")

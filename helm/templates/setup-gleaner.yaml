@@ -13,12 +13,7 @@ spec:
       - name: gleaner-config
         configMap:
           name: gleaner-config
-      - name: polder-repo-config
-        configMap:
-          name: polder-repo-config
-      - name: nabu-config
-        configMap:
-          name: nabu-config
+      {{ include "polder-repo-config-volume" . | indent 6 }}
       - name: gleaner-context
         emptyDir: {}
       dnsPolicy: None
@@ -42,7 +37,7 @@ spec:
         # yes, this is how it has to work, no I am not happy about it
         - >
           set -x;
-          while [ $(curl -sw '%{http_code}' "{{ include "gleaner.triplestore.endpoint" . }}/rest/repositories/" -o /dev/null) -ne 200 ]; do
+          while [ $(curl -sw '%{http_code}' '{{ include "gleaner.triplestore.endpoint" . }}/rest/repositories' -o /dev/null --show-error) -ne 200 ]; do
             sleep 15;
           done
       # Next, create the graphdb repository that we want to use for this app
@@ -53,31 +48,25 @@ spec:
         - name: polder-repo-config
           mountPath: /config
         command:
-        - curl
-        - -vs
-        - -X
-        - POST
-        - -H
-        - 'Content-Type:multipart/form-data'
-        - -F
-        - "config=@./polder.ttl"
-        - "{{- include "gleaner.triplestore.endpoint" . }}/rest/repositories/"
-        - --next
-        - -X
-        - POST
-        - --header
-        - 'Accept: application/json'
-        - --data-urlencode
-        - update@./lucene-connector.sparql
-        - "{{- include "gleaner.triplestore.endpoint" . }}/repositories/{{ .Values.storageNamespace }}/statements"
-        - --next
-        - -X
-        - POST
-        - --header
-        - 'Accept: application/json'
-        - --data-urlencode
-        - update@./geosparql.sparql
-        - "{{- include "gleaner.triplestore.endpoint" . }}/repositories/{{ .Values.storageNamespace }}/statements"
+        - /bin/sh
+        - ./triplestore-setup.sh
+        env:
+        - name: GLEANER_ENDPOINT_URL
+          value: {{ include "gleaner.triplestore.endpoint" . }}/repositories/{{ .Values.storageNamespace }}
+        - name: GRAPHDB_REST_URL
+          value: {{ include "gleaner.triplestore.endpoint" . }}/rest
+        - name: GRAPHDB_INDEXER_USER
+          value: indexer-user
+        - name: GRAPHDB_INDEXER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key:  graphdbIndexerPassword
+              name: {{ .Release.Name }}-secrets
+        - name: GRAPHDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key:  graphdbRootPassword
+              name: {{ .Release.Name }}-secrets
       # Run gleaner setup, which creates cloud storage buckets
       - name: gleaner-setup
         image: nsfearthcube/gleaner:v3.0.8_fix129
@@ -102,7 +91,7 @@ spec:
         - name: gleaner-config
           mountPath: /config/gleaner.yaml
           subPath: gleaner.yaml
-      # We need the latest schema.org context, so fetch it
+      # include shared container spec
       - name: get-contextfiles
         image: curlimages/curl:7.88.1
         command:
@@ -137,55 +126,7 @@ spec:
           mountPath: /context
         workingDir: /context
       # Finally, index our data repositories!
-      - name: gleaner-initial-index
-        image: nsfearthcube/gleaner:v3.0.8_fix129
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        args:
-        - -cfg
-        - gleaner
-        env:
-        - name: MINIO_ACCESS_KEY
-          valueFrom:
-            secretKeyRef:
-              key:  minioAccessKey
-              name: {{ .Release.Name }}-secrets
-        - name: MINIO_SECRET_KEY
-          valueFrom:
-            secretKeyRef:
-              key:  minioSecretKey
-              name: {{ .Release.Name }}-secrets
-        workingDir: /config
-        volumeMounts:
-        - name: gleaner-config
-          mountPath: /config/gleaner.yaml
-          subPath: gleaner.yaml
-        - name: gleaner-context
-          mountPath: /config
+      {{ include "gleaner-index" . | indent 6 }}
       containers:
-      - name: write-to-triplestore
-        image: minio/mc:RELEASE.2022-11-17T21-20-39Z
-        env:
-        - name: MINIO_CLIENT_ACCESS_KEY
-          valueFrom:
-            secretKeyRef:
-              key:  minioAccessKey
-              name: {{ .Release.Name }}-secrets
-        - name: MINIO_CLIENT_SECRET_KEY
-          valueFrom:
-            secretKeyRef:
-              key:  minioSecretKey
-              name: {{ .Release.Name }}-secrets
-        - name: MINIO_SERVER_HOST
-          value: {{ include "gleaner.s3system.endpoint" . }}
-        - name: MINIO_SERVER_PORT_NUMBER
-          value: "{{ .Values.s3system_service.api_port }}"
-        command:
-        # the first line of the following bash command is supposed to happen automatically, according to
-        # the documentation on docker hub, but it does not.
-        - /bin/sh
-        - -c
-        - >
-          mc config host add minio "http://${MINIO_SERVER_HOST}:${MINIO_SERVER_PORT_NUMBER}" "${MINIO_CLIENT_ACCESS_KEY}" "${MINIO_CLIENT_SECRET_KEY}" &&
-          for i in $(mc find minio/{{ .Values.storageNamespace }}/milled); do
-            mc cat $i | curl -X POST -H 'Content-Type:text/rdf+n3;charset=utf-8' --data-binary  @- {{ include "gleaner.triplestore.endpoint" . }}/repositories/{{ .Values.storageNamespace }}/statements
-          done
+      {{ include "write-to-triplestore" . | indent 6 }}
+

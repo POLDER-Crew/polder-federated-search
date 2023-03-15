@@ -35,6 +35,9 @@ spec:
         persistentVolumeClaim:
           claimName: {{ if .Values.persistence.existing }}polder-pvc-02{{ else }}local-volume-s3system{{ end }}
           readOnly: false
+      - name: triplestore-config
+        configMap:
+          name: triplestore-config
       dnsPolicy: None
       dnsConfig:
         nameservers:
@@ -46,13 +49,42 @@ spec:
         options:
         - name: ndots
           value: "5"
+      initContainers:
+      # You can't just mount a configMap for the graphdb users and settings
+      # because configMaps are read-only, so you have to mount one
+      # here and copy it into the volume.
+      # see https://github.com/Ontotext-AD/graphdb-helm/blob/master/templates/graphdb-node.yaml
+      - name: provision-settings
+        image: busybox:1
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        volumeMounts:
+        - mountPath: /opt/graphdb/home
+          name: triplestore-volume
+        - mountPath: /tmp/graphdb-settings
+          name: triplestore-config
+        command: ['sh', '-c']
+        args:
+            - |
+              set -eu
+              if [[ ! -f /opt/graphdb/home/work/workbench/settings.js && ! -f /opt/graphdb/home/data/users.js && -f /tmp/graphdb-settings/users.js ]]; then
+                echo "Provisioning users with users.js file..."
+                mkdir -p /opt/graphdb/home/data ;
+                cp /tmp/graphdb-settings/users.js /opt/graphdb/home/data/users.js
+              fi
+              if [[ ! -f /opt/graphdb/home/work/workbench/settings.js && ! -f /opt/graphdb/home/data/settings.js && -f /tmp/graphdb-settings/settings.js ]]; then
+                echo "Provisioning settings with settings.js file..."
+                mkdir -p /opt/graphdb/home/data ;
+                cp /tmp/graphdb-settings/settings.js /opt/graphdb/home/data/settings.js
+              fi
+              echo 'Done'
       containers:
       - name: triplestore
         image: ontotext/graphdb:10.2.0
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         volumeMounts:
-        - mountPath: /data/graphdb
+        - mountPath: /opt/graphdb/home
           name: triplestore-volume
+
         ports:
         - containerPort: {{ .Values.triplestore_service.port }}
         env:
