@@ -186,9 +186,11 @@ Partials for commonly used containers
         key:  minioSecretKey
         name: {{ .Release.Name }}-secrets
   - name: MINIO_SERVER_HOST
-    value: {{ include "gleaner.s3system.endpoint" . }}
-  - name: MINIO_SERVER_PORT_NUMBER
+    value: http://{{ include "gleaner.s3system.endpoint" . }}
+  - name: MINIO_SERVER_PORT
     value: "{{ .Values.s3system_service.api_port }}"
+  - name: STORAGE_BUCKET
+    value: "{{ .Values.storageNamespace }}"
 {{- end }}
 
 {{- define "polder-repo-config-volume" }}
