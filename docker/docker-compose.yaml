@@ -47,7 +47,7 @@ services:
     command: sh ./triplestore-setup.sh
 
   sitemap-setup:
-    image: wdsito/build-sitemap:1.46.0
+    image: wdsito/build-sitemap:1.47.0
     depends_on:
     - s3system
     profiles:
@@ -143,7 +143,7 @@ services:
     entrypoint: ["sh", "-c", "./write-to-triplestore.sh"]
 
   webapp:
-    image: wdsito/polder-federated-search:1.46.0
+    image: wdsito/polder-federated-search:1.47.0
     depends_on:
       - triplestore
       - s3system
