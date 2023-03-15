@@ -138,6 +138,7 @@ services:
       - MINIO_SERVER_PORT=9000
       - GRAPHDB_INDEXER_USER
       - GRAPHDB_INDEXER_PASSWORD
+      - STORAGE_BUCKET=gleaner
     profiles:
       - write
     entrypoint: ["sh", "-c", "./write-to-triplestore.sh"]
