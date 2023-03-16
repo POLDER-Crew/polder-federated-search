@@ -5,7 +5,7 @@ volumes:
 services:
 
   gleaner-setup:
-    image: nsfearthcube/gleaner:v3.0.8_fix129
+    image: nsfearthcube/gleaner:v3.0.8
     command: -cfg docker -setup
     depends_on:
       - triplestore
@@ -61,7 +61,7 @@ services:
       - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
 
   gleaner:
-    image: nsfearthcube/gleaner:v3.0.8_fix129
+    image: nsfearthcube/gleaner:v3.0.8
     command: -cfg docker
     depends_on:
       - triplestore

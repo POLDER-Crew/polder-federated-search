@@ -69,7 +69,7 @@ spec:
               name: {{ .Release.Name }}-secrets
       # Run gleaner setup, which creates cloud storage buckets
       - name: gleaner-setup
-        image: nsfearthcube/gleaner:v3.0.8_fix129
+        image: nsfearthcube/gleaner:v3.0.8
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         args:
         - -cfg
@@ -113,6 +113,16 @@ spec:
               key:  minioAccessKey
               name: {{ .Release.Name }}-secrets
         - name: MINIO_CLIENT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              key:  minioSecretKey
+              name: {{ .Release.Name }}-secrets
+        - name: MINIO_ROOT_USER
+          valueFrom:
+            secretKeyRef:
+              key:  minioAccessKey
+              name: {{ .Release.Name }}-secrets
+        - name: MINIO_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
               key:  minioSecretKey
