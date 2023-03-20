@@ -52,13 +52,15 @@ This tool uses Docker images to manage the different services that it depends on
 
 The web app itself that hosts the UI and does the searches is built using [Flask](https://flask.palletsprojects.com), which is a Python web framework. I chose Python because Python has good support for RDF and SPARQL operations with [RDFLib](https://rdflib.dev/). The frontend dependencies are HTML, JavaScript and SCSS, built using [Parcel](https://parceljs.org/). The maps in the user interface are built using [OpenLayers](https://openlayers.org/).
 
+Errors in deployed versions of this project are collected with [Sentry](https://polder-federated-search.sentry.io/issues/?project=6247623).
+
 ### Deployment
 A pre-built image for the web app is on Docker Hub as [wdsito/polder-federated-search](https://hub.docker.com/repository/docker/wdsito/polder-federated-search), and that is what all of the Helm/Kubernetes and Docker files in this repository are referencing. If you want to modify this project and build your own ones, you're welcome to.
 
 There is also a sitemap-building step for some of the data repositories that don't have sitemaps that work in the way we want (e.g. they don't have sitemaps, we wanted to scope down the datasets crawled to just polar data, or some other reason). That step uses a purpose-built Docker image, and the code for that is in `build-sitemap` in this repository.
 
 #### Images and versions
-Images are automatically built with [Github Actions](https://github.com/WDS-ITO/polder-federated-search/tree/main/.github/workflows), and tagged with the version specified in `package.json` (in this directory).
+Images are automatically built with [Github Actions](https://github.com/POLDER-Crew/polder-federated-search/tree/main/.github/workflows), and tagged with the version specified in `package.json` (in this directory).
 
 #### Deployment-support
 There is a directory called `deployment-support`, which has files that both Docker and Helm / Kubernetes can use to configure Gleaner and Graphdb.
@@ -77,7 +79,7 @@ The file `EXAMPLE-graphdb-users.js` is standing in for a file that you should no
 
 Don't forget to set the matching passwords in your `.env` file as well.
 
-The [GraphDB documentation](https://graphdb.ontotext.com/documentation/10.1/) may be of use to you here.
+The [GraphDB documentation](https://graphdb.ontotext.com/documentation/10.2/) may be of use to you here.
 
 #### Docker
 Assuming that you're starting from **this directory**:
