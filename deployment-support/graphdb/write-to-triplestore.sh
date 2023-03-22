@@ -11,8 +11,8 @@ for i in $(mc find minio/"$STORAGE_BUCKET"/milled); do
   then
     while [ "$status" = "000" ]
     do
-      echo "failed to connect to minio. Retrying in 10 seconds..."
-      sleep 10
+      echo "failed to connect to minio. Retrying in 30 seconds..."
+      sleep 30
       status=$(mc cat $i | curl -s -w '%{http_code}' -X POST -H "Authorization:$token" -H 'Content-Type:text/rdf+n3;charset=utf-8' --data-binary  @- "$GLEANER_ENDPOINT_URL"/statements)
     done
   fi
