@@ -111,19 +111,6 @@ local-volume-s3system
 {{/*
 Partials for commonly used containers
 */}}
-{{- define "get-contextfiles" -}}
-- name: get-contextfiles
-  image: curlimages/curl:7.88.1
-  command:
-  - curl
-  - -O
-  - https://schema.org/version/latest/schemaorg-current-https.jsonld
-  volumeMounts:
-  - name: gleaner-context
-    mountPath: /context
-  workingDir: /context
-{{- end }}
-
 {{- define "gleaner-index" }}
 - name: gleaner-index
   image: nsfearthcube/gleaner:v3.0.8
