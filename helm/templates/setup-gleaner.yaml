@@ -28,7 +28,7 @@ spec:
         - name: ndots
           value: "5"
       initContainers:
-      # Next, create the graphdb repository that we want to use for this app
+      # Create the graphdb repository that we want to use for this app
       - name: setup-triplestore
         image: curlimages/curl:7.88.1
         workingDir: /config
@@ -79,7 +79,6 @@ spec:
         - name: gleaner-config
           mountPath: /config/gleaner.yaml
           subPath: gleaner.yaml
-      # include shared container spec
       - name: get-contextfiles
         image: curlimages/curl:7.88.1
         command:
@@ -90,7 +89,7 @@ spec:
         - name: gleaner-context
           mountPath: /context
         workingDir: /context
-      # Dynamically create the sitemaps for BAS, GCMD and CCADI, and put
+      # Dynamically create the sitemaps for BAS, GCMD and Datastream, and put
       # them somewhere that Gleaner can use to crawl
       - name: build-sitemap
         image: wdsito/build-sitemap:{{ .Values.image.tag | default .Chart.AppVersion }}
