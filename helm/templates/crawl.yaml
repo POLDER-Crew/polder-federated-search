@@ -31,7 +31,7 @@ spec:
             options:
             - name: ndots
               value: "5"
-          initContainers: # shared container specs
+          initContainers:
           # We need the latest schema.org context, so fetch it
           - name: get-contextfiles
             image: curlimages/curl:7.88.1
