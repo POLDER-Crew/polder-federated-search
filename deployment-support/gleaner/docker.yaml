@@ -52,7 +52,7 @@ sources:
   active: true
 - name: gcmd
   type: sitemap
-  headless: false
+  headless: true
   url: http://s3system:9000/sitemaps/gcmd-sitemap.xml
   properName: Global Change Master Directory
   active: true
