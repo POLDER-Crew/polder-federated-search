@@ -115,11 +115,12 @@ services:
     command: ["server", "/data", "--console-address", ":54321"]
 
   headless:
-    image: chromedp/headless-shell:stable
+    image: chromedp/headless-shell:104.0.5098.0
     ports:
       - 9222:9222
     environment:
      - SERVICE_PORTS=9222
+    command: --disable-gpu
 
   write-to-triplestore:
     image: minio/mc:RELEASE.2022-11-17T21-20-39Z
