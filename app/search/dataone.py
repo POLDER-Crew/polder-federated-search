@@ -154,10 +154,19 @@ class SolrDirectSearch(SearcherBase):
             # convert from dates as represented by Solr
             # See https://solr.apache.org/guide/6_6/working-with-dates.html
 
-            begin = datetime.fromisoformat(result.pop('beginDate').rstrip('Z'))
-            end = datetime.fromisoformat(result.pop('endDate').rstrip('Z'))
-            result['temporal_coverage'] = datetime.date(
-                begin).isoformat() + "/" + datetime.date(end).isoformat()
+            # These values are shown in the UI; provide sensible defaults
+            begin  = "Unknown"
+            end = "Unknown"
+            try:
+                begin = datetime.date(datetime.fromisoformat(result.pop('beginDate').rstrip('Z'))).isoformat()
+            except ValueError as ve:
+                logger.error("Invalid start date in dataone result: %s %s", urls[0], ve)
+            try:
+                end = datetime.date(datetime.fromisoformat(result.pop('endDate').rstrip('Z'))).isoformat()
+            except ValueError as ve:
+                logger.error("Invalid end date in dataone result: %s %s", urls[0], ve)
+
+            result['temporal_coverage'] = begin + "/" + end
 
         boundingbox = {'south': result.pop('southBoundCoord', None), 'north': result.pop(
             'northBoundCoord', None), 'west': result.pop('westBoundCoord', None), 'east': result.pop('eastBoundCoord', None)}

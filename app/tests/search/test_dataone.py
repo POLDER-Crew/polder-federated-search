@@ -221,9 +221,9 @@ class TestSolrDirectSearch(unittest.TestCase):
             unquote(m.request_history[0].url)
         )
 
-    
     def test_search_author_name(self):
-        arguments = {'text': 'ice', 'author': 'anonyous', 'page_number': 1, 'start_min': None, 'start_max': None, 'end_min': None, 'end_max': None}
+        arguments = {'text': 'ice', 'author': 'anonyous', 'page_number': 1,
+                     'start_min': None, 'start_max': None, 'end_min': None, 'end_max': None}
 
         result = dataone.SolrDirectSearch.build_query("&q=originText:", 0)
         self.assertIn("&q=originText:", result)
@@ -355,3 +355,97 @@ class TestSolrDirectSearch(unittest.TestCase):
         }
         test_obj1 = self.search.convert_result(test_result1)
         self.assertEqual(test_obj1.datasource, {})
+
+    def test_bad_dates(self):
+        # based on a real bug encountered in the wild
+        bad_begin_date = {
+            'webUrl': ['url1', 'url2', 'url3'],
+            'contentUrl': {'value': ['url5', 'url6', 'url7']},
+            'seriesId': 'doi:test',
+            'score': 5,
+            'title': 'A title',
+            'id': 'An id',
+            'abstract': 'An abstract',
+            'placeKey': 'a location',
+            'keywords': ['keyword1', 'keyword2', 'keyword3'],
+            'origin': 'an origin',
+            'beginDate': '118051-01-01T00:00:00',
+            'endDate': '2016-12-31T00:00:00Z'
+        }
+        bad_end_date = {
+            'webUrl': ['url1', 'url2', 'url3'],
+            'contentUrl': {'value': ['url5', 'url6', 'url7']},
+            'seriesId': 'doi:test',
+            'score': 5,
+            'title': 'A title',
+            'id': 'An id',
+            'abstract': 'An abstract',
+            'placeKey': 'a location',
+            'keywords': ['keyword1', 'keyword2', 'keyword3'],
+            'origin': 'an origin',
+            'beginDate': '2016-01-01T00:00:00Z',
+            'endDate': 'some non-date string'
+        }
+
+        two_bad_dates = {
+            'webUrl': ['url1', 'url2', 'url3'],
+            'contentUrl': {'value': ['url5', 'url6', 'url7']},
+            'seriesId': 'doi:test',
+            'score': 5,
+            'title': 'A title',
+            'id': 'An id',
+            'abstract': 'An abstract',
+            'placeKey': 'a location',
+            'keywords': ['keyword1', 'keyword2', 'keyword3'],
+            'origin': 'an origin',
+            'beginDate': 'i dunno',
+            'endDate': 'whatever'
+        }
+
+        result = self.search.convert_result(bad_begin_date)
+        result.urls.sort()
+        result.keywords.sort()
+        self.assertEqual(result.score, 5)
+        self.assertEqual(
+            result.urls, ['https://search.dataone.org/view/An%20id', 'url1', 'url2', 'url3', 'url5', 'url6', 'url7'])
+        self.assertEqual(result.title, 'A title'),
+        self.assertEqual(result.id, ['An id'])
+        self.assertEqual(result.abstract, 'An abstract')
+        self.assertEqual(result.geometry['text'], 'a location')
+        self.assertEqual(result.keywords, ['keyword1', 'keyword2', 'keyword3'])
+        self.assertEqual(result.doi, 'doi:test')
+        self.assertEqual(result.origin, 'an origin')
+        self.assertEqual(result.temporal_coverage, [
+                         'Unknown to 2016-12-31'])
+
+        result = self.search.convert_result(bad_end_date)
+        result.urls.sort()
+        result.keywords.sort()
+        self.assertEqual(result.score, 5)
+        self.assertEqual(
+            result.urls, ['https://search.dataone.org/view/An%20id', 'url1', 'url2', 'url3', 'url5', 'url6', 'url7'])
+        self.assertEqual(result.title, 'A title'),
+        self.assertEqual(result.id, ['An id'])
+        self.assertEqual(result.abstract, 'An abstract')
+        self.assertEqual(result.geometry['text'], 'a location')
+        self.assertEqual(result.keywords, ['keyword1', 'keyword2', 'keyword3'])
+        self.assertEqual(result.doi, 'doi:test')
+        self.assertEqual(result.origin, 'an origin')
+        self.assertEqual(result.temporal_coverage, [
+                         '2016-01-01 to Unknown'])
+
+        result = self.search.convert_result(two_bad_dates)
+        result.urls.sort()
+        result.keywords.sort()
+        self.assertEqual(result.score, 5)
+        self.assertEqual(
+            result.urls, ['https://search.dataone.org/view/An%20id', 'url1', 'url2', 'url3', 'url5', 'url6', 'url7'])
+        self.assertEqual(result.title, 'A title'),
+        self.assertEqual(result.id, ['An id'])
+        self.assertEqual(result.abstract, 'An abstract')
+        self.assertEqual(result.geometry['text'], 'a location')
+        self.assertEqual(result.keywords, ['keyword1', 'keyword2', 'keyword3'])
+        self.assertEqual(result.doi, 'doi:test')
+        self.assertEqual(result.origin, 'an origin')
+        self.assertEqual(result.temporal_coverage, [
+                         'Unknown to Unknown'])

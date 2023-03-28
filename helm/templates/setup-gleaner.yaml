@@ -57,7 +57,7 @@ spec:
               name: {{ .Release.Name }}-secrets
       # Run gleaner setup, which creates cloud storage buckets
       - name: gleaner-setup
-        image: nsfearthcube/gleaner:v3.0.8
+        image: nsfearthcube/gleaner:dev-v3.0.8
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         args:
         - -cfg

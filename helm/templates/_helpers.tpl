@@ -113,7 +113,7 @@ Partials for commonly used containers
 */}}
 {{- define "gleaner-index" }}
 - name: gleaner-index
-  image: nsfearthcube/gleaner:v3.0.8
+  image: nsfearthcube/gleaner:dev-v3.0.8
   imagePullPolicy: {{ .Values.image.pullPolicy }}
   args:
   - -cfg

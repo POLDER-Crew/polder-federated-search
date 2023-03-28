@@ -536,6 +536,7 @@ class GleanerSearch(SearcherBase):
 
     def pass_through_query(self, query):
         self.query = query
+        logger.debug(self.query)
         self.sparql.setQuery(query)
 
         if self.sparql.isSparqlUpdateRequest():
