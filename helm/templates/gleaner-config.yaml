@@ -91,4 +91,4 @@ data:
       url: https://ant-nz.geodata.nz/geonetwork/srv/api/0.1/sitemap
       properName: Antarctica New Zealand
       domain: https://ant-nz.geodata.nz/geonetwork
-      active: false
+      active: true
