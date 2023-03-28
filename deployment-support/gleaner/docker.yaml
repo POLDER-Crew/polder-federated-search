@@ -38,7 +38,7 @@ sources:
   active: true
 - name: bas
   type: sitemap
-  headless: true
+  headless: false
   url: http://s3system:9000/sitemaps/bas-sitemap.xml
   properName: British Antarctic Survey
   active: true
@@ -70,7 +70,7 @@ sources:
   properName: pdc
   domain: http://hedeby.uwaterloo.ca
   apipagelimit: 500
-  active: true
+  active: false
 - name: datastream
   type: sitemap
   headless: false
@@ -81,7 +81,7 @@ sources:
 - name: ant-nz
   type: sitemap
   headless: false
-  url: https://ant-nz.geodata.nz/geonetwork/srv/api/0.1/sitemap
+  url: https://ant-nz.geodata.nz/geonetwork/srv/api/0.1/sitemap?format=jsonld
   properName: Antarctica New Zealand
   domain: https://ant-nz.geodata.nz/geonetwork
-  active: false
+  active: true

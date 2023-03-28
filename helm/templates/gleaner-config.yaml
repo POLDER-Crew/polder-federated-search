@@ -77,7 +77,7 @@ data:
       properName: pdc
       domain: http://hedeby.uwaterloo.ca
       apipagelimit: 500
-      active: true
+      active: false
     - name: datastream
       type: sitemap
       headless: false

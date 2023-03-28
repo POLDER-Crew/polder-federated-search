@@ -103,6 +103,7 @@ def sparql():
     if not 'query' in request.args:
         return "Query parameter 'query' is required", BAD_REQUEST_STATUS
     query = request.args['query']
+    logger.debug(query)
     result = GleanerSearch(
         endpoint_url=app.config['GLEANER_ENDPOINT_URL']).pass_through_query(query)
     return result

@@ -117,14 +117,13 @@ spec:
         - name: MINIO_API_TRANSITION_WORKERS
           value: "{{ .Values.MINIO_WORKERS }}"
       - name: headless
-        image: chromedp/headless-shell::104.0.5098.0
+        image: chromedp/headless-shell:109.0.5414.10
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: {{ .Values.headless_service.port }}
         env:
         - name: SERVICE_PORTS
           value: "{{ .Values.headless_service.port }}"
-        args: --disable-gpu
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
