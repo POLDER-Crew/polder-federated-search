@@ -1,7 +1,7 @@
 {
   "name": "polder-federated-search",
   "license": "BSD-3-Clause",
-  "version": "1.48.0",
+  "version": "1.49.0",
   "description": "A federated search for the polar research community",
   "author": "Melinda Minch <melindaminch@oceannetworks.ca>",
   "repository": "https://github.com/WDS-ITO/polder-federated-search",
