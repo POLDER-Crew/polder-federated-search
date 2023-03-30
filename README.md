@@ -14,14 +14,16 @@ There are many DataONE repositories, but of particular interest to the polar res
 - [Netherlands Polar Data Center](https://npdc.nl)
 - [BCO-DMO](https://www.bco-dmo.org/)
 - [U.S. Antarctic Program Data Center](https://usap-dc.org)
-
+- [National Snow and Ice Data Center](https://nsidc.org])
 
 #### Repositories indexed by this app
 - [Greenland Ecosystem Monitoring](https://g-e-m.dk/)
 - [British Antarctic Survey](https://www.bas.ac.uk/), via DataCite's GraphQL API (see `docker/build-bas-sitemap.sh` for how that works)
 - [CLIVAR and Carbon Hydrographic Data Office (CCHDO)](https://cchdo.ucsd.edu/)
+- Polar data from [DataStream](https://gordonfoundation.ca/initiatives/datastream/)
+- [Antarctica New Zealand](https://ant-nz.geodata.nz/geonetwork/srv/eng/catalog.search#/home)
 - Selected polar repositories in Nasa's [Global Change Master Directory (GCMD)](https://earthdata.nasa.gov)
-    - [Australian Antarctic Data Centre](https://data.aad.gov.au/))
+    - [Australian Antarctic Data Centre](https://data.aad.gov.au/)
     - [World Glacier Monitoring Service (WGMS)](https://wgms.ch/)
     - [NOAA National Centers for Environmental Information (NCEI)](https://www.ncei.noaa.gov/)
     - [NASA Distributed Active Archive Center at the National Snow and Ice Data Center (NSIDC DAAC)](https://nsidc.org/daac/)
@@ -40,12 +42,9 @@ There are many DataONE repositories, but of particular interest to the polar res
   - [INTERACT](https://eu-interact.org/)
   - Canadian Watershed Information Network ([CWIN](https://dev.uni-manitoba.links.com.au/data/dataset/))
 
-
 #### Future work
-- [National Snow and Ice Data Center](https://nsidc.org])
 - CRITTERBASE
-- Polar data from [DataStream](https://gordonfoundation.ca/initiatives/datastream/)
-
+- Norwegian Polar Institute
 
 ### Architecture
 This tool uses Docker images to manage the different services that it depends on. One of those is [Gleaner](https://gleaner.io).
@@ -60,7 +59,7 @@ A pre-built image for the web app is on Docker Hub as [wdsito/polder-federated-s
 There is also a sitemap-building step for some of the data repositories that don't have sitemaps that work in the way we want (e.g. they don't have sitemaps, we wanted to scope down the datasets crawled to just polar data, or some other reason). That step uses a purpose-built Docker image, and the code for that is in `build-sitemap` in this repository.
 
 #### Images and versions
-Images are automatically built with [Github Actions](https://github.com/POLDER-Crew/polder-federated-search/tree/main/.github/workflows), and tagged with the version specified in `package.json` (in this directory).
+Images are automatically built with [Github Actions](https://github.com/POLDER-Crew/polder-federated-search/tree/main/.github/workflows), and tagged with the version specified in `package.json` (in this directory). If you want to deploy a new version of the site, remember to incrememt the version in `package.json` and in `helm/Chart.yaml`. Once the Github Action completes, the new website image will be ready for you to deploy.
 
 #### Deployment-support
 There is a directory called `deployment-support`, which has files that both Docker and Helm / Kubernetes can use to configure Gleaner and Graphdb.
