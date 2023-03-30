@@ -398,44 +398,49 @@ export function initializeMaps(lazy=false) {
 }
 
 export function addSearchResult(id, result) {
-    // We're adding features twice in here because there are two maps.
-    // If you only have one map, you only need to do this once.
-    const arcticFeature = new GeoJSON().readFeature(result.geometry, {
-        // If your tileset is using the default projection, don't need the next two lines.
-        dataProjection: getProjection("ESPG:4326"),
-        featureProjection: arcticProjection,
-    });
+    try {
+        // We're adding features twice in here because there are two maps.
+        // If you only have one map, you only need to do this once.
+        const arcticFeature = new GeoJSON().readFeature(result.geometry, {
+            // If your tileset is using the default projection, don't need the next two lines.
+            dataProjection: getProjection("ESPG:4326"),
+            featureProjection: arcticProjection,
+        });
 
-    if (
-        containsExtent(
-            arcticExtentBoundary,
-            arcticFeature.getGeometry().getExtent()
-        )
-    ) {
-        // todo: let's set these in the geojson on the server side.
-        // Can we reproject it in GeoSPARQL or something?
-        arcticFeature.set("id", id);
-        arcticFeature.set("name", result.name);
-        arcticResultsSource.addFeature(arcticFeature);
-        $arcticScreenReaderList.append(`<li>${result.name}</li>`);
+        if (
+            containsExtent(
+                arcticExtentBoundary,
+                arcticFeature.getGeometry().getExtent()
+            )
+        ) {
+            // todo: let's set these in the geojson on the server side.
+            // Can we reproject it in GeoSPARQL or something?
+            arcticFeature.set("id", id);
+            arcticFeature.set("name", result.name);
+            arcticResultsSource.addFeature(arcticFeature);
+            $arcticScreenReaderList.append(`<li>${result.name}</li>`);
+        }
+
+        const antarcticFeature = new GeoJSON().readFeature(result.geometry, {
+            // If your tileset is using the default projection, don't need the next two lines.
+            dataProjection: getProjection("ESPG:4326"),
+            featureProjection: antarcticProjection,
+        });
+
+        if (
+            containsExtent(
+                antarcticExtentBoundary,
+                antarcticFeature.getGeometry().getExtent()
+            )
+        ) {
+            // todo: let's set these in the geojson on the server side.
+            antarcticFeature.set("id", id);
+            antarcticFeature.set("name", result.name);
+            antarcticResultsSource.addFeature(antarcticFeature);
+            $antarcticScreenReaderList.append(`<li>${result.name}</li>`);
+        }
     }
-
-    const antarcticFeature = new GeoJSON().readFeature(result.geometry, {
-        // If your tileset is using the default projection, don't need the next two lines.
-        dataProjection: getProjection("ESPG:4326"),
-        featureProjection: antarcticProjection,
-    });
-
-    if (
-        containsExtent(
-            antarcticExtentBoundary,
-            antarcticFeature.getGeometry().getExtent()
-        )
-    ) {
-        // todo: let's set these in the geojson on the server side.
-        antarcticFeature.set("id", id);
-        antarcticFeature.set("name", result.name);
-        antarcticResultsSource.addFeature(antarcticFeature);
-        $antarcticScreenReaderList.append(`<li>${result.name}</li>`);
+    catch(err) {
+        console.warn("Exception reprojecting", result, err.message, " - continuing without showing it on the map.");
     }
 }
