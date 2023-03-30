@@ -10,10 +10,8 @@ jobs:
         - name: Checkout
           uses: actions/checkout@v3
         - name: get-version-from-package-json
-          uses: polyseam/get-version-from-package-json@1.0.0
+          uses: stevenbenitez/get-package-version-action@v1
           id: get-version-from-package-json
-          with:
-            path-to-package-json: 'package.json'
         - name: print-version
           run: echo "The version key in your json is ${{steps.get-version-from-package-json.outputs.version}}"
         - name: Set up QEMU
