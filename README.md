@@ -23,7 +23,7 @@ There are many DataONE repositories, but of particular interest to the polar res
 - Polar data from [DataStream](https://gordonfoundation.ca/initiatives/datastream/)
 - [Antarctica New Zealand](https://ant-nz.geodata.nz/geonetwork/srv/eng/catalog.search#/home)
 - Selected polar repositories in Nasa's [Global Change Master Directory (GCMD)](https://earthdata.nasa.gov)
-    - [Australian Antarctic Data Centre](https://data.aad.gov.au/))
+    - [Australian Antarctic Data Centre](https://data.aad.gov.au/)
     - [World Glacier Monitoring Service (WGMS)](https://wgms.ch/)
     - [NOAA National Centers for Environmental Information (NCEI)](https://www.ncei.noaa.gov/)
     - [NASA Distributed Active Archive Center at the National Snow and Ice Data Center (NSIDC DAAC)](https://nsidc.org/daac/)
